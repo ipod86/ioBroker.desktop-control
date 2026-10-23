@@ -53,6 +53,8 @@ export interface ManifestParam {
 	required: boolean;
 	/** allowed values */
 	enum?: string[];
+	/** default value of the agent */
+	default?: unknown;
 }
 
 /** One command as announced in the manifest */
@@ -306,6 +308,7 @@ export function normalizeManifest(raw: unknown): Manifest {
 			type: str(p.type) || 'string',
 			required: p.required === true,
 			enum: Array.isArray(p.enum) ? p.enum.map(str) : undefined,
+			default: p.default,
 		})),
 		// run/kill are only flagged because of AllowAnyRun; with alias-only run the agent itself limits them
 		dangerous: e.dangerous === true && !(ALIAS_LIMITED.includes(name) && security.allow_any_run === false),
@@ -454,12 +457,42 @@ export function commandForStateWrite(
  *
  * @param cmd command
  */
-export function commandKind(cmd: ManifestCommand): 'button' | 'json' | 'none' {
+export function commandKind(cmd: ManifestCommand): 'button' | 'json' | 'both' | 'none' {
 	if (cmd.dangerous || cmd.disabled) {
 		return 'none';
 	}
-	// every option should be settable via the data point, so only commands without any parameter are buttons
-	return cmd.params.length ? 'json' : 'button';
+	if (!cmd.params.length) {
+		return 'button';
+	}
+	const primary = cmd.params.find(p => p.name === cmd.primary);
+	// required option, or a main option without default (e.g. kill: which program?) → only the input
+	if (cmd.params.some(p => p.required) || (primary && primary.default === undefined)) {
+		return 'json';
+	}
+	// only optional options: a button with the defaults plus an input "<name>_json" for the options
+	return 'both';
+}
+
+/** Suffix of the additional input data point of commands with kind "both" */
+export const OPTIONS_SUFFIX = '_json';
+
+/**
+ * Data points of a command: id suffix and kind
+ *
+ * @param cmd command from the manifest
+ */
+export function commandDataPoints(cmd: ManifestCommand): { suffix: string; kind: 'button' | 'json' }[] {
+	const kind = commandKind(cmd);
+	if (kind === 'none') {
+		return [];
+	}
+	if (kind === 'both') {
+		return [
+			{ suffix: '', kind: 'button' },
+			{ suffix: OPTIONS_SUFFIX, kind: 'json' },
+		];
+	}
+	return [{ suffix: '', kind }];
 }
 
 /**

@@ -73,7 +73,8 @@ Written on every event (also when the content is the same), so a trigger with `c
 ### Commands (`<pc>.cmd.*`)
 
 - **Button:** commands without options – click to run.
-- **Input:** commands with options. Write one of:
+- **Button + `_json` input:** commands whose options are all optional (e.g. `screenshot`, `mute`, `beep`): the button runs with the defaults, `cmd.<command>_json` takes the options.
+- **Input:** commands with a required option. Write one of:
   - the **short form**: just the value of the main option, e.g. `Hello` into `cmd.speak`
   - **JSON** with any options, e.g. `{"text":"Hello","rate":2}`
   - `true` – runs the command with its default options
@@ -109,7 +110,7 @@ _Generated from the agent (agent version 0.3.2). Examples and all option descrip
 | `cancel_shutdown` | Cancels a planned shutdown/restart | button |  |  |
 | `monitor_off` | Turns the monitors off | button |  |  |
 | `monitor_on` | Wakes the monitors up | button |  |  |
-| `keep_awake` | Prevents standby and screen saver | input | `state` | `state`, `display` |
+| `keep_awake` | Prevents standby and screen saver | button + `keep_awake_json` | `state` | `state`, `display` |
 
 #### Programs & windows
 
@@ -122,7 +123,7 @@ _Generated from the agent (agent version 0.3.2). Examples and all option descrip
 | `list_windows` | Lists visible windows | button |  |  |
 | `focus_window` | Brings a window to the front (title contains …) | input | `title` | `title`* |
 | `close_window` | Closes a window (title contains …) | input | `title` | `title`* |
-| `minimize_all` | Minimizes all windows (show desktop) or restores them | input |  | `undo` |
+| `minimize_all` | Minimizes all windows (show desktop) or restores them | button + `minimize_all_json` |  | `undo` |
 | `empty_recycle_bin` | Empties the recycle bin | button |  |  |
 | `shell` | Runs a PowerShell/cmd command and returns the output | only `sendTo` | `command` | `command`*, `shell` (powershell/cmd), `timeout` |
 
@@ -131,14 +132,14 @@ _Generated from the agent (agent version 0.3.2). Examples and all option descrip
 | Command | Description | Data point | Short form | Options |
 |---|---|---|---|---|
 | `volume` | Sets the master volume (0-100) | input | `level` | `level`* |
-| `volume_change` | Changes the volume relatively | input | `delta` | `delta` |
-| `mute` | Mute / unmute / toggle | input | `state` | `state` |
+| `volume_change` | Changes the volume relatively | button + `volume_change_json` | `delta` | `delta` |
+| `mute` | Mute / unmute / toggle | button + `mute_json` | `state` | `state` |
 | `media` | Sends a media key | input | `key` | `key`* (playpause/next/prev/stop/volume_up/volume_down/mute) |
 | `speak` | Text to speech | input | `text` | `text`*, `voice`, `rate`, `volume`, `wait`, `interrupt` |
 | `list_voices` | Lists the installed voices | button |  |  |
 | `play_sound` | Plays an audio file (mp3/wav/wma, path or URL) | input | `source` | `source`*, `wait` |
 | `stop_sound` | Stops play_sound / speak | button |  |  |
-| `beep` | Simple beep | input |  | `freq`, `ms` |
+| `beep` | Simple beep | button + `beep_json` |  | `freq`, `ms` |
 
 #### Display
 
@@ -151,7 +152,7 @@ _Generated from the agent (agent version 0.3.2). Examples and all option descrip
 | `ask` | Shows a dialog with buttons/input and returns the answer | input | `text` | `text`*, `title`, `buttons`, `input`, `default`, `password`, `timeout`, `width`, `font_size`, `monitor` |
 | `notify` | Shows a Windows notification | input | `text` | `text`*, `title`, `icon` (info/warning/error/none), `seconds` |
 | `close_popups` | Closes all popups, overlays and dialogs | button |  |  |
-| `screenshot` | Takes a screenshot (stored in the ioBroker file storage) | input |  | `monitor`, `scale`, `quality`, `format` (jpeg/png), `inline` |
+| `screenshot` | Takes a screenshot (stored in the ioBroker file storage) | button + `screenshot_json` |  | `monitor`, `scale`, `quality`, `format` (jpeg/png), `inline` |
 | `set_wallpaper` | Sets the desktop wallpaper | input | `source` | `source`* |
 | `brightness` | Sets the brightness (internal laptop displays only) | input | `level` | `level`* |
 
@@ -161,7 +162,7 @@ _Generated from the agent (agent version 0.3.2). Examples and all option descrip
 |---|---|---|---|---|
 | `send_keys` | Sends key presses (SendKeys syntax) | input | `keys` | `keys`* |
 | `type_text` | Types text into the active window | input | `text` | `text`* |
-| `mouse` | Moves/clicks the mouse | input |  | `x`, `y`, `relative`, `click` (none/single/double), `button` (left/right/middle), `wheel` |
+| `mouse` | Moves/clicks the mouse | button + `mouse_json` |  | `x`, `y`, `relative`, `click` (none/single/double), `button` (left/right/middle), `wheel` |
 | `clipboard_set` | Sets the clipboard text | input | `text` | `text`* |
 | `clipboard_get` | Reads the clipboard text | button |  |  |
 

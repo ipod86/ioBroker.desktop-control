@@ -73,7 +73,8 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
 ### Befehle (`<PC>.cmd.*`)
 
 - **Knopf:** Befehle ohne Optionen – Klick führt aus.
-- **Eingabe:** Befehle mit Optionen. Hineinschreiben:
+- **Knopf + `_json`-Eingabe:** Befehle, deren Optionen alle optional sind (z. B. `screenshot`, `mute`, `beep`): Der Knopf führt mit Standardwerten aus, `cmd.<befehl>_json` nimmt die Optionen.
+- **Eingabe:** Befehle mit Pflichtangabe. Hineinschreiben:
   - die **Kurzform**: nur der Wert der Hauptoption, z. B. `Hallo` in `cmd.speak`
   - **JSON** mit beliebigen Optionen, z. B. `{"text":"Hallo","rate":2}`
   - `true` – führt den Befehl mit den Standardwerten aus
@@ -229,7 +230,7 @@ Datenpunkt: `cmd.monitor_on` – Knopf – Klick führt aus
 <details>
 <summary><code>keep_awake</code> – Verhindert Standby/Bildschirmschoner (bis auf Widerruf)</summary>
 
-Datenpunkt: `cmd.keep_awake` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
+Datenpunkt: `cmd.keep_awake` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.keep_awake_json` für die Optionen  
 Kurzform: `state`
 
 Beispiele:
@@ -376,7 +377,7 @@ Editor
 <details>
 <summary><code>minimize_all</code> – Alle Fenster minimieren (Desktop anzeigen) bzw. wiederherstellen</summary>
 
-Datenpunkt: `cmd.minimize_all` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
+Datenpunkt: `cmd.minimize_all` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.minimize_all_json` für die Optionen  
 
 Beispiele:
 
@@ -441,7 +442,7 @@ Beispiele:
 <details>
 <summary><code>volume_change</code> – Lautstärke relativ ändern</summary>
 
-Datenpunkt: `cmd.volume_change` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
+Datenpunkt: `cmd.volume_change` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.volume_change_json` für die Optionen  
 Kurzform: `delta`
 
 Beispiele:
@@ -459,7 +460,7 @@ Beispiele:
 <details>
 <summary><code>mute</code> – Stummschalten / aufheben / umschalten</summary>
 
-Datenpunkt: `cmd.mute` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
+Datenpunkt: `cmd.mute` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.mute_json` für die Optionen  
 Kurzform: `state`
 
 Beispiele:
@@ -554,7 +555,7 @@ Datenpunkt: `cmd.stop_sound` – Knopf – Klick führt aus
 <details>
 <summary><code>beep</code> – Einfacher Piepton</summary>
 
-Datenpunkt: `cmd.beep` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
+Datenpunkt: `cmd.beep` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.beep_json` für die Optionen  
 
 Beispiele:
 
@@ -780,7 +781,7 @@ Datenpunkt: `cmd.close_popups` – Knopf – Klick führt aus
 <details>
 <summary><code>screenshot</code> – Macht einen Screenshot und veröffentlicht das Bild (JPEG/PNG-Rohdaten) auf <base>/<id>/screenshot</summary>
 
-Datenpunkt: `cmd.screenshot` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
+Datenpunkt: `cmd.screenshot` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.screenshot_json` für die Optionen  
 
 Beispiele:
 
@@ -877,7 +878,7 @@ Hallo Welt
 <details>
 <summary><code>mouse</code> – Bewegt/klickt die Maus</summary>
 
-Datenpunkt: `cmd.mouse` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
+Datenpunkt: `cmd.mouse` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.mouse_json` für die Optionen  
 
 Beispiele:
 

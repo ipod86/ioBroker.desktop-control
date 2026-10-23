@@ -9,6 +9,7 @@ import { startBroker, type RunningBroker } from './lib/broker';
 import { Correlator } from './lib/correlator';
 import {
 	commandForStateWrite,
+	commandDataPoints,
 	commandKind,
 	findStateDef,
 	type Manifest,
@@ -400,21 +401,19 @@ class DesktopControl extends utils.Adapter {
 		// commands: button or JSON, dangerous ones only via sendTo; remove commands the agent no longer has
 		const wanted = new Set<string>([`${o}.cmd.${RESULT}`]);
 		for (const c of m.commands) {
-			const kind = commandKind(c);
-			if (kind === 'none') {
-				continue;
+			for (const dp of commandDataPoints(c)) {
+				const id = `${o}.cmd.${sanitizeSegment(c.name)}${dp.suffix}`;
+				if (id === `${o}.cmd.${RESULT}`) {
+					continue; // name is taken by the result data point
+				}
+				wanted.add(id);
+				this.known.delete(id);
+				await this.ensureObject(id, {
+					type: 'state',
+					common: this.commandCommon(c, dp.kind, m.apps),
+					native: { command: c.name },
+				});
 			}
-			const id = `${o}.cmd.${sanitizeSegment(c.name)}`;
-			if (id === `${o}.cmd.${RESULT}`) {
-				continue; // name is taken by the result data point
-			}
-			wanted.add(id);
-			this.known.delete(id);
-			await this.ensureObject(id, {
-				type: 'state',
-				common: this.commandCommon(c, kind, m.apps),
-				native: { command: c.name },
-			});
 		}
 		const existing = await this.getObjectViewAsync('system', 'state', {
 			startkey: `${this.namespace}.${o}.cmd.`,
@@ -446,13 +445,14 @@ class DesktopControl extends utils.Adapter {
 			c.description,
 			c.params.length ? `Options: ${c.params.map(p => `${p.name}${p.required ? '*' : ''}`).join(', ')}` : '',
 			kind === 'json' && c.examples.length ? `Example: ${c.examples[c.examples.length > 1 ? 1 : 0]}` : '',
+			kind === 'button' && c.params.length ? `Runs with the defaults; options via ${c.name}_json` : '',
 		]
 			.filter(Boolean)
 			.join(' | ');
 		return kind === 'button'
 			? { name: c.name, desc, type: 'boolean', role: 'button', read: false, write: true }
 			: {
-					name: c.name,
+					name: commandKind(c) === 'both' ? `${c.name} (options)` : c.name,
 					desc,
 					type: 'string',
 					role: 'json',
@@ -469,7 +469,7 @@ class DesktopControl extends utils.Adapter {
 		const cmds = new Map<string, ManifestCommand>();
 		for (const d of this.devices.values()) {
 			for (const c of d.manifest?.commands ?? []) {
-				if (commandKind(c) !== 'none' && !cmds.has(c.name)) {
+				if (commandDataPoints(c).length && !cmds.has(c.name)) {
 					cmds.set(c.name, c);
 				}
 			}
@@ -480,12 +480,13 @@ class DesktopControl extends utils.Adapter {
 		await this.ensureObject('all', { type: 'device', common: { name: 'All PCs (broadcast)' }, native: {} });
 		await this.ensureObject('all.cmd', { type: 'channel', common: { name: 'Commands to all PCs' }, native: {} });
 		for (const c of cmds.values()) {
-			const kind = commandKind(c) as 'button' | 'json';
-			await this.ensureObject(`all.cmd.${sanitizeSegment(c.name)}`, {
-				type: 'state',
-				common: this.commandCommon(c, kind),
-				native: { command: c.name },
-			});
+			for (const dp of commandDataPoints(c)) {
+				await this.ensureObject(`all.cmd.${sanitizeSegment(c.name)}${dp.suffix}`, {
+					type: 'state',
+					common: this.commandCommon(c, dp.kind),
+					native: { command: c.name },
+				});
+			}
 		}
 	}
 

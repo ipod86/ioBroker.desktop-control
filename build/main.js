@@ -366,21 +366,19 @@ class DesktopControl extends utils.Adapter {
     }
     const wanted = /* @__PURE__ */ new Set([`${o}.cmd.${RESULT}`]);
     for (const c of m.commands) {
-      const kind = (0, import_protocol.commandKind)(c);
-      if (kind === "none") {
-        continue;
+      for (const dp of (0, import_protocol.commandDataPoints)(c)) {
+        const id = `${o}.cmd.${(0, import_protocol.sanitizeSegment)(c.name)}${dp.suffix}`;
+        if (id === `${o}.cmd.${RESULT}`) {
+          continue;
+        }
+        wanted.add(id);
+        this.known.delete(id);
+        await this.ensureObject(id, {
+          type: "state",
+          common: this.commandCommon(c, dp.kind, m.apps),
+          native: { command: c.name }
+        });
       }
-      const id = `${o}.cmd.${(0, import_protocol.sanitizeSegment)(c.name)}`;
-      if (id === `${o}.cmd.${RESULT}`) {
-        continue;
-      }
-      wanted.add(id);
-      this.known.delete(id);
-      await this.ensureObject(id, {
-        type: "state",
-        common: this.commandCommon(c, kind, m.apps),
-        native: { command: c.name }
-      });
     }
     const existing = await this.getObjectViewAsync("system", "state", {
       startkey: `${this.namespace}.${o}.cmd.`,
@@ -409,10 +407,11 @@ class DesktopControl extends utils.Adapter {
     const desc = [
       c.description,
       c.params.length ? `Options: ${c.params.map((p) => `${p.name}${p.required ? "*" : ""}`).join(", ")}` : "",
-      kind === "json" && c.examples.length ? `Example: ${c.examples[c.examples.length > 1 ? 1 : 0]}` : ""
+      kind === "json" && c.examples.length ? `Example: ${c.examples[c.examples.length > 1 ? 1 : 0]}` : "",
+      kind === "button" && c.params.length ? `Runs with the defaults; options via ${c.name}_json` : ""
     ].filter(Boolean).join(" | ");
     return kind === "button" ? { name: c.name, desc, type: "boolean", role: "button", read: false, write: true } : {
-      name: c.name,
+      name: (0, import_protocol.commandKind)(c) === "both" ? `${c.name} (options)` : c.name,
       desc,
       type: "string",
       role: "json",
@@ -429,7 +428,7 @@ class DesktopControl extends utils.Adapter {
     const cmds = /* @__PURE__ */ new Map();
     for (const d of this.devices.values()) {
       for (const c of (_b = (_a = d.manifest) == null ? void 0 : _a.commands) != null ? _b : []) {
-        if ((0, import_protocol.commandKind)(c) !== "none" && !cmds.has(c.name)) {
+        if ((0, import_protocol.commandDataPoints)(c).length && !cmds.has(c.name)) {
           cmds.set(c.name, c);
         }
       }
@@ -440,12 +439,13 @@ class DesktopControl extends utils.Adapter {
     await this.ensureObject("all", { type: "device", common: { name: "All PCs (broadcast)" }, native: {} });
     await this.ensureObject("all.cmd", { type: "channel", common: { name: "Commands to all PCs" }, native: {} });
     for (const c of cmds.values()) {
-      const kind = (0, import_protocol.commandKind)(c);
-      await this.ensureObject(`all.cmd.${(0, import_protocol.sanitizeSegment)(c.name)}`, {
-        type: "state",
-        common: this.commandCommon(c, kind),
-        native: { command: c.name }
-      });
+      for (const dp of (0, import_protocol.commandDataPoints)(c)) {
+        await this.ensureObject(`all.cmd.${(0, import_protocol.sanitizeSegment)(c.name)}${dp.suffix}`, {
+          type: "state",
+          common: this.commandCommon(c, dp.kind),
+          native: { command: c.name }
+        });
+      }
     }
   }
   /**

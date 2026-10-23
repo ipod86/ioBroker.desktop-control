@@ -123,6 +123,11 @@ tests.integration(path.join(__dirname, '..'), {
 				// switched off in the agent config
 				const beep = await harness.objects.getObjectAsync(`${NS}.fake-pc.cmd.beep`);
 				expect(beep).to.equal(null);
+				// only optional options: button plus input for the options
+				const shot = await harness.objects.getObjectAsync(`${NS}.fake-pc.cmd.screenshot`);
+				expect(shot.common.role).to.equal('button');
+				const shotJson = await harness.objects.getObjectAsync(`${NS}.fake-pc.cmd.screenshot_json`);
+				expect(shotJson.common.role).to.equal('json');
 				const apps = await waitForState(`${NS}.fake-pc.info.apps`);
 				expect(JSON.parse(apps.val)).to.deep.equal(['notepad', 'calc']);
 				const all = await harness.objects.getObjectAsync(`${NS}.all.cmd.ping`);

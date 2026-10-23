@@ -26,6 +26,7 @@ const T = {
 		note: 'Generated from the agent (`docs/protocol.json`, agent version {v}); the descriptions come from the agent and are German.',
 		dp: 'Data point',
 		button: 'button – click to run',
+		both: 'button (runs with the defaults) + input `cmd.{n}_json` for the options',
 		input: 'input – JSON, short form or `true` (= default options)',
 		sendto: 'no data point (security relevant) – only via `sendTo`',
 		runNote: ' (data point only while the agent only starts programs from its alias list)',
@@ -50,6 +51,7 @@ const T = {
 		note: 'Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version {v}).',
 		dp: 'Datenpunkt',
 		button: 'Knopf – Klick führt aus',
+		both: 'Knopf (führt mit Standardwerten aus) + Eingabe `cmd.{n}_json` für die Optionen',
 		input: 'Eingabe – JSON, Kurzform oder `true` (= Standardwerte)',
 		sendto: 'kein Datenpunkt (sicherheitsrelevant) – nur per `sendTo`',
 		runNote: ' (Datenpunkt nur, solange der Agent nur Programme aus seiner Alias-Liste startet)',
@@ -65,6 +67,29 @@ const T = {
 };
 
 const WRITABLE = ['volume', 'muted', 'keep_awake'];
+
+/**
+ * Data point kind like in src/lib/protocol.ts (commandKind)
+ *
+ * @param {{name: string, dangerous?: boolean, primary?: string, params: {name: string, required: boolean, default?: unknown}[]}} c command
+ * @returns {'none'|'button'|'json'|'both'|'alias'} kind
+ */
+function kindOf(c) {
+	if (ALIAS_LIMITED.includes(c.name)) {
+		return 'alias';
+	}
+	if (c.dangerous) {
+		return 'none';
+	}
+	if (!c.params.length) {
+		return 'button';
+	}
+	const primary = c.params.find(p => p.name === c.primary);
+	if (c.params.some(p => p.required) || (primary && primary.default === undefined)) {
+		return 'json';
+	}
+	return 'both';
+}
 
 /** English descriptions (the agent only has German ones; README.md must be English) */
 const EN_CMD = {
@@ -177,14 +202,13 @@ function renderEn() {
 			'|---|---|---|---|---|',
 		);
 		for (const c of cats[cat]) {
-			const kind =
-				c.dangerous && !ALIAS_LIMITED.includes(c.name)
-					? 'only `sendTo`'
-					: ALIAS_LIMITED.includes(c.name)
-						? 'input (alias list only)'
-						: c.params.length
-							? 'input'
-							: 'button';
+			const kind = {
+				none: 'only `sendTo`',
+				alias: 'input (alias list only)',
+				json: 'input',
+				button: 'button',
+				both: `button + \`${c.name}_json\``,
+			}[kindOf(c)];
 			const opts = c.params
 				.map(p => `\`${p.name}\`${p.required ? '*' : ''}${p.enum ? ` (${p.enum.join('/')})` : ''}`)
 				.join(', ');
@@ -225,8 +249,15 @@ function renderDe() {
 		}
 		out.push(`#### ${title}`, '');
 		for (const c of cats[cat]) {
+			const k = kindOf(c);
 			const kind =
-				c.dangerous && !ALIAS_LIMITED.includes(c.name) ? t.sendto : c.params.length ? t.input : t.button;
+				k === 'none'
+					? t.sendto
+					: k === 'button'
+						? t.button
+						: k === 'both'
+							? t.both.replace('{n}', c.name)
+							: t.input;
 			const extra = ALIAS_LIMITED.includes(c.name) ? t.runNote : '';
 			out.push('<details>', `<summary><code>${c.name}</code> – ${c.description}</summary>`, '');
 			out.push(`${t.dp}: \`cmd.${c.name}\` – ${kind}${extra}  `);

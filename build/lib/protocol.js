@@ -19,7 +19,9 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var protocol_exports = {};
 __export(protocol_exports, {
   ALIAS_LIMITED: () => ALIAS_LIMITED,
+  OPTIONS_SUFFIX: () => OPTIONS_SUFFIX,
   WRITABLE_COMMANDS: () => WRITABLE_COMMANDS,
+  commandDataPoints: () => commandDataPoints,
   commandForStateWrite: () => commandForStateWrite,
   commandKind: () => commandKind,
   convertParam: () => convertParam,
@@ -167,7 +169,8 @@ function normalizeManifest(raw) {
       name: pn,
       type: str(p.type) || "string",
       required: p.required === true,
-      enum: Array.isArray(p.enum) ? p.enum.map(str) : void 0
+      enum: Array.isArray(p.enum) ? p.enum.map(str) : void 0,
+      default: p.default
     })),
     // run/kill are only flagged because of AllowAnyRun; with alias-only run the agent itself limits them
     dangerous: e.dangerous === true && !(ALIAS_LIMITED.includes(name) && security.allow_any_run === false),
@@ -270,7 +273,28 @@ function commandKind(cmd) {
   if (cmd.dangerous || cmd.disabled) {
     return "none";
   }
-  return cmd.params.length ? "json" : "button";
+  if (!cmd.params.length) {
+    return "button";
+  }
+  const primary = cmd.params.find((p) => p.name === cmd.primary);
+  if (cmd.params.some((p) => p.required) || primary && primary.default === void 0) {
+    return "json";
+  }
+  return "both";
+}
+const OPTIONS_SUFFIX = "_json";
+function commandDataPoints(cmd) {
+  const kind = commandKind(cmd);
+  if (kind === "none") {
+    return [];
+  }
+  if (kind === "both") {
+    return [
+      { suffix: "", kind: "button" },
+      { suffix: OPTIONS_SUFFIX, kind: "json" }
+    ];
+  }
+  return [{ suffix: "", kind }];
 }
 function parseCommandParams(value, cmd) {
   var _a;
@@ -343,7 +367,9 @@ function parseScreenshot(payload) {
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ALIAS_LIMITED,
+  OPTIONS_SUFFIX,
   WRITABLE_COMMANDS,
+  commandDataPoints,
   commandForStateWrite,
   commandKind,
   convertParam,

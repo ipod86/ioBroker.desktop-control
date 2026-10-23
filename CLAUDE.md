@@ -22,7 +22,7 @@ WinCtl.exe (per PC) ──MQTT──> broker (built-in or external) <──MQTT�
 
 - Topics: `{base}/{id}/online|info|state/<path>|event/<name>|result|screenshot`, commands to `{base}/{id}/cmd/<name>` and `{base}/all/cmd/<name>`.
 - States are plain text; typed with the manifest. `/` in state paths becomes an object level (`disk/C_free_gb` → `state.disk.C_free_gb`). Dynamic states (`<...>` or `/*` in the manifest) are created on the first value.
-- Command data points: no params at all → button; otherwise `json` (string), so every option is settable. A non-JSON value is the short form for the `primary` parameter; `true`/`{}` = default options. `common.desc` = description | options | example (from the manifest `examples`).
+- Command data points (`commandDataPoints`): no params → button; required param (or primary without default) → `json` input; only optional params → button with defaults + `<name>_json` input. A non-JSON value is the short form for the `primary` parameter; `true`/`{}` = default options. `common.desc` = description | options | example (from the manifest `examples`).
 - README command/state reference is generated: `npm run readme` (tools/gen-readme.js, from docs/protocol.json, between `<!-- generated:start/end -->`). Run it after copying new protocol files from the agent.
 - `dangerous` and `disabled_commands` get no data point (only `sendTo`). Exception `ALIAS_LIMITED` (run, kill): data point while `security.allow_any_run === false`; `cmd.run` gets the aliases as `common.states`. Stale `cmd.*` objects are removed when the manifest changes.
 - Writable states: `volume` → `volume{level}`, `muted` → `mute{state}`, `keep_awake` → `keep_awake{state}` (`WRITABLE_COMMANDS`).

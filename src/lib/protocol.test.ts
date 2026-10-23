@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import {
+	commandDataPoints,
 	commandForStateWrite,
 	commandKind,
 	findStateDef,
@@ -34,7 +35,11 @@ const MANIFEST = normalizeManifest({
 	commands: [
 		{ name: 'ping', params: [] },
 		{ name: 'volume', primary: 'level', params: [{ name: 'level', type: 'integer', required: true }] },
-		{ name: 'mute', primary: 'state', params: [{ name: 'state', type: 'string', required: false }] },
+		{
+			name: 'mute',
+			primary: 'state',
+			params: [{ name: 'state', type: 'string', required: false, default: 'toggle' }],
+		},
 		{ name: 'speak', primary: 'text', params: [{ name: 'text', type: 'string', required: true }] },
 		{ name: 'shell', dangerous: true, params: [{ name: 'cmd', type: 'string', required: true }] },
 		{ name: 'beep', params: [] },
@@ -139,8 +144,13 @@ describe('manifest', () => {
 	});
 	it('creates buttons, json data points, and nothing for dangerous or disabled commands', () => {
 		expect(commandKind(cmd('ping'))).to.equal('button');
-		// only optional parameters: still an input, so the options can be set
-		expect(commandKind(cmd('mute'))).to.equal('json');
+		// only optional parameters: button with the defaults plus an input for the options
+		expect(commandKind(cmd('mute'))).to.equal('both');
+		expect(commandDataPoints(cmd('mute'))).to.deep.equal([
+			{ suffix: '', kind: 'button' },
+			{ suffix: '_json', kind: 'json' },
+		]);
+		expect(commandDataPoints(cmd('shell'))).to.deep.equal([]);
 		expect(commandKind(cmd('speak'))).to.equal('json');
 		expect(commandKind(cmd('shell'))).to.equal('none');
 		expect(commandKind(cmd('beep'))).to.equal('none');
