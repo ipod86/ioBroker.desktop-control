@@ -21,7 +21,7 @@ export interface ParsedTopic {
 
 /** One state as announced in the manifest */
 export interface ManifestState {
-	/** state path (template without "/*") */
+	/** state path, for dynamic states the pattern as announced ("disk/<laufwerk>_free_gb") */
 	path: string;
 	/** ioBroker type */
 	type: ioBroker.CommonType;
@@ -29,6 +29,8 @@ export interface ManifestState {
 	role: string;
 	/** display name */
 	name: string;
+	/** description from the agent */
+	description: string;
 	/** unit */
 	unit?: string;
 	/** minimum */
@@ -37,8 +39,8 @@ export interface ManifestState {
 	max?: number;
 	/** can be changed from ioBroker */
 	writable: boolean;
-	/** template for dynamic states ("disk/*") */
-	template: boolean;
+	/** dynamic states: matches the concrete paths ("disk/C_free_gb"); undefined for fixed states */
+	pattern?: RegExp;
 }
 
 /** One command parameter */
@@ -49,6 +51,8 @@ export interface ManifestParam {
 	type: string;
 	/** must be given */
 	required: boolean;
+	/** allowed values */
+	enum?: string[];
 }
 
 /** One command as announced in the manifest */
@@ -63,6 +67,10 @@ export interface ManifestCommand {
 	needsGui: boolean;
 	/** description */
 	description: string;
+	/** parameter a plain value is mapped to (short form) */
+	primary?: string;
+	/** switched off in the agent config (DisabledCommands) */
+	disabled: boolean;
 }
 
 /** Normalised manifest */
@@ -77,6 +85,14 @@ export interface Manifest {
 	os: string;
 	/** logged-in user */
 	user: string;
+	/** agent id from the config */
+	deviceId: string;
+	/** start time of the agent (ISO) */
+	started: string;
+	/** protocol version */
+	protocol: number;
+	/** run/open aliases allowed by the agent config */
+	apps: string[];
 	/** announced states */
 	states: ManifestState[];
 	/** announced commands */
@@ -222,6 +238,13 @@ function entries(input: unknown): [string, Record<string, unknown>][] {
 	return [];
 }
 
+/** commands a writable state triggers, with the default parameter (the manifest's "primary" wins) */
+export const WRITABLE_COMMANDS: Record<string, { command: string; param: string }> = {
+	volume: { command: 'volume', param: 'level' },
+	muted: { command: 'mute', param: 'state' },
+	keep_awake: { command: 'keep_awake', param: 'state' },
+};
+
 const TYPES = ['number', 'string', 'boolean', 'json', 'array', 'object', 'mixed'];
 
 /**
@@ -234,32 +257,54 @@ export function normalizeManifest(raw: unknown): Manifest {
 	const str = text;
 	const states: ManifestState[] = entries(m.states).map(([path, e]) => {
 		const raw = TYPES.includes(str(e.type)) ? str(e.type) : 'mixed';
-		const template = path.endsWith('/*');
+		// dynamic states: "disk/<laufwerk>_free_gb" (agent) or "disk/*"
+		let pattern: RegExp | undefined;
+		if (path.includes('<') || path.endsWith('/*')) {
+			const re = path
+				.split(/(<[^>]+>|\*)/)
+				.map(part =>
+					part.startsWith('<') || part === '*' ? '[^/]+' : part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+				)
+				.join('');
+			pattern = new RegExp(`^${re}$`);
+		}
 		// structured values are stored as JSON text
 		const type = (['json', 'array', 'object'].includes(raw) ? 'string' : raw) as ioBroker.CommonType;
+		// volume, muted, keep_awake can be set from ioBroker (the agent has a command for them)
+		const writable = e.writable === true || path in WRITABLE_COMMANDS;
+		let role = OFFICIAL_ROLES.has(str(e.role)) ? str(e.role) : defaultRole(raw, writable);
+		if (writable && role === 'indicator') {
+			role = 'switch';
+		}
 		return {
-			path: template ? path.slice(0, -2) : path,
+			path,
 			type,
 			// only official ioBroker roles; anything else falls back to a generic role of the type
-			role: OFFICIAL_ROLES.has(str(e.role)) ? str(e.role) : defaultRole(raw, !!e.writable),
+			role,
 			name: str(e.name) || path,
-			unit: e.unit !== undefined ? str(e.unit) : undefined,
+			description: str(e.description),
+			unit: e.unit !== undefined && e.unit !== '' ? str(e.unit) : undefined,
 			min: typeof e.min === 'number' ? e.min : undefined,
 			max: typeof e.max === 'number' ? e.max : undefined,
-			writable: e.writable === true,
-			template,
+			writable,
+			pattern,
 		};
 	});
+	const security = m.security && typeof m.security === 'object' ? (m.security as Record<string, unknown>) : {};
+	const disabled = Array.isArray(security.disabled_commands) ? security.disabled_commands.map(str) : [];
 	const commands: ManifestCommand[] = entries(m.commands).map(([name, e]) => ({
 		name,
 		params: entries(e.params).map(([pn, p]) => ({
 			name: pn,
 			type: str(p.type) || 'string',
 			required: p.required === true,
+			enum: Array.isArray(p.enum) ? p.enum.map(str) : undefined,
 		})),
 		dangerous: e.dangerous === true,
 		needsGui: e.needs_gui === true || e.needsGui === true,
 		description: str(e.description),
+		primary: e.primary ? str(e.primary) : undefined,
+		disabled: disabled.includes(name),
 	}));
 	const events = Array.isArray(m.events) ? m.events.map(str).filter(Boolean) : entries(m.events).map(([n]) => n);
 	return {
@@ -268,6 +313,10 @@ export function normalizeManifest(raw: unknown): Manifest {
 		version: str(m.version),
 		os: str(m.os),
 		user: str(m.user),
+		deviceId: str(m.device_id),
+		started: str(m.started),
+		protocol: typeof m.protocol === 'number' ? m.protocol : 0,
+		apps: Array.isArray(security.apps) ? security.apps.map(str) : [],
 		states,
 		commands,
 		events,
@@ -303,10 +352,7 @@ export function findStateDef(manifest: Manifest | undefined, path: string): Mani
 	if (!manifest) {
 		return undefined;
 	}
-	return (
-		manifest.states.find(s => !s.template && s.path === path) ||
-		manifest.states.find(s => s.template && path.startsWith(`${s.path}/`))
-	);
+	return manifest.states.find(s => !s.pattern && s.path === path) || manifest.states.find(s => s.pattern?.test(path));
 }
 
 /**
@@ -323,7 +369,7 @@ export function stateCommon(
 ): ioBroker.StateCommon {
 	if (def) {
 		const common: ioBroker.StateCommon = {
-			name: def.template ? `${def.name} ${path.slice(def.path.length + 1)}` : def.name,
+			name: def.pattern ? path : def.name,
 			type: def.type,
 			role: def.role,
 			read: true,
@@ -331,6 +377,9 @@ export function stateCommon(
 		};
 		if (def.unit) {
 			common.unit = def.unit;
+		}
+		if (def.description) {
+			common.desc = def.description;
 		}
 		if (def.min !== undefined) {
 			common.min = def.min;
@@ -345,12 +394,26 @@ export function stateCommon(
 	return { name: path, type, role: defaultRole(type, false), read: true, write: false };
 }
 
-/** commands a writable state triggers, with the default parameter */
-export const WRITABLE_COMMANDS: Record<string, { command: string; param: string }> = {
-	volume: { command: 'volume', param: 'level' },
-	muted: { command: 'mute', param: 'mute' },
-	keep_awake: { command: 'keep_awake', param: 'enable' },
-};
+/**
+ * Converts a value to the type of a command parameter
+ *
+ * @param value value
+ * @param type parameter type from the manifest
+ */
+export function convertParam(value: unknown, type: string | undefined): unknown {
+	switch (type) {
+		case 'integer':
+			return Math.round(Number(value));
+		case 'number':
+			return Number(value);
+		case 'boolean':
+			return typeof value === 'string' ? ['true', '1', 'on', 'yes'].includes(value.toLowerCase()) : !!value;
+		case 'string':
+			return text(value);
+		default:
+			return value;
+	}
+}
 
 /**
  * Command and parameter for a write to a writable state
@@ -370,8 +433,9 @@ export function commandForStateWrite(
 		return null;
 	}
 	const cmd = manifest?.commands.find(c => c.name === map.command);
-	const param = cmd?.params[0]?.name || map.param;
-	return { command: map.command, params: { [param]: value } };
+	const param = cmd?.primary || cmd?.params[0]?.name || map.param;
+	const type = cmd?.params.find(p => p.name === param)?.type;
+	return { command: map.command, params: { [param]: convertParam(value, type) } };
 }
 
 /**
@@ -381,32 +445,40 @@ export function commandForStateWrite(
  * @param cmd command
  */
 export function commandKind(cmd: ManifestCommand): 'button' | 'json' | 'none' {
-	if (cmd.dangerous) {
+	if (cmd.dangerous || cmd.disabled) {
 		return 'none';
 	}
 	return cmd.params.some(p => p.required) ? 'json' : 'button';
 }
 
 /**
- * Parameters written to a command data point (JSON object, or "" / true for none)
+ * Parameters written to a command data point: a JSON object, nothing ("" / true) for commands without
+ * parameters, or a plain value for the command's "primary" parameter (short form, e.g. speak ← "Hallo")
  *
  * @param value state value
+ * @param cmd command from the manifest (enables the short form)
  * @returns parameters or an error text
  */
-export function parseCommandParams(value: ioBroker.StateValue): Record<string, unknown> | string {
+export function parseCommandParams(
+	value: ioBroker.StateValue,
+	cmd?: ManifestCommand,
+): Record<string, unknown> | string {
 	if (value === null || value === undefined || value === '' || value === true) {
 		return {};
 	}
-	if (typeof value !== 'string') {
-		return 'parameters must be a JSON object';
-	}
-	try {
-		const p: unknown = JSON.parse(value);
-		if (p && typeof p === 'object' && !Array.isArray(p)) {
-			return p as Record<string, unknown>;
+	if (typeof value === 'string') {
+		try {
+			const p: unknown = JSON.parse(value);
+			if (p && typeof p === 'object' && !Array.isArray(p)) {
+				return p as Record<string, unknown>;
+			}
+		} catch {
+			// not JSON: maybe the short form
 		}
-	} catch {
-		// fall through
+	}
+	if (cmd?.primary) {
+		const type = cmd.params.find(p => p.name === cmd.primary)?.type;
+		return { [cmd.primary]: convertParam(value, type) };
 	}
 	return 'parameters must be a JSON object';
 }
@@ -439,7 +511,7 @@ export function parseResult(payload: string): ResultMessage | null {
 		const error = r.error === undefined || r.error === null ? undefined : text(r.error);
 		return {
 			id: text(r.id),
-			command: text(r.command),
+			command: text(r.cmd ?? r.command),
 			ok: r.ok === undefined ? !error : r.ok === true,
 			result: r.result !== undefined ? r.result : r.data,
 			error,

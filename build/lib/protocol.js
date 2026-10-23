@@ -21,6 +21,7 @@ __export(protocol_exports, {
   WRITABLE_COMMANDS: () => WRITABLE_COMMANDS,
   commandForStateWrite: () => commandForStateWrite,
   commandKind: () => commandKind,
+  convertParam: () => convertParam,
   findStateDef: () => findStateDef,
   normalizeManifest: () => normalizeManifest,
   parseCommandParams: () => parseCommandParams,
@@ -118,37 +119,59 @@ function entries(input) {
   }
   return [];
 }
+const WRITABLE_COMMANDS = {
+  volume: { command: "volume", param: "level" },
+  muted: { command: "mute", param: "state" },
+  keep_awake: { command: "keep_awake", param: "state" }
+};
 const TYPES = ["number", "string", "boolean", "json", "array", "object", "mixed"];
 function normalizeManifest(raw) {
   const m = raw && typeof raw === "object" ? raw : {};
   const str = text;
   const states = entries(m.states).map(([path, e]) => {
     const raw2 = TYPES.includes(str(e.type)) ? str(e.type) : "mixed";
-    const template = path.endsWith("/*");
+    let pattern;
+    if (path.includes("<") || path.endsWith("/*")) {
+      const re = path.split(/(<[^>]+>|\*)/).map(
+        (part) => part.startsWith("<") || part === "*" ? "[^/]+" : part.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+      ).join("");
+      pattern = new RegExp(`^${re}$`);
+    }
     const type = ["json", "array", "object"].includes(raw2) ? "string" : raw2;
+    const writable = e.writable === true || path in WRITABLE_COMMANDS;
+    let role = import_roles.OFFICIAL_ROLES.has(str(e.role)) ? str(e.role) : defaultRole(raw2, writable);
+    if (writable && role === "indicator") {
+      role = "switch";
+    }
     return {
-      path: template ? path.slice(0, -2) : path,
+      path,
       type,
       // only official ioBroker roles; anything else falls back to a generic role of the type
-      role: import_roles.OFFICIAL_ROLES.has(str(e.role)) ? str(e.role) : defaultRole(raw2, !!e.writable),
+      role,
       name: str(e.name) || path,
-      unit: e.unit !== void 0 ? str(e.unit) : void 0,
+      description: str(e.description),
+      unit: e.unit !== void 0 && e.unit !== "" ? str(e.unit) : void 0,
       min: typeof e.min === "number" ? e.min : void 0,
       max: typeof e.max === "number" ? e.max : void 0,
-      writable: e.writable === true,
-      template
+      writable,
+      pattern
     };
   });
+  const security = m.security && typeof m.security === "object" ? m.security : {};
+  const disabled = Array.isArray(security.disabled_commands) ? security.disabled_commands.map(str) : [];
   const commands = entries(m.commands).map(([name, e]) => ({
     name,
     params: entries(e.params).map(([pn, p]) => ({
       name: pn,
       type: str(p.type) || "string",
-      required: p.required === true
+      required: p.required === true,
+      enum: Array.isArray(p.enum) ? p.enum.map(str) : void 0
     })),
     dangerous: e.dangerous === true,
     needsGui: e.needs_gui === true || e.needsGui === true,
-    description: str(e.description)
+    description: str(e.description),
+    primary: e.primary ? str(e.primary) : void 0,
+    disabled: disabled.includes(name)
   }));
   const events = Array.isArray(m.events) ? m.events.map(str).filter(Boolean) : entries(m.events).map(([n]) => n);
   return {
@@ -157,6 +180,10 @@ function normalizeManifest(raw) {
     version: str(m.version),
     os: str(m.os),
     user: str(m.user),
+    deviceId: str(m.device_id),
+    started: str(m.started),
+    protocol: typeof m.protocol === "number" ? m.protocol : 0,
+    apps: Array.isArray(security.apps) ? security.apps.map(str) : [],
     states,
     commands,
     events
@@ -178,12 +205,15 @@ function findStateDef(manifest, path) {
   if (!manifest) {
     return void 0;
   }
-  return manifest.states.find((s) => !s.template && s.path === path) || manifest.states.find((s) => s.template && path.startsWith(`${s.path}/`));
+  return manifest.states.find((s) => !s.pattern && s.path === path) || manifest.states.find((s) => {
+    var _a;
+    return (_a = s.pattern) == null ? void 0 : _a.test(path);
+  });
 }
 function stateCommon(path, def, value) {
   if (def) {
     const common = {
-      name: def.template ? `${def.name} ${path.slice(def.path.length + 1)}` : def.name,
+      name: def.pattern ? path : def.name,
       type: def.type,
       role: def.role,
       read: true,
@@ -191,6 +221,9 @@ function stateCommon(path, def, value) {
     };
     if (def.unit) {
       common.unit = def.unit;
+    }
+    if (def.description) {
+      common.desc = def.description;
     }
     if (def.min !== void 0) {
       common.min = def.min;
@@ -203,44 +236,59 @@ function stateCommon(path, def, value) {
   const type = typeof value === "number" ? "number" : typeof value === "boolean" ? "boolean" : "string";
   return { name: path, type, role: defaultRole(type, false), read: true, write: false };
 }
-const WRITABLE_COMMANDS = {
-  volume: { command: "volume", param: "level" },
-  muted: { command: "mute", param: "mute" },
-  keep_awake: { command: "keep_awake", param: "enable" }
-};
+function convertParam(value, type) {
+  switch (type) {
+    case "integer":
+      return Math.round(Number(value));
+    case "number":
+      return Number(value);
+    case "boolean":
+      return typeof value === "string" ? ["true", "1", "on", "yes"].includes(value.toLowerCase()) : !!value;
+    case "string":
+      return text(value);
+    default:
+      return value;
+  }
+}
 function commandForStateWrite(manifest, path, value) {
-  var _a;
+  var _a, _b;
   const map = WRITABLE_COMMANDS[path];
   if (!map) {
     return null;
   }
   const cmd = manifest == null ? void 0 : manifest.commands.find((c) => c.name === map.command);
-  const param = ((_a = cmd == null ? void 0 : cmd.params[0]) == null ? void 0 : _a.name) || map.param;
-  return { command: map.command, params: { [param]: value } };
+  const param = (cmd == null ? void 0 : cmd.primary) || ((_a = cmd == null ? void 0 : cmd.params[0]) == null ? void 0 : _a.name) || map.param;
+  const type = (_b = cmd == null ? void 0 : cmd.params.find((p) => p.name === param)) == null ? void 0 : _b.type;
+  return { command: map.command, params: { [param]: convertParam(value, type) } };
 }
 function commandKind(cmd) {
-  if (cmd.dangerous) {
+  if (cmd.dangerous || cmd.disabled) {
     return "none";
   }
   return cmd.params.some((p) => p.required) ? "json" : "button";
 }
-function parseCommandParams(value) {
+function parseCommandParams(value, cmd) {
+  var _a;
   if (value === null || value === void 0 || value === "" || value === true) {
     return {};
   }
-  if (typeof value !== "string") {
-    return "parameters must be a JSON object";
-  }
-  try {
-    const p = JSON.parse(value);
-    if (p && typeof p === "object" && !Array.isArray(p)) {
-      return p;
+  if (typeof value === "string") {
+    try {
+      const p = JSON.parse(value);
+      if (p && typeof p === "object" && !Array.isArray(p)) {
+        return p;
+      }
+    } catch {
     }
-  } catch {
+  }
+  if (cmd == null ? void 0 : cmd.primary) {
+    const type = (_a = cmd.params.find((p) => p.name === cmd.primary)) == null ? void 0 : _a.type;
+    return { [cmd.primary]: convertParam(value, type) };
   }
   return "parameters must be a JSON object";
 }
 function parseResult(payload) {
+  var _a;
   try {
     const r = JSON.parse(payload);
     if (!r || typeof r !== "object") {
@@ -249,7 +297,7 @@ function parseResult(payload) {
     const error = r.error === void 0 || r.error === null ? void 0 : text(r.error);
     return {
       id: text(r.id),
-      command: text(r.command),
+      command: text((_a = r.cmd) != null ? _a : r.command),
       ok: r.ok === void 0 ? !error : r.ok === true,
       result: r.result !== void 0 ? r.result : r.data,
       error
@@ -289,6 +337,7 @@ function parseScreenshot(payload) {
   WRITABLE_COMMANDS,
   commandForStateWrite,
   commandKind,
+  convertParam,
   findStateDef,
   normalizeManifest,
   parseCommandParams,

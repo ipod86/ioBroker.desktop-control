@@ -14,33 +14,44 @@ import {
 	stateCommon,
 } from './protocol';
 
+// shaped like the real agent manifest (docs/PROTOCOL.md): arrays, primary, dynamic state patterns
 const MANIFEST = normalizeManifest({
+	protocol: 1,
+	device_id: 'pc1',
 	hostname: 'PC1',
 	ip: '10.0.0.2',
-	version: '1.0.0',
+	version: '0.1.0',
 	os: 'Windows 11',
 	user: 'david',
-	states: {
-		locked: { type: 'boolean', role: 'indicator', name: 'Locked' },
-		volume: { type: 'number', role: 'level.volume', unit: '%', min: 0, max: 100, writable: true },
-		'disk/*': { type: 'number', role: 'value', unit: '%', name: 'Disk' },
-	},
-	commands: {
-		ping: {},
-		volume: { params: { percent: { type: 'number', required: true } } },
-		run: { params: { alias: { type: 'string', required: true }, wait: { type: 'boolean' } } },
-		shell: { dangerous: true, params: { cmd: { type: 'string', required: true } } },
-		ask: { needs_gui: true, params: [{ name: 'text', required: true }] },
-	},
+	started: '2026-10-23T08:00:00Z',
+	security: { apps: ['notepad'], disabled_commands: ['beep'] },
+	states: [
+		{ name: 'locked', type: 'boolean', role: 'indicator', unit: '', description: 'Locked' },
+		{ name: 'volume', type: 'number', role: 'level.volume', unit: '%' },
+		{ name: 'keep_awake', type: 'boolean', role: 'indicator', unit: '' },
+		{ name: 'disk/<laufwerk>_free_gb', type: 'number', role: 'value', unit: 'GB', description: 'Free space' },
+	],
+	commands: [
+		{ name: 'ping', params: [] },
+		{ name: 'volume', primary: 'level', params: [{ name: 'level', type: 'integer', required: true }] },
+		{ name: 'mute', primary: 'state', params: [{ name: 'state', type: 'string', required: false }] },
+		{ name: 'speak', primary: 'text', params: [{ name: 'text', type: 'string', required: true }] },
+		{ name: 'shell', dangerous: true, params: [{ name: 'cmd', type: 'string', required: true }] },
+		{ name: 'beep', params: [] },
+		{ name: 'ask', needs_gui: true, primary: 'text', params: [{ name: 'text', required: true }] },
+	],
 	events: ['lock', 'unlock'],
 });
 
+const cmd = (name: string): NonNullable<ReturnType<typeof MANIFEST.commands.find>> =>
+	MANIFEST.commands.find(c => c.name === name)!;
+
 describe('parseTopic', () => {
 	it('parses state, event and simple kinds', () => {
-		expect(parseTopic('winctl', 'winctl/pc1/state/disk/C')).to.deep.equal({
+		expect(parseTopic('winctl', 'winctl/pc1/state/disk/C_free_gb')).to.deep.equal({
 			device: 'pc1',
 			kind: 'state',
-			path: 'disk/C',
+			path: 'disk/C_free_gb',
 		});
 		expect(parseTopic('winctl', 'winctl/pc1/event/lock')).to.deep.equal({
 			device: 'pc1',
@@ -61,88 +72,105 @@ describe('parseTopic', () => {
 
 describe('id mapping', () => {
 	it('turns "/" into levels and removes forbidden characters and dots', () => {
-		expect(pathToId('disk/C:')).to.equal('disk.C:');
+		expect(pathToId('disk/C_free_gb')).to.equal('disk.C_free_gb');
 		expect(pathToId('proc/chrome.exe')).to.equal('proc.chrome_exe');
 		expect(pathToId('a b/c*d')).to.equal('a_b.c_d');
 	});
 });
 
 describe('values', () => {
-	it('parses JSON and typed values', () => {
+	it('parses plain text and typed values', () => {
 		expect(parseValue('42', 'number')).to.equal(42);
-		expect(parseValue('"x"')).to.equal('x');
+		expect(parseValue('notepad.exe', 'string')).to.equal('notepad.exe');
 		expect(parseValue('true', 'boolean')).to.equal(true);
-		expect(parseValue('off', 'boolean')).to.equal(false);
+		expect(parseValue('false', 'boolean')).to.equal(false);
 		expect(parseValue('{"a":1}')).to.equal('{"a":1}');
 		expect(parseValue('abc', 'number')).to.equal(null);
 	});
 	it('parses online payloads', () => {
 		expect(parseOnline('true')).to.equal(true);
 		expect(parseOnline('"online"')).to.equal(true);
-		expect(parseOnline('offline')).to.equal(false);
+		expect(parseOnline('false')).to.equal(false);
 		expect(parseOnline('0')).to.equal(false);
 	});
 });
 
 describe('manifest', () => {
-	it('normalises states, templates, commands and events', () => {
-		expect(MANIFEST.hostname).to.equal('PC1');
-		expect(MANIFEST.states.find(s => s.path === 'disk')?.template).to.equal(true);
-		expect(MANIFEST.commands.map(c => c.name)).to.deep.equal(['ping', 'volume', 'run', 'shell', 'ask']);
-		expect(MANIFEST.commands.find(c => c.name === 'ask')?.needsGui).to.equal(true);
+	it('normalises the agent manifest', () => {
+		expect(MANIFEST).to.include({ hostname: 'PC1', deviceId: 'pc1', protocol: 1, started: '2026-10-23T08:00:00Z' });
+		expect(MANIFEST.apps).to.deep.equal(['notepad']);
+		const disk = MANIFEST.states.find(s => s.path === 'disk/<laufwerk>_free_gb');
+		expect(disk?.pattern?.test('disk/C_free_gb')).to.equal(true);
+		expect(disk?.pattern?.test('disk/C_used_percent')).to.equal(false);
+		expect(cmd('volume').primary).to.equal('level');
+		expect(cmd('beep').disabled).to.equal(true);
+		expect(cmd('ask').needsGui).to.equal(true);
 		expect(MANIFEST.events).to.deep.equal(['lock', 'unlock']);
 	});
-	it('builds state common from the manifest, templates and unknown values', () => {
+	it('builds state common from the manifest, dynamic states and unknown values', () => {
 		const vol = stateCommon('volume', findStateDef(MANIFEST, 'volume'));
-		expect(vol).to.include({ type: 'number', role: 'level.volume', unit: '%', write: true, min: 0, max: 100 });
-		const disk = stateCommon('disk/C', findStateDef(MANIFEST, 'disk/C'));
-		expect(disk).to.include({ name: 'Disk C', unit: '%', write: false });
+		expect(vol).to.include({ type: 'number', role: 'level.volume', unit: '%', write: true });
+		// writable boolean with a read-only role becomes a switch
+		expect(stateCommon('keep_awake', findStateDef(MANIFEST, 'keep_awake'))).to.include({
+			role: 'switch',
+			write: true,
+		});
+		const disk = stateCommon('disk/C_free_gb', findStateDef(MANIFEST, 'disk/C_free_gb'));
+		expect(disk).to.include({ name: 'disk/C_free_gb', unit: 'GB', write: false, desc: 'Free space' });
+		expect(stateCommon('locked', findStateDef(MANIFEST, 'locked'))).to.not.have.property('unit');
 		expect(stateCommon('proc/x', undefined, true)).to.include({ type: 'boolean', role: 'indicator' });
-		const odd = normalizeManifest({ states: { cpu: { type: 'number', role: 'value.cpu.load.custom' } } });
+	});
+	it('accepts only official roles', () => {
+		const odd = normalizeManifest({ states: [{ name: 'cpu', type: 'number', role: 'value.cpu.custom' }] });
 		expect(odd.states[0].role).to.equal('value');
 	});
-	it('creates buttons for commands without required parameters, json otherwise, nothing for dangerous ones', () => {
-		const kind = (n: string): string => commandKind(MANIFEST.commands.find(c => c.name === n)!);
-		expect(kind('ping')).to.equal('button');
-		expect(kind('run')).to.equal('json');
-		expect(kind('shell')).to.equal('none');
+	it('creates buttons, json data points, and nothing for dangerous or disabled commands', () => {
+		expect(commandKind(cmd('ping'))).to.equal('button');
+		expect(commandKind(cmd('speak'))).to.equal('json');
+		expect(commandKind(cmd('shell'))).to.equal('none');
+		expect(commandKind(cmd('beep'))).to.equal('none');
 	});
-	it('maps writable states to commands with the manifest parameter name', () => {
-		expect(commandForStateWrite(MANIFEST, 'volume', 30)).to.deep.equal({
+	it('maps writable states to commands with the primary parameter and its type', () => {
+		expect(commandForStateWrite(MANIFEST, 'volume', 30.4)).to.deep.equal({
 			command: 'volume',
-			params: { percent: 30 },
+			params: { level: 30 },
 		});
 		expect(commandForStateWrite(MANIFEST, 'muted', true)).to.deep.equal({
 			command: 'mute',
-			params: { mute: true },
+			params: { state: 'true' },
 		});
 		expect(commandForStateWrite(MANIFEST, 'locked', true)).to.equal(null);
 	});
 });
 
 describe('commands and results', () => {
-	it('parses command parameters', () => {
+	it('parses command parameters including the short form', () => {
 		expect(parseCommandParams(true)).to.deep.equal({});
 		expect(parseCommandParams('{"alias":"notepad"}')).to.deep.equal({ alias: 'notepad' });
 		expect(parseCommandParams('[1]')).to.be.a('string');
 		expect(parseCommandParams('nope')).to.be.a('string');
+		expect(parseCommandParams('Hallo Welt', cmd('speak'))).to.deep.equal({ text: 'Hallo Welt' });
+		expect(parseCommandParams('{"text":"x"}', cmd('speak'))).to.deep.equal({ text: 'x' });
+		expect(parseCommandParams(35, cmd('volume'))).to.deep.equal({ level: 35 });
 	});
-	it('parses results', () => {
-		expect(parseResult('{"id":"a","command":"ping","ok":true,"result":"pong"}')).to.deep.equal({
-			id: 'a',
-			command: 'ping',
+	it('parses results of the agent ("cmd", "data")', () => {
+		expect(parseResult('{"id":"c","cmd":"volume","ok":true,"data":{"level":30},"ts":"x"}')).to.deep.equal({
+			id: 'c',
+			command: 'volume',
 			ok: true,
-			result: 'pong',
+			result: { level: 30 },
 			error: undefined,
 		});
-		expect(parseResult('{"id":"b","error":"denied"}')?.ok).to.equal(false);
+		expect(parseResult('{"id":null,"cmd":"run","ok":false,"error":"denied"}')).to.include({
+			ok: false,
+			error: 'denied',
+			id: '',
+		});
 		expect(parseResult('x')).to.equal(null);
 	});
 	it('detects screenshot formats', () => {
-		const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2]);
-		expect(parseScreenshot(png)?.ext).to.equal('png');
-		const json = Buffer.from(JSON.stringify({ id: 'x', data: Buffer.from([0xff, 0xd8, 1]).toString('base64') }));
-		expect(parseScreenshot(json)).to.include({ ext: 'jpg', id: 'x' });
+		expect(parseScreenshot(Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2]))?.ext).to.equal('png');
+		expect(parseScreenshot(Buffer.from([0xff, 0xd8, 0xff, 1]))?.ext).to.equal('jpg');
 		expect(parseScreenshot(Buffer.from('hello'))).to.equal(null);
 	});
 });

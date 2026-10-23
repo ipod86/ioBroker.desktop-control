@@ -7,7 +7,9 @@ import type { ResultMessage } from './protocol';
 
 /** Timer functions */
 export interface Timers {
+	/** starts a timer */
 	set: (cb: () => void, ms: number) => unknown;
+	/** stops a timer */
 	clear: (handle: unknown) => void;
 }
 
