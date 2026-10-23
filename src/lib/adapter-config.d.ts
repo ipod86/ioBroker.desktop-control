@@ -4,8 +4,16 @@
 declare global {
 	namespace ioBroker {
 		interface AdapterConfig {
-			option1: boolean;
-			option2: string;
+			host: string;
+			port: number;
+			username: string;
+			password: string;
+			tls: boolean;
+			rejectUnauthorized: boolean;
+			topicBase: string;
+			clientId: string;
+			cmdTimeout: number;
+			askTimeout: number;
 		}
 	}
 }

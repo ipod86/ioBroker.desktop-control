@@ -31,9 +31,23 @@ __export(protocol_exports, {
   parseValue: () => parseValue,
   pathToId: () => pathToId,
   sanitizeSegment: () => sanitizeSegment,
-  stateCommon: () => stateCommon
+  stateCommon: () => stateCommon,
+  text: () => text
 });
 module.exports = __toCommonJS(protocol_exports);
+var import_roles = require("./roles");
+function text(v) {
+  if (v === void 0 || v === null) {
+    return "";
+  }
+  if (typeof v === "object") {
+    return JSON.stringify(v);
+  }
+  if (typeof v === "string") {
+    return v;
+  }
+  return typeof v === "number" || typeof v === "boolean" || typeof v === "bigint" ? v.toString() : "";
+}
 const KINDS = ["online", "info", "state", "event", "result", "screenshot"];
 const FORBIDDEN = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
 function parseTopic(base, topic) {
@@ -107,7 +121,7 @@ function entries(input) {
 const TYPES = ["number", "string", "boolean", "json", "array", "object", "mixed"];
 function normalizeManifest(raw) {
   const m = raw && typeof raw === "object" ? raw : {};
-  const str = (v) => v === void 0 || v === null ? "" : typeof v === "object" ? JSON.stringify(v) : String(v);
+  const str = text;
   const states = entries(m.states).map(([path, e]) => {
     const raw2 = TYPES.includes(str(e.type)) ? str(e.type) : "mixed";
     const template = path.endsWith("/*");
@@ -115,7 +129,8 @@ function normalizeManifest(raw) {
     return {
       path: template ? path.slice(0, -2) : path,
       type,
-      role: str(e.role) || defaultRole(raw2, !!e.writable),
+      // only official ioBroker roles; anything else falls back to a generic role of the type
+      role: import_roles.OFFICIAL_ROLES.has(str(e.role)) ? str(e.role) : defaultRole(raw2, !!e.writable),
       name: str(e.name) || path,
       unit: e.unit !== void 0 ? str(e.unit) : void 0,
       min: typeof e.min === "number" ? e.min : void 0,
@@ -231,10 +246,10 @@ function parseResult(payload) {
     if (!r || typeof r !== "object") {
       return null;
     }
-    const error = r.error === void 0 || r.error === null ? void 0 : String(r.error);
+    const error = r.error === void 0 || r.error === null ? void 0 : text(r.error);
     return {
-      id: r.id === void 0 || r.id === null ? "" : String(r.id),
-      command: r.command === void 0 ? "" : String(r.command),
+      id: text(r.id),
+      command: text(r.command),
       ok: r.ok === void 0 ? !error : r.ok === true,
       result: r.result !== void 0 ? r.result : r.data,
       error
@@ -256,7 +271,7 @@ function parseScreenshot(payload) {
         return null;
       }
       data = Buffer.from(j.data, "base64");
-      id = j.id === void 0 ? "" : String(j.id);
+      id = text(j.id);
     } catch {
       return null;
     }
@@ -284,6 +299,7 @@ function parseScreenshot(payload) {
   parseValue,
   pathToId,
   sanitizeSegment,
-  stateCommon
+  stateCommon,
+  text
 });
 //# sourceMappingURL=protocol.js.map

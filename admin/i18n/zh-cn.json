@@ -1,5 +1,20 @@
 {
 	"desktop-control adapter settings": "desktop-control的适配器设置",
-	"option1": "option1",
-	"option2": "option2"
+	"MQTT broker": "MQTT 代理",
+	"brokerHint": "适配器连接到现有的 MQTT 代理（例如 Mosquitto 或服务器模式下的 ioBroker MQTT 适配器）。Windows 电脑上的 DesktopControl 代理连接到同一个代理。",
+	"Host": "主机",
+	"hostHelp": "代理的 IP 地址或主机名",
+	"Port": "端口",
+	"User name": "用户名",
+	"Password": "密码",
+	"Use TLS (mqtts)": "使用 TLS (mqtts)",
+	"Verify the broker certificate": "验证代理证书",
+	"Client ID": "客户端 ID",
+	"clientIdHelp": "留空 = 自动生成",
+	"Agents": "代理程序",
+	"Topic base": "主题前缀",
+	"topicBaseHelp": "必须与代理程序一致（当前为 \"winctl\"）",
+	"Command timeout (s)": "命令超时（秒）",
+	"Timeout for dialogs (ask) (s)": "对话框超时 (ask)（秒）",
+	"askTimeoutHelp": "适配器等待电脑上对话框答复的时间"
 }

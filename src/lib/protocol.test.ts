@@ -98,6 +98,8 @@ describe('manifest', () => {
 		const disk = stateCommon('disk/C', findStateDef(MANIFEST, 'disk/C'));
 		expect(disk).to.include({ name: 'Disk C', unit: '%', write: false });
 		expect(stateCommon('proc/x', undefined, true)).to.include({ type: 'boolean', role: 'indicator' });
+		const odd = normalizeManifest({ states: { cpu: { type: 'number', role: 'value.cpu.load.custom' } } });
+		expect(odd.states[0].role).to.equal('value');
 	});
 	it('creates buttons for commands without required parameters, json otherwise, nothing for dangerous ones', () => {
 		const kind = (n: string): string => commandKind(MANIFEST.commands.find(c => c.name === n)!);

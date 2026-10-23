@@ -1,5 +1,20 @@
 {
 	"desktop-control adapter settings": "Adapterinstellingen voor desktop-control",
-	"option1": "option1",
-	"option2": "option2"
+	"MQTT broker": "MQTT-broker",
+	"brokerHint": "De adapter verbindt met een bestaande MQTT-broker (bijv. Mosquitto of de ioBroker-MQTT-adapter in servermodus). De DesktopControl-agents op de Windows-pc's verbinden met dezelfde broker.",
+	"Host": "Host",
+	"hostHelp": "IP-adres of hostnaam van de broker",
+	"Port": "Poort",
+	"User name": "Gebruikersnaam",
+	"Password": "Wachtwoord",
+	"Use TLS (mqtts)": "TLS gebruiken (mqtts)",
+	"Verify the broker certificate": "Certificaat van de broker controleren",
+	"Client ID": "Client-ID",
+	"clientIdHelp": "Leeg = wordt automatisch gegenereerd",
+	"Agents": "Agents",
+	"Topic base": "Topic-basis",
+	"topicBaseHelp": "Moet overeenkomen met de agents (momenteel \"winctl\")",
+	"Command timeout (s)": "Time-out voor opdrachten (s)",
+	"Timeout for dialogs (ask) (s)": "Time-out voor dialogen (ask) (s)",
+	"askTimeoutHelp": "Hoe lang de adapter wacht op het antwoord van een dialoog op de pc"
 }

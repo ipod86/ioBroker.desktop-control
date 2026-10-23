@@ -82,11 +82,20 @@
 			{
 				"admin": ">=7.8.23"
 			}
-		]
+		],
+		"messagebox": true
 	},
 	"native": {
-		"option1": true,
-		"option2": "42"
+		"host": "",
+		"port": 1883,
+		"username": "",
+		"password": "",
+		"tls": false,
+		"rejectUnauthorized": true,
+		"topicBase": "winctl",
+		"clientId": "",
+		"cmdTimeout": 10,
+		"askTimeout": 120
 	},
 	"objects": [],
 	"instanceObjects": [
@@ -111,5 +120,11 @@
 			},
 			"native": {}
 		}
+	],
+	"encryptedNative": [
+		"password"
+	],
+	"protectedNative": [
+		"password"
 	]
 }

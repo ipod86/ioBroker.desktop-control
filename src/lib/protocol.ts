@@ -4,6 +4,8 @@
  * so everything here is unit tested.
  */
 
+import { OFFICIAL_ROLES } from './roles';
+
 /** Kind of message a topic carries */
 export type TopicKind = 'online' | 'info' | 'state' | 'event' | 'result' | 'screenshot';
 
@@ -238,7 +240,8 @@ export function normalizeManifest(raw: unknown): Manifest {
 		return {
 			path: template ? path.slice(0, -2) : path,
 			type,
-			role: str(e.role) || defaultRole(raw, !!e.writable),
+			// only official ioBroker roles; anything else falls back to a generic role of the type
+			role: OFFICIAL_ROLES.has(str(e.role)) ? str(e.role) : defaultRole(raw, !!e.writable),
 			name: str(e.name) || path,
 			unit: e.unit !== undefined ? str(e.unit) : undefined,
 			min: typeof e.min === 'number' ? e.min : undefined,
