@@ -82,7 +82,7 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
 - Sicherheitsrelevante Befehle (z. B. `shell`, `shutdown`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 <!-- generated:start -->
-_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.2.0)._
+_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.3.0)._
 
 #### System
 
@@ -118,6 +118,20 @@ Datenpunkt: `cmd.exit` – kein Datenpunkt (sicherheitsrelevant) – nur per `se
 <summary><code>list_commands</code> – Gibt die Liste aller Befehle zurück</summary>
 
 Datenpunkt: `cmd.list_commands` – Knopf – Klick führt aus  
+
+</details>
+
+<details>
+<summary><code>check_update</code> – Prüft, ob es eine neuere WinCtl-Version gibt (GitHub-Releases)</summary>
+
+Datenpunkt: `cmd.check_update` – Knopf – Klick führt aus  
+
+</details>
+
+<details>
+<summary><code>update</code> – Installiert die neueste WinCtl-Version und startet den Agent neu</summary>
+
+Datenpunkt: `cmd.update` – Knopf – Klick führt aus  
 
 </details>
 
@@ -929,6 +943,8 @@ Datenpunkt: `cmd.clipboard_get` – Knopf – Klick führt aus
 | `state.ip` | string |  |  | Lokale IPv4-Adresse |
 | `state.user` | string |  |  | Angemeldeter Benutzer |
 | `state.keep_awake` | boolean |  | ja | keep_awake aktiv |
+| `state.update_available` | boolean |  |  | Neuere WinCtl-Version verfügbar (Prüfung beim Start und alle 12 h) |
+| `state.latest_version` | string |  |  | Neueste WinCtl-Version auf GitHub |
 | `state.disk.<laufwerk>_free_gb` | number | GB |  | Freier Platz je Festplatte (dynamisch) |
 | `state.disk.<laufwerk>_used_percent` | number | % |  | Belegung je Festplatte (dynamisch) |
 | `state.proc.<name>` | boolean |  |  | Prozess läuft (aus Config 'WatchProcesses', dynamisch) |
@@ -969,6 +985,7 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 ### **WORK IN PROGRESS**
 * (ipod86) Erste Version
 * (ipod86) Eingebauter MQTT-Broker
+* (ipod86) Agent-Update aus ioBroker: `state.update_available`, `state.latest_version`, Knopf `cmd.update`
 * (ipod86) Alle Befehlsoptionen über die Datenpunkte einstellbar; Beschreibung mit Optionen und Beispiel; Befehls- und State-Referenz in der README
 
 Ältere Einträge stehen in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).

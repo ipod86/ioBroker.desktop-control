@@ -82,7 +82,7 @@ Written on every event (also when the content is the same), so a trigger with `c
 - Security relevant commands (e.g. `shell`, `shutdown`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (agent version 0.2.0). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
+_Generated from the agent (agent version 0.3.0). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
@@ -93,6 +93,8 @@ _Generated from the agent (agent version 0.2.0). Examples and all option descrip
 | `reload_config` | Reloads the agent config and reconnects | button |  |  |
 | `exit` | Stops the agent | only `sendTo` |  |  |
 | `list_commands` | Returns the list of all commands | button |  |  |
+| `check_update` | Checks for a newer agent version (GitHub releases) | button |  |  |
+| `update` | Installs the newest agent version and restarts the agent | button |  |  |
 
 #### Power & session
 
@@ -186,6 +188,8 @@ _Generated from the agent (agent version 0.2.0). Examples and all option descrip
 | `state.ip` | string |  |  | Local IPv4 address |
 | `state.user` | string |  |  | Logged-in user |
 | `state.keep_awake` | boolean |  | yes | keep_awake active |
+| `state.update_available` | boolean |  |  | Newer agent version available (checked at start and every 12 h) |
+| `state.latest_version` | string |  |  | Newest agent version on GitHub |
 | `state.disk.<laufwerk>_free_gb` | number | GB |  | Free space per drive, e.g. `disk.C_free_gb` |
 | `state.disk.<laufwerk>_used_percent` | number | % |  | Usage per drive, e.g. `disk.C_used_percent` |
 | `state.proc.<name>` | boolean |  |  | Watched program is running (agent settings "Processes") |
@@ -226,6 +230,7 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 ### **WORK IN PROGRESS**
 * (ipod86) initial release
 * (ipod86) built-in MQTT broker
+* (ipod86) agent update from ioBroker: `state.update_available`, `state.latest_version`, button `cmd.update`
 * (ipod86) every command option settable via the data points; description with options and example; command and state reference in the README
 
 Older changelogs are available in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).

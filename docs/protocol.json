@@ -1,6 +1,6 @@
 {
   "protocol": 1,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "states": [
     {
       "name": "locked",
@@ -122,6 +122,20 @@
       "description": "keep_awake aktiv"
     },
     {
+      "name": "update_available",
+      "type": "boolean",
+      "role": "indicator",
+      "unit": "",
+      "description": "Neuere WinCtl-Version verfügbar (Prüfung beim Start und alle 12 h)"
+    },
+    {
+      "name": "latest_version",
+      "type": "string",
+      "role": "text",
+      "unit": "",
+      "description": "Neueste WinCtl-Version auf GitHub"
+    },
+    {
       "name": "disk/\u003claufwerk\u003e_free_gb",
       "type": "number",
       "role": "value",
@@ -185,6 +199,24 @@
       "name": "list_commands",
       "category": "system",
       "description": "Gibt die Liste aller Befehle zurück",
+      "params": [],
+      "examples": [
+        "true"
+      ]
+    },
+    {
+      "name": "check_update",
+      "category": "system",
+      "description": "Prüft, ob es eine neuere WinCtl-Version gibt (GitHub-Releases)",
+      "params": [],
+      "examples": [
+        "true"
+      ]
+    },
+    {
+      "name": "update",
+      "category": "system",
+      "description": "Installiert die neueste WinCtl-Version und startet den Agent neu",
       "params": [],
       "examples": [
         "true"

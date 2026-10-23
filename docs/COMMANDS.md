@@ -1,6 +1,6 @@
 # Befehlsreferenz
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.2.0). Nicht von Hand ändern._
+_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.3.0). Nicht von Hand ändern._
 
 Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
 
@@ -20,6 +20,12 @@ Beendet den Agent
 
 ### `list_commands`
 Gibt die Liste aller Befehle zurück  
+
+### `check_update`
+Prüft, ob es eine neuere WinCtl-Version gibt (GitHub-Releases)  
+
+### `update`
+Installiert die neueste WinCtl-Version und startet den Agent neu  
 
 ## Energie & Sitzung
 
@@ -653,6 +659,8 @@ Liest den Text der Zwischenablage
 | `ip` | string |  | `text` | Lokale IPv4-Adresse |
 | `user` | string |  | `text` | Angemeldeter Benutzer |
 | `keep_awake` | boolean |  | `indicator` | keep_awake aktiv |
+| `update_available` | boolean |  | `indicator` | Neuere WinCtl-Version verfügbar (Prüfung beim Start und alle 12 h) |
+| `latest_version` | string |  | `text` | Neueste WinCtl-Version auf GitHub |
 | `disk/<laufwerk>_free_gb` | number | GB | `value` | Freier Platz je Festplatte (dynamisch) |
 | `disk/<laufwerk>_used_percent` | number | % | `value` | Belegung je Festplatte (dynamisch) |
 | `proc/<name>` | boolean |  | `indicator` | Prozess läuft (aus Config 'WatchProcesses', dynamisch) |
