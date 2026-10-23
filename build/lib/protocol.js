@@ -174,6 +174,7 @@ function normalizeManifest(raw) {
     needsGui: e.needs_gui === true || e.needsGui === true,
     description: str(e.description),
     primary: e.primary ? str(e.primary) : void 0,
+    examples: Array.isArray(e.examples) ? e.examples.map(str) : [],
     disabled: disabled.includes(name)
   }));
   const events = Array.isArray(m.events) ? m.events.map(str).filter(Boolean) : entries(m.events).map(([n]) => n);
@@ -269,7 +270,7 @@ function commandKind(cmd) {
   if (cmd.dangerous || cmd.disabled) {
     return "none";
   }
-  return cmd.params.some((p) => p.required) ? "json" : "button";
+  return cmd.params.length ? "json" : "button";
 }
 function parseCommandParams(value, cmd) {
   var _a;
@@ -288,6 +289,9 @@ function parseCommandParams(value, cmd) {
   if (cmd == null ? void 0 : cmd.primary) {
     const type = (_a = cmd.params.find((p) => p.name === cmd.primary)) == null ? void 0 : _a.type;
     return { [cmd.primary]: convertParam(value, type) };
+  }
+  if (value === "true" || value === "{}") {
+    return {};
   }
   return "parameters must be a JSON object";
 }

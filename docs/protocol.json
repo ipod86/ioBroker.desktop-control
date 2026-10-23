@@ -1,6 +1,6 @@
 {
   "protocol": 1,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "states": [
     {
       "name": "locked",
@@ -148,50 +148,74 @@
       "name": "ping",
       "category": "system",
       "description": "Lebenszeichen - antwortet mit Zeitstempel und Version",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "get_state",
       "category": "system",
       "description": "Veröffentlicht alle State-Werte sofort neu",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "reload_config",
       "category": "system",
       "description": "Config-Datei neu einlesen und neu verbinden",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "exit",
       "category": "system",
       "description": "Beendet den Agent",
       "params": [],
-      "dangerous": true
+      "dangerous": true,
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "list_commands",
       "category": "system",
       "description": "Gibt die Liste aller Befehle zurück",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "lock",
       "category": "power",
       "description": "Sperrt den Bildschirm (Win+L)",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "sleep",
       "category": "power",
       "description": "Standby",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "hibernate",
       "category": "power",
       "description": "Ruhezustand",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "shutdown",
@@ -214,7 +238,11 @@
         }
       ],
       "primary": "delay",
-      "dangerous": true
+      "dangerous": true,
+      "examples": [
+        "60",
+        "{\"delay\":0,\"force\":true}"
+      ]
     },
     {
       "name": "restart",
@@ -237,32 +265,48 @@
         }
       ],
       "primary": "delay",
-      "dangerous": true
+      "dangerous": true,
+      "examples": [
+        "30",
+        "{\"delay\":0,\"force\":true}"
+      ]
     },
     {
       "name": "logoff",
       "category": "power",
       "description": "Meldet den Benutzer ab",
       "params": [],
-      "dangerous": true
+      "dangerous": true,
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "cancel_shutdown",
       "category": "power",
       "description": "Bricht einen geplanten Shutdown/Neustart ab",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "monitor_off",
       "category": "power",
       "description": "Schaltet die Monitore aus",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "monitor_on",
       "category": "power",
       "description": "Weckt die Monitore auf",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "keep_awake",
@@ -285,7 +329,11 @@
         }
       ],
       "primary": "state",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "true",
+        "{\"state\":true,\"display\":false}"
+      ]
     },
     {
       "name": "run",
@@ -348,7 +396,11 @@
         }
       ],
       "primary": "path",
-      "dangerous": true
+      "dangerous": true,
+      "examples": [
+        "notepad",
+        "{\"path\":\"kodi\",\"args\":\"--fullscreen\",\"window\":\"maximized\"}"
+      ]
     },
     {
       "name": "open",
@@ -362,7 +414,11 @@
           "required": true
         }
       ],
-      "primary": "target"
+      "primary": "target",
+      "examples": [
+        "https://www.iobroker.net",
+        "ms-settings:display"
+      ]
     },
     {
       "name": "kill",
@@ -383,7 +439,11 @@
         }
       ],
       "primary": "name",
-      "dangerous": true
+      "dangerous": true,
+      "examples": [
+        "notepad",
+        "{\"pid\":1234}"
+      ]
     },
     {
       "name": "list_processes",
@@ -397,13 +457,19 @@
           "required": false
         }
       ],
-      "primary": "filter"
+      "primary": "filter",
+      "examples": [
+        "chrome"
+      ]
     },
     {
       "name": "list_windows",
       "category": "programs",
       "description": "Listet sichtbare Fenster mit Titel",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "focus_window",
@@ -417,7 +483,10 @@
           "required": true
         }
       ],
-      "primary": "title"
+      "primary": "title",
+      "examples": [
+        "Kodi"
+      ]
     },
     {
       "name": "close_window",
@@ -431,7 +500,10 @@
           "required": true
         }
       ],
-      "primary": "title"
+      "primary": "title",
+      "examples": [
+        "Editor"
+      ]
     },
     {
       "name": "minimize_all",
@@ -445,13 +517,20 @@
           "required": false,
           "default": false
         }
+      ],
+      "examples": [
+        "true",
+        "{\"undo\":true}"
       ]
     },
     {
       "name": "empty_recycle_bin",
       "category": "programs",
       "description": "Leert den Papierkorb",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "shell",
@@ -484,7 +563,11 @@
         }
       ],
       "primary": "command",
-      "dangerous": true
+      "dangerous": true,
+      "examples": [
+        "Get-Date",
+        "{\"command\":\"ipconfig\",\"shell\":\"cmd\"}"
+      ]
     },
     {
       "name": "volume",
@@ -498,7 +581,10 @@
           "required": true
         }
       ],
-      "primary": "level"
+      "primary": "level",
+      "examples": [
+        "30"
+      ]
     },
     {
       "name": "volume_change",
@@ -513,7 +599,10 @@
           "default": 5
         }
       ],
-      "primary": "delta"
+      "primary": "delta",
+      "examples": [
+        "-10"
+      ]
     },
     {
       "name": "mute",
@@ -528,7 +617,11 @@
           "default": "toggle"
         }
       ],
-      "primary": "state"
+      "primary": "state",
+      "examples": [
+        "toggle",
+        "true"
+      ]
     },
     {
       "name": "media",
@@ -551,7 +644,11 @@
           ]
         }
       ],
-      "primary": "key"
+      "primary": "key",
+      "examples": [
+        "playpause",
+        "next"
+      ]
     },
     {
       "name": "speak",
@@ -598,13 +695,20 @@
           "default": true
         }
       ],
-      "primary": "text"
+      "primary": "text",
+      "examples": [
+        "Das Essen ist fertig",
+        "{\"text\":\"Achtung\",\"voice\":\"Hedda\",\"rate\":2,\"volume\":80}"
+      ]
     },
     {
       "name": "list_voices",
       "category": "audio",
       "description": "Listet installierte TTS-Stimmen",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "play_sound",
@@ -625,13 +729,20 @@
           "default": false
         }
       ],
-      "primary": "source"
+      "primary": "source",
+      "examples": [
+        "http://192.168.1.5/gong.mp3",
+        "{\"source\":\"C:\\\\Sounds\\\\klingel.wav\",\"wait\":true}"
+      ]
     },
     {
       "name": "stop_sound",
       "category": "audio",
       "description": "Stoppt play_sound / speak",
-      "params": []
+      "params": [],
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "beep",
@@ -652,6 +763,10 @@
           "required": false,
           "default": 300
         }
+      ],
+      "examples": [
+        "true",
+        "{\"freq\":1200,\"ms\":500}"
       ]
     },
     {
@@ -711,15 +826,61 @@
         {
           "name": "position",
           "type": "string",
-          "description": "Nur bei mode=corner",
+          "description": "Lage bei mode=corner",
           "required": false,
           "default": "bottom-right",
           "enum": [
             "top-left",
+            "top",
             "top-right",
+            "left",
+            "center",
+            "right",
             "bottom-left",
+            "bottom",
             "bottom-right"
           ]
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "description": "Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %)",
+          "required": false
+        },
+        {
+          "name": "margin",
+          "type": "integer",
+          "description": "Abstand zum Bildschirmrand in Pixel (mode=corner)",
+          "required": false,
+          "default": 16
+        },
+        {
+          "name": "border",
+          "type": "integer",
+          "description": "Rahmenbreite in Pixel (0 = kein Rahmen)",
+          "required": false,
+          "default": 2
+        },
+        {
+          "name": "border_color",
+          "type": "string",
+          "description": "Rahmenfarbe, z.B. #ff0000",
+          "required": false,
+          "default": "#282828"
+        },
+        {
+          "name": "caption_size",
+          "type": "number",
+          "description": "Schriftgröße der Beschriftung",
+          "required": false,
+          "default": 11
+        },
+        {
+          "name": "caption_color",
+          "type": "string",
+          "description": "Farbe der Beschriftung",
+          "required": false,
+          "default": "#ffffff"
         },
         {
           "name": "caption",
@@ -760,7 +921,12 @@
         }
       ],
       "primary": "source",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "http://kamera/snapshot.jpg",
+        "{\"source\":\"http://kamera/snapshot.jpg\",\"mode\":\"corner\",\"position\":\"top-right\",\"size\":30,\"seconds\":10,\"caption\":\"Haustür\",\"slot\":\"klingel\"}",
+        "{\"source\":\"https://picsum.photos/1920/1080\",\"mode\":\"fullscreen\",\"seconds\":15}"
+      ]
     },
     {
       "name": "show_video",
@@ -836,15 +1002,61 @@
         {
           "name": "position",
           "type": "string",
-          "description": "Nur bei mode=corner",
+          "description": "Lage bei mode=corner",
           "required": false,
           "default": "bottom-right",
           "enum": [
             "top-left",
+            "top",
             "top-right",
+            "left",
+            "center",
+            "right",
             "bottom-left",
+            "bottom",
             "bottom-right"
           ]
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "description": "Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %)",
+          "required": false
+        },
+        {
+          "name": "margin",
+          "type": "integer",
+          "description": "Abstand zum Bildschirmrand in Pixel (mode=corner)",
+          "required": false,
+          "default": 16
+        },
+        {
+          "name": "border",
+          "type": "integer",
+          "description": "Rahmenbreite in Pixel (0 = kein Rahmen)",
+          "required": false,
+          "default": 2
+        },
+        {
+          "name": "border_color",
+          "type": "string",
+          "description": "Rahmenfarbe, z.B. #ff0000",
+          "required": false,
+          "default": "#282828"
+        },
+        {
+          "name": "caption_size",
+          "type": "number",
+          "description": "Schriftgröße der Beschriftung",
+          "required": false,
+          "default": 11
+        },
+        {
+          "name": "caption_color",
+          "type": "string",
+          "description": "Farbe der Beschriftung",
+          "required": false,
+          "default": "#ffffff"
         },
         {
           "name": "caption",
@@ -885,7 +1097,12 @@
         }
       ],
       "primary": "source",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "http://server/video.mp4",
+        "{\"source\":\"http://server/video.mp4\",\"mode\":\"corner\",\"position\":\"bottom-left\",\"size\":25,\"muted\":true,\"loop\":true}",
+        "{\"source\":\"C:\\\\Videos\\\\intro.mp4\",\"mode\":\"fullscreen\",\"close_when_done\":true}"
+      ]
     },
     {
       "name": "show_web",
@@ -926,15 +1143,61 @@
         {
           "name": "position",
           "type": "string",
-          "description": "Nur bei mode=corner",
+          "description": "Lage bei mode=corner",
           "required": false,
           "default": "bottom-right",
           "enum": [
             "top-left",
+            "top",
             "top-right",
+            "left",
+            "center",
+            "right",
             "bottom-left",
+            "bottom",
             "bottom-right"
           ]
+        },
+        {
+          "name": "size",
+          "type": "number",
+          "description": "Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %)",
+          "required": false
+        },
+        {
+          "name": "margin",
+          "type": "integer",
+          "description": "Abstand zum Bildschirmrand in Pixel (mode=corner)",
+          "required": false,
+          "default": 16
+        },
+        {
+          "name": "border",
+          "type": "integer",
+          "description": "Rahmenbreite in Pixel (0 = kein Rahmen)",
+          "required": false,
+          "default": 2
+        },
+        {
+          "name": "border_color",
+          "type": "string",
+          "description": "Rahmenfarbe, z.B. #ff0000",
+          "required": false,
+          "default": "#282828"
+        },
+        {
+          "name": "caption_size",
+          "type": "number",
+          "description": "Schriftgröße der Beschriftung",
+          "required": false,
+          "default": 11
+        },
+        {
+          "name": "caption_color",
+          "type": "string",
+          "description": "Farbe der Beschriftung",
+          "required": false,
+          "default": "#ffffff"
         },
         {
           "name": "caption",
@@ -975,7 +1238,12 @@
         }
       ],
       "primary": "url",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "http://192.168.1.5:8082/vis/",
+        "{\"url\":\"http://192.168.1.5:8082/vis/\",\"mode\":\"fullscreen\"}",
+        "{\"url\":\"http://kamera/stream\",\"mode\":\"corner\",\"size\":35,\"seconds\":30,\"slot\":\"kamera\"}"
+      ]
     },
     {
       "name": "show_text",
@@ -1068,10 +1336,34 @@
           "type": "string",
           "description": "Ersetzt Overlay mit gleichem Slot",
           "required": false
+        },
+        {
+          "name": "max_width",
+          "type": "number",
+          "description": "Maximale Breite in % des Bildschirms (Text bricht um)",
+          "required": false,
+          "default": 80
+        },
+        {
+          "name": "padding",
+          "type": "integer",
+          "description": "Innenabstand in Pixel",
+          "required": false,
+          "default": 24
+        },
+        {
+          "name": "margin",
+          "type": "integer",
+          "description": "Abstand zum Rand in Pixel (top: 40, bottom: 60)",
+          "required": false
         }
       ],
       "primary": "text",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "Waschmaschine fertig",
+        "{\"text\":\"Alarm!\",\"size\":60,\"color\":\"#ffffff\",\"bg\":\"#c00000\",\"position\":\"center\",\"seconds\":10}"
+      ]
     },
     {
       "name": "ask",
@@ -1125,10 +1417,36 @@
           "description": "Sekunden bis automatisch geschlossen (0 = nie)",
           "required": false,
           "default": 0
+        },
+        {
+          "name": "width",
+          "type": "integer",
+          "description": "Breite des Dialogs in Pixel",
+          "required": false,
+          "default": 460
+        },
+        {
+          "name": "font_size",
+          "type": "number",
+          "description": "Schriftgröße",
+          "required": false,
+          "default": 10
+        },
+        {
+          "name": "monitor",
+          "type": "integer",
+          "description": "Monitor-Index (-1 = Hauptmonitor)",
+          "required": false,
+          "default": -1
         }
       ],
       "primary": "text",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "Licht ausschalten?",
+        "{\"text\":\"Kinomodus starten?\",\"buttons\":[\"Ja\",\"Nein\"],\"timeout\":30}",
+        "{\"text\":\"Wie warm soll es werden?\",\"input\":true,\"default\":\"21\",\"buttons\":[\"OK\",\"Abbrechen\"]}"
+      ]
     },
     {
       "name": "notify",
@@ -1170,14 +1488,21 @@
         }
       ],
       "primary": "text",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "Paket ist angekommen",
+        "{\"text\":\"Fenster offen\",\"title\":\"Heizung\",\"icon\":\"warning\",\"seconds\":10}"
+      ]
     },
     {
       "name": "close_popups",
       "category": "display",
       "description": "Schließt alle Popups/Overlays/Dialoge von WinCtl",
       "params": [],
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "true"
+      ]
     },
     {
       "name": "screenshot",
@@ -1224,7 +1549,11 @@
           "default": false
         }
       ],
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "true",
+        "{\"monitor\":0,\"scale\":1,\"format\":\"png\"}"
+      ]
     },
     {
       "name": "set_wallpaper",
@@ -1238,7 +1567,10 @@
           "required": true
         }
       ],
-      "primary": "source"
+      "primary": "source",
+      "examples": [
+        "https://picsum.photos/1920/1080"
+      ]
     },
     {
       "name": "brightness",
@@ -1252,7 +1584,10 @@
           "required": true
         }
       ],
-      "primary": "level"
+      "primary": "level",
+      "examples": [
+        "60"
+      ]
     },
     {
       "name": "send_keys",
@@ -1267,7 +1602,12 @@
         }
       ],
       "primary": "keys",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "^c",
+        "%{F4}",
+        "{ENTER}"
+      ]
     },
     {
       "name": "type_text",
@@ -1282,7 +1622,10 @@
         }
       ],
       "primary": "text",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "Hallo Welt"
+      ]
     },
     {
       "name": "mouse",
@@ -1338,6 +1681,10 @@
           "description": "Scrollrad-Schritte (+ hoch / - runter)",
           "required": false
         }
+      ],
+      "examples": [
+        "{\"x\":100,\"y\":200,\"click\":\"single\"}",
+        "{\"wheel\":-3}"
       ]
     },
     {
@@ -1353,14 +1700,20 @@
         }
       ],
       "primary": "text",
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "Text für die Zwischenablage"
+      ]
     },
     {
       "name": "clipboard_get",
       "category": "input",
       "description": "Liest den Text der Zwischenablage",
       "params": [],
-      "needs_gui": true
+      "needs_gui": true,
+      "examples": [
+        "true"
+      ]
     }
   ]
 }

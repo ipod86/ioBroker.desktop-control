@@ -71,7 +71,8 @@
     "lint": "eslint -c eslint.config.mjs .",
     "translate": "translate-adapter",
     "release": "release-script",
-    "dev-server": "dev-server"
+    "dev-server": "dev-server",
+    "readme": "node tools/gen-readme.js"
   },
   "bugs": {
     "url": "https://github.com/ipod86/ioBroker.desktop-control/issues"

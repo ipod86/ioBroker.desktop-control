@@ -441,9 +441,14 @@ class DesktopControl extends utils.Adapter {
 	 * @param apps aliases of the agent (selection list for run)
 	 */
 	private commandCommon(c: ManifestCommand, kind: 'button' | 'json', apps?: string[]): ioBroker.StateCommon {
-		const desc =
-			c.description ||
-			(c.params.length ? `Parameters: ${c.params.map(p => `${p.name}${p.required ? '*' : ''}`).join(', ')}` : '');
+		// description, options (* = required) and an example, so the data point explains itself in the object browser
+		const desc = [
+			c.description,
+			c.params.length ? `Options: ${c.params.map(p => `${p.name}${p.required ? '*' : ''}`).join(', ')}` : '',
+			kind === 'json' && c.examples.length ? `Example: ${c.examples[c.examples.length > 1 ? 1 : 0]}` : '',
+		]
+			.filter(Boolean)
+			.join(' | ');
 		return kind === 'button'
 			? { name: c.name, desc, type: 'boolean', role: 'button', read: false, write: true }
 			: {

@@ -127,7 +127,7 @@ describe('manifest', () => {
 			{ name: 'shell', dangerous: true, params: [{ name: 'command', required: true }] },
 		];
 		const limited = normalizeManifest({ security: { allow_any_run: false }, commands });
-		expect(limited.commands.map(c => commandKind(c))).to.deep.equal(['json', 'button', 'none']);
+		expect(limited.commands.map(c => commandKind(c))).to.deep.equal(['json', 'json', 'none']);
 		const open = normalizeManifest({ security: { allow_any_run: true }, commands });
 		expect(open.commands.map(c => commandKind(c))).to.deep.equal(['none', 'none', 'none']);
 		// unknown (older agent): stays dangerous
@@ -139,6 +139,8 @@ describe('manifest', () => {
 	});
 	it('creates buttons, json data points, and nothing for dangerous or disabled commands', () => {
 		expect(commandKind(cmd('ping'))).to.equal('button');
+		// only optional parameters: still an input, so the options can be set
+		expect(commandKind(cmd('mute'))).to.equal('json');
 		expect(commandKind(cmd('speak'))).to.equal('json');
 		expect(commandKind(cmd('shell'))).to.equal('none');
 		expect(commandKind(cmd('beep'))).to.equal('none');
@@ -162,6 +164,8 @@ describe('commands and results', () => {
 		expect(parseCommandParams('{"alias":"notepad"}')).to.deep.equal({ alias: 'notepad' });
 		expect(parseCommandParams('[1]')).to.be.a('string');
 		expect(parseCommandParams('nope')).to.be.a('string');
+		expect(parseCommandParams('true')).to.deep.equal({});
+		expect(parseCommandParams('{}')).to.deep.equal({});
 		expect(parseCommandParams('Hallo Welt', cmd('speak'))).to.deep.equal({ text: 'Hallo Welt' });
 		expect(parseCommandParams('{"text":"x"}', cmd('speak'))).to.deep.equal({ text: 'x' });
 		expect(parseCommandParams(35, cmd('volume'))).to.deep.equal({ level: 35 });

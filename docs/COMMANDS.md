@@ -1,6 +1,6 @@
 # Befehlsreferenz
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.1.0). Nicht von Hand ändern._
+_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.2.0). Nicht von Hand ändern._
 
 Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
 
@@ -36,6 +36,13 @@ Ruhezustand
 Fährt den PC herunter  
 Kurzform: Payload `<text>` entspricht `{"delay": "<text>"}`.  
 
+Beispiele:
+
+```
+60
+{"delay":0,"force":true}
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `delay` | integer |  | 10 | Verzögerung in Sekunden |
@@ -44,6 +51,13 @@ Kurzform: Payload `<text>` entspricht `{"delay": "<text>"}`.
 ### `restart`  _(⚠ sicherheitsrelevant)_
 Startet den PC neu  
 Kurzform: Payload `<text>` entspricht `{"delay": "<text>"}`.  
+
+Beispiele:
+
+```
+30
+{"delay":0,"force":true}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -66,6 +80,12 @@ Weckt die Monitore auf
 Verhindert Standby/Bildschirmschoner (bis auf Widerruf)  
 Kurzform: Payload `<text>` entspricht `{"state": "<text>"}`.  
 
+Beispiele:
+
+```
+{"state":true,"display":false}
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `state` | boolean |  | true | an/aus |
@@ -76,6 +96,13 @@ Kurzform: Payload `<text>` entspricht `{"state": "<text>"}`.
 ### `run`  _(⚠ sicherheitsrelevant)_
 Startet ein Programm (Alias aus der Config oder - wenn erlaubt - beliebiger Pfad) mit Parametern  
 Kurzform: Payload `<text>` entspricht `{"path": "<text>"}`.  
+
+Beispiele:
+
+```
+notepad
+{"path":"kodi","args":"--fullscreen","window":"maximized"}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -92,6 +119,13 @@ Kurzform: Payload `<text>` entspricht `{"path": "<text>"}`.
 Öffnet URL, Datei oder Ordner mit der Standard-App (Dateien/Ordner nur mit AllowAnyRun)  
 Kurzform: Payload `<text>` entspricht `{"target": "<text>"}`.  
 
+Beispiele:
+
+```
+https://www.iobroker.net
+ms-settings:display
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `target` | string | ja |  | URL (immer erlaubt), sonst Alias/Pfad |
@@ -99,6 +133,13 @@ Kurzform: Payload `<text>` entspricht `{"target": "<text>"}`.
 ### `kill`  _(⚠ sicherheitsrelevant)_
 Beendet Prozesse nach Name oder PID  
 Kurzform: Payload `<text>` entspricht `{"name": "<text>"}`.  
+
+Beispiele:
+
+```
+notepad
+{"pid":1234}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -108,6 +149,12 @@ Kurzform: Payload `<text>` entspricht `{"name": "<text>"}`.
 ### `list_processes`
 Listet laufende Prozesse (max. 300)  
 Kurzform: Payload `<text>` entspricht `{"filter": "<text>"}`.  
+
+Beispiele:
+
+```
+chrome
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -120,6 +167,12 @@ Listet sichtbare Fenster mit Titel
 Bringt ein Fenster (Titel enthält ...) in den Vordergrund  
 Kurzform: Payload `<text>` entspricht `{"title": "<text>"}`.  
 
+Beispiele:
+
+```
+Kodi
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `title` | string | ja |  | Teil des Fenstertitels |
@@ -128,12 +181,24 @@ Kurzform: Payload `<text>` entspricht `{"title": "<text>"}`.
 Schließt ein Fenster sauber (Titel enthält ...)  
 Kurzform: Payload `<text>` entspricht `{"title": "<text>"}`.  
 
+Beispiele:
+
+```
+Editor
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `title` | string | ja |  | Teil des Fenstertitels |
 
 ### `minimize_all`
 Alle Fenster minimieren (Desktop anzeigen) bzw. wiederherstellen  
+
+Beispiele:
+
+```
+{"undo":true}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -145,6 +210,13 @@ Leert den Papierkorb
 ### `shell`  _(⚠ sicherheitsrelevant)_
 Führt einen Shell-Befehl aus und liefert die Ausgabe (nur mit AllowShell=true)  
 Kurzform: Payload `<text>` entspricht `{"command": "<text>"}`.  
+
+Beispiele:
+
+```
+Get-Date
+{"command":"ipconfig","shell":"cmd"}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -158,6 +230,12 @@ Kurzform: Payload `<text>` entspricht `{"command": "<text>"}`.
 Setzt die Master-Lautstärke (0-100)  
 Kurzform: Payload `<text>` entspricht `{"level": "<text>"}`.  
 
+Beispiele:
+
+```
+30
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `level` | integer | ja |  | 0 - 100 |
@@ -165,6 +243,12 @@ Kurzform: Payload `<text>` entspricht `{"level": "<text>"}`.
 ### `volume_change`
 Lautstärke relativ ändern  
 Kurzform: Payload `<text>` entspricht `{"delta": "<text>"}`.  
+
+Beispiele:
+
+```
+-10
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -174,6 +258,12 @@ Kurzform: Payload `<text>` entspricht `{"delta": "<text>"}`.
 Stummschalten / aufheben / umschalten  
 Kurzform: Payload `<text>` entspricht `{"state": "<text>"}`.  
 
+Beispiele:
+
+```
+toggle
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `state` | string |  | "toggle" | true / false / toggle |
@@ -182,6 +272,13 @@ Kurzform: Payload `<text>` entspricht `{"state": "<text>"}`.
 Sendet eine Medientaste  
 Kurzform: Payload `<text>` entspricht `{"key": "<text>"}`.  
 
+Beispiele:
+
+```
+playpause
+next
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `key` | string | ja |  | Medientaste (playpause / next / prev / stop / volume_up / volume_down / mute) |
@@ -189,6 +286,13 @@ Kurzform: Payload `<text>` entspricht `{"key": "<text>"}`.
 ### `speak`
 Text-to-Speech (Windows-Stimme)  
 Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+
+Beispiele:
+
+```
+Das Essen ist fertig
+{"text":"Achtung","voice":"Hedda","rate":2,"volume":80}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -206,6 +310,13 @@ Listet installierte TTS-Stimmen
 Spielt eine Audiodatei (mp3/wav/wma, Pfad oder URL)  
 Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
 
+Beispiele:
+
+```
+http://192.168.1.5/gong.mp3
+{"source":"C:\\Sounds\\klingel.wav","wait":true}
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `source` | string | ja |  | Pfad oder URL |
@@ -216,6 +327,12 @@ Stoppt play_sound / speak
 
 ### `beep`
 Einfacher Piepton  
+
+Beispiele:
+
+```
+{"freq":1200,"ms":500}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -228,6 +345,14 @@ Einfacher Piepton
 Zeigt ein Bild als Popup, Vollbild oder Ecken-Einblendung (Pfad, URL oder Base64)  
 Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
 
+Beispiele:
+
+```
+http://kamera/snapshot.jpg
+{"source":"http://kamera/snapshot.jpg","mode":"corner","position":"top-right","size":30,"seconds":10,"caption":"Haustür","slot":"klingel"}
+{"source":"https://picsum.photos/1920/1080","mode":"fullscreen","seconds":15}
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `source` | string | ja |  | Pfad, http(s)-URL oder data:-URI |
@@ -236,7 +361,13 @@ Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.
 | `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
 | `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string |  | "bottom-right" | Nur bei mode=corner (top-left / top-right / bottom-left / bottom-right) |
+| `position` | string |  | "bottom-right" | Lage bei mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
+| `size` | number |  |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
+| `margin` | integer |  | 16 | Abstand zum Bildschirmrand in Pixel (mode=corner) |
+| `border` | integer |  | 2 | Rahmenbreite in Pixel (0 = kein Rahmen) |
+| `border_color` | string |  | "#282828" | Rahmenfarbe, z.B. #ff0000 |
+| `caption_size` | number |  | 11 | Schriftgröße der Beschriftung |
+| `caption_color` | string |  | "#ffffff" | Farbe der Beschriftung |
 | `caption` | string |  |  | Beschriftung unter dem Inhalt |
 | `slot` | string |  |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
 | `click_close` | boolean |  |  | Klick schließt das Popup |
@@ -247,6 +378,14 @@ Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.
 ### `show_video`  _(braucht GUI-Sitzung)_
 Spielt ein Video ab (Datei oder URL, mp4/H.264 empfohlen)  
 Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
+
+Beispiele:
+
+```
+http://server/video.mp4
+{"source":"http://server/video.mp4","mode":"corner","position":"bottom-left","size":25,"muted":true,"loop":true}
+{"source":"C:\\Videos\\intro.mp4","mode":"fullscreen","close_when_done":true}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -259,7 +398,13 @@ Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.
 | `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
 | `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string |  | "bottom-right" | Nur bei mode=corner (top-left / top-right / bottom-left / bottom-right) |
+| `position` | string |  | "bottom-right" | Lage bei mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
+| `size` | number |  |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
+| `margin` | integer |  | 16 | Abstand zum Bildschirmrand in Pixel (mode=corner) |
+| `border` | integer |  | 2 | Rahmenbreite in Pixel (0 = kein Rahmen) |
+| `border_color` | string |  | "#282828" | Rahmenfarbe, z.B. #ff0000 |
+| `caption_size` | number |  | 11 | Schriftgröße der Beschriftung |
+| `caption_color` | string |  | "#ffffff" | Farbe der Beschriftung |
 | `caption` | string |  |  | Beschriftung unter dem Inhalt |
 | `slot` | string |  |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
 | `click_close` | boolean |  |  | Klick schließt das Popup |
@@ -271,13 +416,27 @@ Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.
 Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild  
 Kurzform: Payload `<text>` entspricht `{"url": "<text>"}`.  
 
+Beispiele:
+
+```
+http://192.168.1.5:8082/vis/
+{"url":"http://192.168.1.5:8082/vis/","mode":"fullscreen"}
+{"url":"http://kamera/stream","mode":"corner","size":35,"seconds":30,"slot":"kamera"}
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `url` | string | ja |  | Adresse |
 | `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
 | `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string |  | "bottom-right" | Nur bei mode=corner (top-left / top-right / bottom-left / bottom-right) |
+| `position` | string |  | "bottom-right" | Lage bei mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
+| `size` | number |  |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
+| `margin` | integer |  | 16 | Abstand zum Bildschirmrand in Pixel (mode=corner) |
+| `border` | integer |  | 2 | Rahmenbreite in Pixel (0 = kein Rahmen) |
+| `border_color` | string |  | "#282828" | Rahmenfarbe, z.B. #ff0000 |
+| `caption_size` | number |  | 11 | Schriftgröße der Beschriftung |
+| `caption_color` | string |  | "#ffffff" | Farbe der Beschriftung |
 | `caption` | string |  |  | Beschriftung unter dem Inhalt |
 | `slot` | string |  |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
 | `click_close` | boolean |  |  | Klick schließt das Popup |
@@ -288,6 +447,13 @@ Kurzform: Payload `<text>` entspricht `{"url": "<text>"}`.
 ### `show_text`  _(braucht GUI-Sitzung)_
 Blendet Text als Overlay ein (klickdurchlässig)  
 Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+
+Beispiele:
+
+```
+Waschmaschine fertig
+{"text":"Alarm!","size":60,"color":"#ffffff","bg":"#c00000","position":"center","seconds":10}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -303,10 +469,21 @@ Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.
 | `font` | string |  | "Segoe UI" | Schriftart |
 | `click_through` | boolean |  | true | Mausklicks gehen durch |
 | `slot` | string |  |  | Ersetzt Overlay mit gleichem Slot |
+| `max_width` | number |  | 80 | Maximale Breite in % des Bildschirms (Text bricht um) |
+| `padding` | integer |  | 24 | Innenabstand in Pixel |
+| `margin` | integer |  |  | Abstand zum Rand in Pixel (top: 40, bottom: 60) |
 
 ### `ask`  _(braucht GUI-Sitzung)_
 Zeigt einen Dialog mit Buttons/Eingabefeld und liefert die Antwort im result zurück  
 Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+
+Beispiele:
+
+```
+Licht ausschalten?
+{"text":"Kinomodus starten?","buttons":["Ja","Nein"],"timeout":30}
+{"text":"Wie warm soll es werden?","input":true,"default":"21","buttons":["OK","Abbrechen"]}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -317,10 +494,20 @@ Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.
 | `default` | string |  |  | Vorgabe im Eingabefeld |
 | `password` | boolean |  | false | Eingabe verdecken |
 | `timeout` | integer |  | 0 | Sekunden bis automatisch geschlossen (0 = nie) |
+| `width` | integer |  | 460 | Breite des Dialogs in Pixel |
+| `font_size` | number |  | 10 | Schriftgröße |
+| `monitor` | integer |  | -1 | Monitor-Index (-1 = Hauptmonitor) |
 
 ### `notify`  _(braucht GUI-Sitzung)_
 Zeigt eine Windows-Benachrichtigung  
 Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+
+Beispiele:
+
+```
+Paket ist angekommen
+{"text":"Fenster offen","title":"Heizung","icon":"warning","seconds":10}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -335,6 +522,12 @@ Schließt alle Popups/Overlays/Dialoge von WinCtl
 ### `screenshot`  _(braucht GUI-Sitzung)_
 Macht einen Screenshot und veröffentlicht das Bild (JPEG/PNG-Rohdaten) auf <base>/<id>/screenshot  
 
+Beispiele:
+
+```
+{"monitor":0,"scale":1,"format":"png"}
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `monitor` | integer |  | -1 | -1 = alle Monitore, 0 = erster ... |
@@ -347,6 +540,12 @@ Macht einen Screenshot und veröffentlicht das Bild (JPEG/PNG-Rohdaten) auf <bas
 Setzt das Desktop-Hintergrundbild (Pfad oder URL)  
 Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
 
+Beispiele:
+
+```
+https://picsum.photos/1920/1080
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `source` | string | ja |  | Pfad oder URL |
@@ -354,6 +553,12 @@ Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.
 ### `brightness`
 Setzt die Helligkeit (nur interne Laptop-Displays, 0-100)  
 Kurzform: Payload `<text>` entspricht `{"level": "<text>"}`.  
+
+Beispiele:
+
+```
+60
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -365,6 +570,14 @@ Kurzform: Payload `<text>` entspricht `{"level": "<text>"}`.
 Sendet Tastendrücke (SendKeys-Syntax: ^=Strg, %=Alt, +=Umschalt, {ENTER}, {F5} ...)  
 Kurzform: Payload `<text>` entspricht `{"keys": "<text>"}`.  
 
+Beispiele:
+
+```
+^c
+%{F4}
+{ENTER}
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `keys` | string | ja |  | z.B. ^c oder %{F4} oder {ENTER} |
@@ -373,12 +586,25 @@ Kurzform: Payload `<text>` entspricht `{"keys": "<text>"}`.
 Tippt Text in das aktive Fenster  
 Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
 
+Beispiele:
+
+```
+Hallo Welt
+```
+
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
 | `text` | string | ja |  | Text |
 
 ### `mouse`
 Bewegt/klickt die Maus  
+
+Beispiele:
+
+```
+{"x":100,"y":200,"click":"single"}
+{"wheel":-3}
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
@@ -392,6 +618,12 @@ Bewegt/klickt die Maus
 ### `clipboard_set`  _(braucht GUI-Sitzung)_
 Setzt den Text der Zwischenablage  
 Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+
+Beispiele:
+
+```
+Text für die Zwischenablage
+```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|

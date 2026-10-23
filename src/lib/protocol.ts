@@ -69,6 +69,8 @@ export interface ManifestCommand {
 	description: string;
 	/** parameter a plain value is mapped to (short form) */
 	primary?: string;
+	/** example payloads (JSON or short form) */
+	examples: string[];
 	/** switched off in the agent config (DisabledCommands) */
 	disabled: boolean;
 }
@@ -310,6 +312,7 @@ export function normalizeManifest(raw: unknown): Manifest {
 		needsGui: e.needs_gui === true || e.needsGui === true,
 		description: str(e.description),
 		primary: e.primary ? str(e.primary) : undefined,
+		examples: Array.isArray(e.examples) ? e.examples.map(str) : [],
 		disabled: disabled.includes(name),
 	}));
 	const events = Array.isArray(m.events) ? m.events.map(str).filter(Boolean) : entries(m.events).map(([n]) => n);
@@ -447,7 +450,7 @@ export function commandForStateWrite(
 
 /**
  * Whether a command gets a data point, and which kind:
- * button (no required parameter), json (parameters as JSON) or none (dangerous → only via sendTo)
+ * button (no parameters), json (parameters as JSON or short form) or none (dangerous → only via sendTo)
  *
  * @param cmd command
  */
@@ -455,7 +458,8 @@ export function commandKind(cmd: ManifestCommand): 'button' | 'json' | 'none' {
 	if (cmd.dangerous || cmd.disabled) {
 		return 'none';
 	}
-	return cmd.params.some(p => p.required) ? 'json' : 'button';
+	// every option should be settable via the data point, so only commands without any parameter are buttons
+	return cmd.params.length ? 'json' : 'button';
 }
 
 /**
@@ -486,6 +490,10 @@ export function parseCommandParams(
 	if (cmd?.primary) {
 		const type = cmd.params.find(p => p.name === cmd.primary)?.type;
 		return { [cmd.primary]: convertParam(value, type) };
+	}
+	// "true" or "{}" = run with the default options
+	if (value === 'true' || value === '{}') {
+		return {};
 	}
 	return 'parameters must be a JSON object';
 }
