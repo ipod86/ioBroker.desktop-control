@@ -1,0 +1,106 @@
+{
+	"common": {
+		"name": "desktop-control",
+		"version": "0.0.1",
+		"news": {
+			"0.0.1": {
+				"en": "initial release",
+				"de": "Erstveröffentlichung",
+				"ru": "Начальная версия",
+				"pt": "lançamento inicial",
+				"nl": "Eerste uitgave",
+				"fr": "Première version",
+				"it": "Versione iniziale",
+				"es": "Versión inicial",
+				"pl": "Pierwsze wydanie",
+				"uk": "Початкова версія",
+				"zh-cn": "首次出版"
+			}
+		},
+		"titleLang": {
+			"en": "Desktop Control",
+			"de": "Desktop Control",
+			"ru": "Desktop Control",
+			"pt": "Desktop Control",
+			"nl": "Desktop Control",
+			"fr": "Desktop Control",
+			"it": "Desktop Control",
+			"es": "Desktop Control",
+			"pl": "Desktop Control",
+			"uk": "Desktop Control",
+			"zh-cn": "Desktop Control"
+		},
+		"desc": {
+			"en": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"de": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"ru": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"pt": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"nl": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"fr": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"it": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"es": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"pl": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"uk": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+			"zh-cn": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT"
+		},
+		"authors": ["David <david@graef.email>"],
+		"keywords": ["windows", "desktop", "remote control", "mqtt", "popup", "pc"],
+		"licenseInformation": {
+			"type": "free",
+			"license": "MIT"
+		},
+		"platform": "Javascript/Node.js",
+		"icon": "desktop-control.png",
+		"enabled": true,
+		"extIcon": "https://raw.githubusercontent.com/ipod86/ioBroker.desktop-control/main/admin/desktop-control.png",
+		"readme": "https://github.com/ipod86/ioBroker.desktop-control/blob/main/README.md",
+		"loglevel": "info",
+		"tier": 3,
+		"mode": "daemon",
+		"type": "utility",
+		"compact": true,
+		"connectionType": "local",
+		"dataSource": "push",
+		"adminUI": {
+			"config": "json"
+		},
+		"dependencies": [
+			{
+				"js-controller": ">=6.0.11"
+			}
+		],
+		"globalDependencies": [
+			{
+				"admin": ">=7.0.23"
+			}
+		]
+	},
+	"native": {
+		"option1": true,
+		"option2": "42"
+	},
+	"objects": [],
+	"instanceObjects": [
+		{
+			"_id": "info",
+			"type": "channel",
+			"common": {
+				"name": "Information"
+			},
+			"native": {}
+		},
+		{
+			"_id": "info.connection",
+			"type": "state",
+			"common": {
+				"role": "indicator.connected",
+				"name": "Device or service connected",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		}
+	]
+}
