@@ -152,7 +152,7 @@ tests.integration(path.join(__dirname, '..'), {
 				await harness.states.setStateAsync(`${NS}.fake-pc.cmd.volume`, '{"level":25}', false);
 				const vol = await waitForState(`${NS}.fake-pc.state.volume`, v => v === 25);
 				expect(vol.val).to.equal(25);
-				const result = await waitForState(`${NS}.fake-pc.result`, v => String(v).includes('"level":25'));
+				const result = await waitForState(`${NS}.fake-pc.cmd.result`, v => String(v).includes('"level":25'));
 				expect(JSON.parse(result.val)).to.include({ command: 'volume', ok: true });
 			});
 

@@ -38,7 +38,7 @@ With an existing broker select "Existing broker" in the adapter and enter the sa
 | `state.*` | Values reported by the agent (locked, user present, idle time, active window, volume, CPU, RAM, battery, drives, watched processes, …). `volume`, `muted` and `keep_awake` are writable. |
 | `cmd.*` | One data point per command: a button for commands without required parameters, otherwise JSON (`{"text":"Hello"}`) or the plain value of the main parameter (`Hello`) |
 | `event.*` | Events like `lock`, `unlock`, `hotkey` |
-| `result` | Result of the last command |
+| `cmd.result` | Result of the last command (e.g. the answer of `ask`) |
 | `screenshot` | Path of the last screenshot in the ioBroker file storage |
 
 `all.cmd.*` sends a command to all PCs at once.

@@ -27,6 +27,9 @@ import {
 	text,
 } from './lib/protocol';
 
+/** data point (in the cmd channel) with the result of the last command */
+const RESULT = 'result';
+
 /** what the adapter knows about one agent */
 interface Device {
 	/** agent id as used in the topics */
@@ -223,7 +226,7 @@ class DesktopControl extends utils.Adapter {
 		]) {
 			await this.ensureObject(`${o}.${ch}`, { type: 'channel', common: { name }, native: {} });
 		}
-		await this.ensureObject(`${o}.result`, {
+		await this.ensureObject(`${o}.cmd.${RESULT}`, {
 			type: 'state',
 			common: { name: 'Last command result', type: 'string', role: 'json', read: true, write: false },
 			native: {},
@@ -305,7 +308,7 @@ class DesktopControl extends utils.Adapter {
 				const result = parseResult(body);
 				if (result) {
 					this.correlator.resolve(result);
-					await this.setState(`${o}.result`, JSON.stringify(result), true);
+					await this.setState(`${o}.cmd.${RESULT}`, JSON.stringify(result), true);
 				}
 				break;
 			}
@@ -395,13 +398,16 @@ class DesktopControl extends utils.Adapter {
 			await this.ensureObject(id, { type: 'state', common: stateCommon(s.path, s), native: {} });
 		}
 		// commands: button or JSON, dangerous ones only via sendTo; remove commands the agent no longer has
-		const wanted = new Set<string>();
+		const wanted = new Set<string>([`${o}.cmd.${RESULT}`]);
 		for (const c of m.commands) {
 			const kind = commandKind(c);
 			if (kind === 'none') {
 				continue;
 			}
 			const id = `${o}.cmd.${sanitizeSegment(c.name)}`;
+			if (id === `${o}.cmd.${RESULT}`) {
+				continue; // name is taken by the result data point
+			}
 			wanted.add(id);
 			this.known.delete(id);
 			await this.ensureObject(id, {
@@ -538,7 +544,7 @@ class DesktopControl extends utils.Adapter {
 		const rel = id.slice(this.namespace.length + 1);
 		const parts = rel.split('.');
 		try {
-			if (parts[1] === 'cmd' && parts.length === 3) {
+			if (parts[1] === 'cmd' && parts.length === 3 && parts[2] !== RESULT) {
 				const obj = await this.getObjectAsync(rel);
 				const command = String((obj?.native as { command?: string } | undefined)?.command || parts[2]);
 				// command definition (for the short form): from this device, for "all" from any device

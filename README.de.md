@@ -38,7 +38,7 @@ Mit einem vorhandenen Broker im Adapter „Vorhandener Broker“ wählen und in 
 | `state.*` | Werte des Agents (gesperrt, Benutzer anwesend, Leerlaufzeit, aktives Fenster, Lautstärke, CPU, RAM, Akku, Laufwerke, überwachte Prozesse, …). `volume`, `muted` und `keep_awake` sind schreibbar. |
 | `cmd.*` | Ein Datenpunkt je Befehl: Button bei Befehlen ohne Pflichtparameter, sonst JSON (`{"text":"Hallo"}`) oder direkt der Wert des Hauptparameters (`Hallo`) |
 | `event.*` | Ereignisse wie `lock`, `unlock`, `hotkey` |
-| `result` | Ergebnis des letzten Befehls |
+| `cmd.result` | Ergebnis des letzten Befehls (z. B. die Antwort von `ask`) |
 | `screenshot` | Pfad des letzten Screenshots im ioBroker-Dateispeicher |
 
 `all.cmd.*` schickt einen Befehl an alle PCs gleichzeitig.

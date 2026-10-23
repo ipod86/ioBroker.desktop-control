@@ -26,6 +26,7 @@ var import_mqtt = __toESM(require("mqtt"));
 var import_broker = require("./lib/broker");
 var import_correlator = require("./lib/correlator");
 var import_protocol = require("./lib/protocol");
+const RESULT = "result";
 const DIALOG_COMMANDS = ["ask"];
 class DesktopControl extends utils.Adapter {
   client;
@@ -196,7 +197,7 @@ class DesktopControl extends utils.Adapter {
     ]) {
       await this.ensureObject(`${o}.${ch}`, { type: "channel", common: { name }, native: {} });
     }
-    await this.ensureObject(`${o}.result`, {
+    await this.ensureObject(`${o}.cmd.${RESULT}`, {
       type: "state",
       common: { name: "Last command result", type: "string", role: "json", read: true, write: false },
       native: {}
@@ -276,7 +277,7 @@ class DesktopControl extends utils.Adapter {
         const result = (0, import_protocol.parseResult)(body);
         if (result) {
           this.correlator.resolve(result);
-          await this.setState(`${o}.result`, JSON.stringify(result), true);
+          await this.setState(`${o}.cmd.${RESULT}`, JSON.stringify(result), true);
         }
         break;
       }
@@ -363,13 +364,16 @@ class DesktopControl extends utils.Adapter {
       this.known.delete(id);
       await this.ensureObject(id, { type: "state", common: (0, import_protocol.stateCommon)(s.path, s), native: {} });
     }
-    const wanted = /* @__PURE__ */ new Set();
+    const wanted = /* @__PURE__ */ new Set([`${o}.cmd.${RESULT}`]);
     for (const c of m.commands) {
       const kind = (0, import_protocol.commandKind)(c);
       if (kind === "none") {
         continue;
       }
       const id = `${o}.cmd.${(0, import_protocol.sanitizeSegment)(c.name)}`;
+      if (id === `${o}.cmd.${RESULT}`) {
+        continue;
+      }
       wanted.add(id);
       this.known.delete(id);
       await this.ensureObject(id, {
@@ -494,7 +498,7 @@ class DesktopControl extends utils.Adapter {
     const rel = id.slice(this.namespace.length + 1);
     const parts = rel.split(".");
     try {
-      if (parts[1] === "cmd" && parts.length === 3) {
+      if (parts[1] === "cmd" && parts.length === 3 && parts[2] !== RESULT) {
         const obj = await this.getObjectAsync(rel);
         const command = String(((_a = obj == null ? void 0 : obj.native) == null ? void 0 : _a.command) || parts[2]);
         const def = [...this.devices.values()].filter((d) => parts[0] === "all" || d.objId === parts[0]).map((d) => {
