@@ -81,9 +81,9 @@ class DesktopControl extends utils.Adapter {
       this.log.error("No MQTT broker configured \u2013 please enter the broker host in the adapter settings.");
       return;
     }
-    await this.setForeignObjectNotExistsAsync(this.namespace, {
+    await this.extendForeignObjectAsync(this.namespace, {
       type: "meta",
-      common: { name: "Desktop Control files (screenshots)", type: "meta.user" },
+      common: { name: `${this.namespace} (screenshots)`, type: "meta.user" },
       native: {}
     });
     await this.restoreDevices();

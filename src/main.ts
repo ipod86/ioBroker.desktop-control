@@ -103,9 +103,10 @@ class DesktopControl extends utils.Adapter {
 			return;
 		}
 		// file storage for screenshots (writeFile needs a meta object with the instance name)
-		await this.setForeignObjectNotExistsAsync(this.namespace, {
+		// the admin file browser shows common.name as the folder title, so it starts with the instance name
+		await this.extendForeignObjectAsync(this.namespace, {
 			type: 'meta',
-			common: { name: 'Desktop Control files (screenshots)', type: 'meta.user' },
+			common: { name: `${this.namespace} (screenshots)`, type: 'meta.user' },
 			native: {},
 		});
 		await this.restoreDevices();
