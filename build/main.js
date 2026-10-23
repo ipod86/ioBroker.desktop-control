@@ -37,6 +37,8 @@ class DesktopControl extends utils.Adapter {
   /** object ids already created/updated in this run */
   known = /* @__PURE__ */ new Set();
   lastError = "";
+  /** messages are handled one after another, so a manifest is complete before the states that follow it */
+  queue = Promise.resolve();
   constructor(options = {}) {
     super({
       ...options,
@@ -58,6 +60,11 @@ class DesktopControl extends utils.Adapter {
       this.log.error("No MQTT broker configured \u2013 please enter the broker host in the adapter settings.");
       return;
     }
+    await this.setForeignObjectNotExistsAsync(this.namespace, {
+      type: "meta",
+      common: { name: "Desktop Control files (screenshots)", type: "meta.user" },
+      native: {}
+    });
     await this.restoreDevices();
     await this.subscribeStatesAsync("*");
     this.connect();
@@ -120,7 +127,7 @@ class DesktopControl extends utils.Adapter {
       }
     });
     client.on("message", (topic, payload) => {
-      this.handleMessage(topic, payload).catch((e) => this.log.warn(`Message ${topic}: ${e.message}`));
+      this.queue = this.queue.then(() => this.handleMessage(topic, payload)).catch((e) => this.log.warn(`Message ${topic}: ${e.message}`));
     });
   }
   /**
@@ -301,7 +308,8 @@ class DesktopControl extends utils.Adapter {
       ["ip", "IP address", "info.ip"],
       ["version", "Agent version", "info.firmware"],
       ["os", "Operating system", "text"],
-      ["user", "Logged-in user", "text"]
+      ["user", "Logged-in user", "text"],
+      ["started", "Agent started", "date"]
     ];
     for (const [key, name, role] of infos) {
       await this.ensureObject(`${o}.info.${key}`, {
@@ -311,7 +319,24 @@ class DesktopControl extends utils.Adapter {
       });
       await this.setStateChangedAsync(`${o}.info.${key}`, m[key], true);
     }
-    for (const s of m.states.filter((st) => !st.template)) {
+    await this.ensureObject(`${o}.info.apps`, {
+      type: "state",
+      common: {
+        name: "Allowed programs (aliases for run/open)",
+        type: "string",
+        role: "json",
+        read: true,
+        write: false
+      },
+      native: {}
+    });
+    await this.setStateChangedAsync(`${o}.info.apps`, JSON.stringify(m.apps), true);
+    if (m.protocol > 1) {
+      this.log.warn(
+        `${dev.topicId}: agent uses protocol ${m.protocol}, this adapter knows protocol 1 \u2013 please update the adapter`
+      );
+    }
+    for (const s of m.states.filter((st) => !st.pattern)) {
       const id = `${o}.state.${(0, import_protocol.pathToId)(s.path)}`;
       this.known.delete(id);
       await this.ensureObject(id, { type: "state", common: (0, import_protocol.stateCommon)(s.path, s), native: {} });
@@ -439,7 +464,11 @@ class DesktopControl extends utils.Adapter {
       if (parts[1] === "cmd" && parts.length === 3) {
         const obj = await this.getObjectAsync(rel);
         const command = String(((_a = obj == null ? void 0 : obj.native) == null ? void 0 : _a.command) || parts[2]);
-        const params = (0, import_protocol.parseCommandParams)(state.val);
+        const def = [...this.devices.values()].filter((d) => parts[0] === "all" || d.objId === parts[0]).map((d) => {
+          var _a2;
+          return (_a2 = d.manifest) == null ? void 0 : _a2.commands.find((c) => c.name === command);
+        }).find((c) => c);
+        const params = (0, import_protocol.parseCommandParams)(state.val, def);
         if (typeof params === "string") {
           throw new Error(params);
         }
@@ -517,18 +546,36 @@ class DesktopControl extends utils.Adapter {
     }
     const device = (0, import_protocol.text)(msg.device);
     const command = (0, import_protocol.text)(msg.command);
-    const params = msg.params && typeof msg.params === "object" ? msg.params : {};
     if (!device || !command) {
       reply({ ok: false, error: "device and command are required" });
       return;
     }
+    const paramsFor = (topicId) => {
+      if (msg.params && typeof msg.params === "object" && !Array.isArray(msg.params)) {
+        return msg.params;
+      }
+      if (msg.params === void 0 || msg.params === null) {
+        return {};
+      }
+      const def = [...this.devices.values()].filter((d) => !topicId || d.topicId === topicId).map((d) => {
+        var _a2;
+        return (_a2 = d.manifest) == null ? void 0 : _a2.commands.find((c) => c.name === command);
+      }).find((c) => c);
+      const p = (0, import_protocol.parseCommandParams)(msg.params, def);
+      if (typeof p === "string") {
+        throw new Error(p);
+      }
+      return p;
+    };
     try {
       if (device === "all") {
-        await this.broadcast(command, params);
+        const params2 = paramsFor();
+        await this.broadcast(command, params2);
         reply({ ok: true, broadcast: true });
         return;
       }
       const topicId = this.resolveDevice(device);
+      const params = paramsFor(topicId);
       const timeout = typeof msg.timeout === "number" && msg.timeout > 0 ? msg.timeout : void 0;
       const result = await this.sendCommand(topicId, command, params, timeout);
       reply(result);
