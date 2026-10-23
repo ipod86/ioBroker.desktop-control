@@ -42,7 +42,7 @@
       "type": "number",
       "role": "level.volume",
       "unit": "%",
-      "description": "Master-Lautst?rke"
+      "description": "Master-Lautstärke"
     },
     {
       "name": "muted",
@@ -84,14 +84,14 @@
       "type": "number",
       "role": "value.battery",
       "unit": "%",
-      "description": "Akkustand (nur Ger?te mit Akku)"
+      "description": "Akkustand (nur Geräte mit Akku)"
     },
     {
       "name": "charging",
       "type": "boolean",
       "role": "indicator",
       "unit": "",
-      "description": "Netzteil angeschlossen (nur Ger?te mit Akku)"
+      "description": "Netzteil angeschlossen (nur Geräte mit Akku)"
     },
     {
       "name": "monitors",
@@ -140,7 +140,7 @@
       "type": "boolean",
       "role": "indicator",
       "unit": "",
-      "description": "Prozess l?uft (aus Config \u0027WatchProcesses\u0027, dynamisch)"
+      "description": "Prozess läuft (aus Config \u0027WatchProcesses\u0027, dynamisch)"
     }
   ],
   "commands": [
@@ -153,7 +153,7 @@
     {
       "name": "get_state",
       "category": "system",
-      "description": "Ver?ffentlicht alle State-Werte sofort neu",
+      "description": "Veröffentlicht alle State-Werte sofort neu",
       "params": []
     },
     {
@@ -172,7 +172,7 @@
     {
       "name": "list_commands",
       "category": "system",
-      "description": "Gibt die Liste aller Befehle zur?ck",
+      "description": "Gibt die Liste aller Befehle zurück",
       "params": []
     },
     {
@@ -196,19 +196,19 @@
     {
       "name": "shutdown",
       "category": "power",
-      "description": "F?hrt den PC herunter",
+      "description": "Fährt den PC herunter",
       "params": [
         {
           "name": "delay",
           "type": "integer",
-          "description": "Verz?gerung in Sekunden",
+          "description": "Verzögerung in Sekunden",
           "required": false,
           "default": 10
         },
         {
           "name": "force",
           "type": "boolean",
-          "description": "Programme zwangsweise schlie?en",
+          "description": "Programme zwangsweise schließen",
           "required": false,
           "default": false
         }
@@ -224,14 +224,14 @@
         {
           "name": "delay",
           "type": "integer",
-          "description": "Verz?gerung in Sekunden",
+          "description": "Verzögerung in Sekunden",
           "required": false,
           "default": 10
         },
         {
           "name": "force",
           "type": "boolean",
-          "description": "Programme zwangsweise schlie?en",
+          "description": "Programme zwangsweise schließen",
           "required": false,
           "default": false
         }
@@ -336,7 +336,7 @@
         {
           "name": "wait",
           "type": "boolean",
-          "description": "Auf Ende warten und Exit-Code zur?ckgeben",
+          "description": "Auf Ende warten und Exit-Code zurückgeben",
           "required": false
         },
         {
@@ -353,7 +353,7 @@
     {
       "name": "open",
       "category": "programs",
-      "description": "?ffnet URL, Datei oder Ordner mit der Standard-App (Dateien/Ordner nur mit AllowAnyRun)",
+      "description": "Öffnet URL, Datei oder Ordner mit der Standard-App (Dateien/Ordner nur mit AllowAnyRun)",
       "params": [
         {
           "name": "target",
@@ -408,7 +408,7 @@
     {
       "name": "focus_window",
       "category": "programs",
-      "description": "Bringt ein Fenster (Titel enth?lt ...) in den Vordergrund",
+      "description": "Bringt ein Fenster (Titel enthält ...) in den Vordergrund",
       "params": [
         {
           "name": "title",
@@ -422,7 +422,7 @@
     {
       "name": "close_window",
       "category": "programs",
-      "description": "Schlie?t ein Fenster sauber (Titel enth?lt ...)",
+      "description": "Schließt ein Fenster sauber (Titel enthält ...)",
       "params": [
         {
           "name": "title",
@@ -456,7 +456,7 @@
     {
       "name": "shell",
       "category": "programs",
-      "description": "F?hrt einen Shell-Befehl aus und liefert die Ausgabe (nur mit AllowShell=true)",
+      "description": "Führt einen Shell-Befehl aus und liefert die Ausgabe (nur mit AllowShell=true)",
       "params": [
         {
           "name": "command",
@@ -489,7 +489,7 @@
     {
       "name": "volume",
       "category": "audio",
-      "description": "Setzt die Master-Lautst?rke (0-100)",
+      "description": "Setzt die Master-Lautstärke (0-100)",
       "params": [
         {
           "name": "level",
@@ -503,7 +503,7 @@
     {
       "name": "volume_change",
       "category": "audio",
-      "description": "Lautst?rke relativ ?ndern",
+      "description": "Lautstärke relativ ändern",
       "params": [
         {
           "name": "delta",
@@ -686,7 +686,7 @@
         {
           "name": "mode",
           "type": "string",
-          "description": "popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. T?rklingel-Kamera)",
+          "description": "popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera)",
           "required": false,
           "default": "popup",
           "enum": [
@@ -698,7 +698,7 @@
         {
           "name": "seconds",
           "type": "number",
-          "description": "Automatisch schlie?en nach X Sekunden (0 = bleibt bis Klick/close_popups)",
+          "description": "Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups)",
           "required": false
         },
         {
@@ -736,7 +736,7 @@
         {
           "name": "click_close",
           "type": "boolean",
-          "description": "Klick schlie?t das Popup",
+          "description": "Klick schließt das Popup",
           "required": false
         },
         {
@@ -748,7 +748,7 @@
         {
           "name": "activate",
           "type": "boolean",
-          "description": "Fokus ?bernehmen (Standard: nein, st?rt nicht beim Arbeiten)",
+          "description": "Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten)",
           "required": false,
           "default": false
         },
@@ -804,14 +804,14 @@
         {
           "name": "close_when_done",
           "type": "boolean",
-          "description": "Nach Ende schlie?en",
+          "description": "Nach Ende schließen",
           "required": false,
           "default": true
         },
         {
           "name": "mode",
           "type": "string",
-          "description": "popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. T?rklingel-Kamera)",
+          "description": "popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera)",
           "required": false,
           "default": "popup",
           "enum": [
@@ -823,7 +823,7 @@
         {
           "name": "seconds",
           "type": "number",
-          "description": "Automatisch schlie?en nach X Sekunden (0 = bleibt bis Klick/close_popups)",
+          "description": "Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups)",
           "required": false
         },
         {
@@ -861,7 +861,7 @@
         {
           "name": "click_close",
           "type": "boolean",
-          "description": "Klick schlie?t das Popup",
+          "description": "Klick schließt das Popup",
           "required": false
         },
         {
@@ -873,7 +873,7 @@
         {
           "name": "activate",
           "type": "boolean",
-          "description": "Fokus ?bernehmen (Standard: nein, st?rt nicht beim Arbeiten)",
+          "description": "Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten)",
           "required": false,
           "default": false
         },
@@ -901,7 +901,7 @@
         {
           "name": "mode",
           "type": "string",
-          "description": "popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. T?rklingel-Kamera)",
+          "description": "popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera)",
           "required": false,
           "default": "popup",
           "enum": [
@@ -913,7 +913,7 @@
         {
           "name": "seconds",
           "type": "number",
-          "description": "Automatisch schlie?en nach X Sekunden (0 = bleibt bis Klick/close_popups)",
+          "description": "Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups)",
           "required": false
         },
         {
@@ -951,7 +951,7 @@
         {
           "name": "click_close",
           "type": "boolean",
-          "description": "Klick schlie?t das Popup",
+          "description": "Klick schließt das Popup",
           "required": false
         },
         {
@@ -963,7 +963,7 @@
         {
           "name": "activate",
           "type": "boolean",
-          "description": "Fokus ?bernehmen (Standard: nein, st?rt nicht beim Arbeiten)",
+          "description": "Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten)",
           "required": false,
           "default": false
         },
@@ -980,7 +980,7 @@
     {
       "name": "show_text",
       "category": "display",
-      "description": "Blendet Text als Overlay ein (klickdurchl?ssig)",
+      "description": "Blendet Text als Overlay ein (klickdurchlässig)",
       "params": [
         {
           "name": "text",
@@ -998,7 +998,7 @@
         {
           "name": "size",
           "type": "number",
-          "description": "Schriftgr??e",
+          "description": "Schriftgröße",
           "required": false,
           "default": 40
         },
@@ -1076,7 +1076,7 @@
     {
       "name": "ask",
       "category": "display",
-      "description": "Zeigt einen Dialog mit Buttons/Eingabefeld und liefert die Antwort im result zur?ck",
+      "description": "Zeigt einen Dialog mit Buttons/Eingabefeld und liefert die Antwort im result zurück",
       "params": [
         {
           "name": "text",
@@ -1175,14 +1175,14 @@
     {
       "name": "close_popups",
       "category": "display",
-      "description": "Schlie?t alle Popups/Overlays/Dialoge von WinCtl",
+      "description": "Schließt alle Popups/Overlays/Dialoge von WinCtl",
       "params": [],
       "needs_gui": true
     },
     {
       "name": "screenshot",
       "category": "display",
-      "description": "Macht einen Screenshot und ver?ffentlicht das Bild (JPEG/PNG-Rohdaten) auf \u003cbase\u003e/\u003cid\u003e/screenshot",
+      "description": "Macht einen Screenshot und veröffentlicht das Bild (JPEG/PNG-Rohdaten) auf \u003cbase\u003e/\u003cid\u003e/screenshot",
       "params": [
         {
           "name": "monitor",
@@ -1201,7 +1201,7 @@
         {
           "name": "quality",
           "type": "integer",
-          "description": "JPEG-Qualit?t",
+          "description": "JPEG-Qualität",
           "required": false,
           "default": 70
         },
@@ -1219,7 +1219,7 @@
         {
           "name": "inline",
           "type": "boolean",
-          "description": "Base64 zus?tzlich im result mitsenden",
+          "description": "Base64 zusätzlich im result mitsenden",
           "required": false,
           "default": false
         }
@@ -1257,7 +1257,7 @@
     {
       "name": "send_keys",
       "category": "input",
-      "description": "Sendet Tastendr?cke (SendKeys-Syntax: ^=Strg, %=Alt, +=Umschalt, {ENTER}, {F5} ...)",
+      "description": "Sendet Tastendrücke (SendKeys-Syntax: ^=Strg, %=Alt, +=Umschalt, {ENTER}, {F5} ...)",
       "params": [
         {
           "name": "keys",
