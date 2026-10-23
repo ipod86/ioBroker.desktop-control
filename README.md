@@ -82,856 +82,113 @@ Written on every event (also when the content is the same), so a trigger with `c
 - Security relevant commands (e.g. `shell`, `shutdown`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (`docs/protocol.json`, agent version 0.2.0); the descriptions come from the agent and are German._
+_Generated from the agent (agent version 0.2.0). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
-<details>
-<summary><code>ping</code> – Lebenszeichen - antwortet mit Zeitstempel und Version</summary>
-
-Data point: `cmd.ping` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>get_state</code> – Veröffentlicht alle State-Werte sofort neu</summary>
-
-Data point: `cmd.get_state` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>reload_config</code> – Config-Datei neu einlesen und neu verbinden</summary>
-
-Data point: `cmd.reload_config` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>exit</code> – Beendet den Agent</summary>
-
-Data point: `cmd.exit` – no data point (security relevant) – only via `sendTo`  
-
-</details>
-
-<details>
-<summary><code>list_commands</code> – Gibt die Liste aller Befehle zurück</summary>
-
-Data point: `cmd.list_commands` – button – click to run  
-
-</details>
+| Command | Description | Data point | Short form | Options |
+|---|---|---|---|---|
+| `ping` | Sign of life, answers with time and agent version | button |  |  |
+| `get_state` | Publishes all state values again | button |  |  |
+| `reload_config` | Reloads the agent config and reconnects | button |  |  |
+| `exit` | Stops the agent | only `sendTo` |  |  |
+| `list_commands` | Returns the list of all commands | button |  |  |
 
 #### Power & session
 
-<details>
-<summary><code>lock</code> – Sperrt den Bildschirm (Win+L)</summary>
-
-Data point: `cmd.lock` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>sleep</code> – Standby</summary>
-
-Data point: `cmd.sleep` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>hibernate</code> – Ruhezustand</summary>
-
-Data point: `cmd.hibernate` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>shutdown</code> – Fährt den PC herunter</summary>
-
-Data point: `cmd.shutdown` – no data point (security relevant) – only via `sendTo`  
-Short form: `delay`
-
-Examples:
-
-```
-60
-{"delay":0,"force":true}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `delay` | integer | `10` | Verzögerung in Sekunden |
-| `force` | boolean | `false` | Programme zwangsweise schließen |
-
-</details>
-
-<details>
-<summary><code>restart</code> – Startet den PC neu</summary>
-
-Data point: `cmd.restart` – no data point (security relevant) – only via `sendTo`  
-Short form: `delay`
-
-Examples:
-
-```
-30
-{"delay":0,"force":true}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `delay` | integer | `10` | Verzögerung in Sekunden |
-| `force` | boolean | `false` | Programme zwangsweise schließen |
-
-</details>
-
-<details>
-<summary><code>logoff</code> – Meldet den Benutzer ab</summary>
-
-Data point: `cmd.logoff` – no data point (security relevant) – only via `sendTo`  
-
-</details>
-
-<details>
-<summary><code>cancel_shutdown</code> – Bricht einen geplanten Shutdown/Neustart ab</summary>
-
-Data point: `cmd.cancel_shutdown` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>monitor_off</code> – Schaltet die Monitore aus</summary>
-
-Data point: `cmd.monitor_off` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>monitor_on</code> – Weckt die Monitore auf</summary>
-
-Data point: `cmd.monitor_on` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>keep_awake</code> – Verhindert Standby/Bildschirmschoner (bis auf Widerruf)</summary>
-
-Data point: `cmd.keep_awake` – input – JSON, short form or `true` (= default options)  
-Short form: `state`
-
-Examples:
-
-```
-{"state":true,"display":false}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `state` | boolean | `true` | an/aus |
-| `display` | boolean | `true` | auch Bildschirm anlassen |
-
-</details>
+| Command | Description | Data point | Short form | Options |
+|---|---|---|---|---|
+| `lock` | Locks the screen (Win+L) | button |  |  |
+| `sleep` | Standby | button |  |  |
+| `hibernate` | Hibernate | button |  |  |
+| `shutdown` | Shuts the PC down | only `sendTo` | `delay` | `delay`, `force` |
+| `restart` | Restarts the PC | only `sendTo` | `delay` | `delay`, `force` |
+| `logoff` | Logs the user off | only `sendTo` |  |  |
+| `cancel_shutdown` | Cancels a planned shutdown/restart | button |  |  |
+| `monitor_off` | Turns the monitors off | button |  |  |
+| `monitor_on` | Wakes the monitors up | button |  |  |
+| `keep_awake` | Prevents standby and screen saver | input | `state` | `state`, `display` |
 
 #### Programs & windows
 
-<details>
-<summary><code>run</code> – Startet ein Programm (Alias aus der Config oder - wenn erlaubt - beliebiger Pfad) mit Parametern</summary>
-
-Data point: `cmd.run` – input – JSON, short form or `true` (= default options) (data point only while the agent only starts programs from its alias list)  
-Short form: `path`
-
-Examples:
-
-```
-notepad
-{"path":"kodi","args":"--fullscreen","window":"maximized"}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `path` | string | required | Alias (z.B. 'notepad') oder Pfad zur .exe |
-| `args` | string |  | Parameter als String oder Liste |
-| `workdir` | string |  | Arbeitsverzeichnis |
-| `hidden` | boolean |  | Ohne Fenster starten |
-| `window` | string |  | Fensterzustand (`normal`, `minimized`, `maximized`) |
-| `admin` | boolean |  | Als Administrator (UAC-Abfrage am PC!) |
-| `wait` | boolean |  | Auf Ende warten und Exit-Code zurückgeben |
-| `timeout` | integer | `60` | Wartezeit in Sekunden bei wait |
-
-</details>
-
-<details>
-<summary><code>open</code> – Öffnet URL, Datei oder Ordner mit der Standard-App (Dateien/Ordner nur mit AllowAnyRun)</summary>
-
-Data point: `cmd.open` – input – JSON, short form or `true` (= default options)  
-Short form: `target`
-
-Examples:
-
-```
-https://www.iobroker.net
-ms-settings:display
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `target` | string | required | URL (immer erlaubt), sonst Alias/Pfad |
-
-</details>
-
-<details>
-<summary><code>kill</code> – Beendet Prozesse nach Name oder PID</summary>
-
-Data point: `cmd.kill` – input – JSON, short form or `true` (= default options) (data point only while the agent only starts programs from its alias list)  
-Short form: `name`
-
-Examples:
-
-```
-notepad
-{"pid":1234}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `name` | string |  | Prozessname, z.B. 'chrome' |
-| `pid` | integer |  | Prozess-ID |
-
-</details>
-
-<details>
-<summary><code>list_processes</code> – Listet laufende Prozesse (max. 300)</summary>
-
-Data point: `cmd.list_processes` – input – JSON, short form or `true` (= default options)  
-Short form: `filter`
-
-Examples:
-
-```
-chrome
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `filter` | string |  | Namensfilter |
-
-</details>
-
-<details>
-<summary><code>list_windows</code> – Listet sichtbare Fenster mit Titel</summary>
-
-Data point: `cmd.list_windows` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>focus_window</code> – Bringt ein Fenster (Titel enthält ...) in den Vordergrund</summary>
-
-Data point: `cmd.focus_window` – input – JSON, short form or `true` (= default options)  
-Short form: `title`
-
-Examples:
-
-```
-Kodi
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `title` | string | required | Teil des Fenstertitels |
-
-</details>
-
-<details>
-<summary><code>close_window</code> – Schließt ein Fenster sauber (Titel enthält ...)</summary>
-
-Data point: `cmd.close_window` – input – JSON, short form or `true` (= default options)  
-Short form: `title`
-
-Examples:
-
-```
-Editor
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `title` | string | required | Teil des Fenstertitels |
-
-</details>
-
-<details>
-<summary><code>minimize_all</code> – Alle Fenster minimieren (Desktop anzeigen) bzw. wiederherstellen</summary>
-
-Data point: `cmd.minimize_all` – input – JSON, short form or `true` (= default options)  
-
-Examples:
-
-```
-{"undo":true}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `undo` | boolean | `false` | Wiederherstellen statt minimieren |
-
-</details>
-
-<details>
-<summary><code>empty_recycle_bin</code> – Leert den Papierkorb</summary>
-
-Data point: `cmd.empty_recycle_bin` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>shell</code> – Führt einen Shell-Befehl aus und liefert die Ausgabe (nur mit AllowShell=true)</summary>
-
-Data point: `cmd.shell` – no data point (security relevant) – only via `sendTo`  
-Short form: `command`
-
-Examples:
-
-```
-Get-Date
-{"command":"ipconfig","shell":"cmd"}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `command` | string | required | Befehl / Skript |
-| `shell` | string | `"powershell"` | Interpreter (`powershell`, `cmd`) |
-| `timeout` | integer | `30` | Sekunden |
-
-</details>
+| Command | Description | Data point | Short form | Options |
+|---|---|---|---|---|
+| `run` | Starts a program (alias from the agent settings) | input (alias list only) | `path` | `path`*, `args`, `workdir`, `hidden`, `window` (normal/minimized/maximized), `admin`, `wait`, `timeout` |
+| `open` | Opens a URL, file or folder with the default app | input | `target` | `target`* |
+| `kill` | Ends processes by name or PID | input (alias list only) | `name` | `name`, `pid` |
+| `list_processes` | Lists running processes | input | `filter` | `filter` |
+| `list_windows` | Lists visible windows | button |  |  |
+| `focus_window` | Brings a window to the front (title contains …) | input | `title` | `title`* |
+| `close_window` | Closes a window (title contains …) | input | `title` | `title`* |
+| `minimize_all` | Minimizes all windows (show desktop) or restores them | input |  | `undo` |
+| `empty_recycle_bin` | Empties the recycle bin | button |  |  |
+| `shell` | Runs a PowerShell/cmd command and returns the output | only `sendTo` | `command` | `command`*, `shell` (powershell/cmd), `timeout` |
 
 #### Audio
 
-<details>
-<summary><code>volume</code> – Setzt die Master-Lautstärke (0-100)</summary>
-
-Data point: `cmd.volume` – input – JSON, short form or `true` (= default options)  
-Short form: `level`
-
-Examples:
-
-```
-30
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `level` | integer | required | 0 - 100 |
-
-</details>
-
-<details>
-<summary><code>volume_change</code> – Lautstärke relativ ändern</summary>
-
-Data point: `cmd.volume_change` – input – JSON, short form or `true` (= default options)  
-Short form: `delta`
-
-Examples:
-
-```
--10
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `delta` | integer | `5` | z.B. 5 oder -10 |
-
-</details>
-
-<details>
-<summary><code>mute</code> – Stummschalten / aufheben / umschalten</summary>
-
-Data point: `cmd.mute` – input – JSON, short form or `true` (= default options)  
-Short form: `state`
-
-Examples:
-
-```
-toggle
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `state` | string | `"toggle"` | true / false / toggle |
-
-</details>
-
-<details>
-<summary><code>media</code> – Sendet eine Medientaste</summary>
-
-Data point: `cmd.media` – input – JSON, short form or `true` (= default options)  
-Short form: `key`
-
-Examples:
-
-```
-playpause
-next
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `key` | string | required | Medientaste (`playpause`, `next`, `prev`, `stop`, `volume_up`, `volume_down`, `mute`) |
-
-</details>
-
-<details>
-<summary><code>speak</code> – Text-to-Speech (Windows-Stimme)</summary>
-
-Data point: `cmd.speak` – input – JSON, short form or `true` (= default options)  
-Short form: `text`
-
-Examples:
-
-```
-Das Essen ist fertig
-{"text":"Achtung","voice":"Hedda","rate":2,"volume":80}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `text` | string | required | Zu sprechender Text |
-| `voice` | string |  | Teil des Stimmennamens, z.B. 'Hedda' |
-| `rate` | integer | `0` | -10 (langsam) bis 10 (schnell) |
-| `volume` | integer | `100` | 0-100 |
-| `wait` | boolean |  | Warten bis fertig gesprochen |
-| `interrupt` | boolean | `true` | Laufende Ausgabe abbrechen |
-
-</details>
-
-<details>
-<summary><code>list_voices</code> – Listet installierte TTS-Stimmen</summary>
-
-Data point: `cmd.list_voices` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>play_sound</code> – Spielt eine Audiodatei (mp3/wav/wma, Pfad oder URL)</summary>
-
-Data point: `cmd.play_sound` – input – JSON, short form or `true` (= default options)  
-Short form: `source`
-
-Examples:
-
-```
-http://192.168.1.5/gong.mp3
-{"source":"C:\\Sounds\\klingel.wav","wait":true}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `source` | string | required | Pfad oder URL |
-| `wait` | boolean | `false` | Warten bis zum Ende |
-
-</details>
-
-<details>
-<summary><code>stop_sound</code> – Stoppt play_sound / speak</summary>
-
-Data point: `cmd.stop_sound` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>beep</code> – Einfacher Piepton</summary>
-
-Data point: `cmd.beep` – input – JSON, short form or `true` (= default options)  
-
-Examples:
-
-```
-{"freq":1200,"ms":500}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `freq` | integer | `800` | Hz |
-| `ms` | integer | `300` | Dauer in ms |
-
-</details>
+| Command | Description | Data point | Short form | Options |
+|---|---|---|---|---|
+| `volume` | Sets the master volume (0-100) | input | `level` | `level`* |
+| `volume_change` | Changes the volume relatively | input | `delta` | `delta` |
+| `mute` | Mute / unmute / toggle | input | `state` | `state` |
+| `media` | Sends a media key | input | `key` | `key`* (playpause/next/prev/stop/volume_up/volume_down/mute) |
+| `speak` | Text to speech | input | `text` | `text`*, `voice`, `rate`, `volume`, `wait`, `interrupt` |
+| `list_voices` | Lists the installed voices | button |  |  |
+| `play_sound` | Plays an audio file (mp3/wav/wma, path or URL) | input | `source` | `source`*, `wait` |
+| `stop_sound` | Stops play_sound / speak | button |  |  |
+| `beep` | Simple beep | input |  | `freq`, `ms` |
 
 #### Display
 
-<details>
-<summary><code>show_image</code> – Zeigt ein Bild als Popup, Vollbild oder Ecken-Einblendung (Pfad, URL oder Base64)</summary>
-
-Data point: `cmd.show_image` – input – JSON, short form or `true` (= default options)  
-Short form: `source`
-
-Examples:
-
-```
-http://kamera/snapshot.jpg
-{"source":"http://kamera/snapshot.jpg","mode":"corner","position":"top-right","size":30,"seconds":10,"caption":"Haustür","slot":"klingel"}
-{"source":"https://picsum.photos/1920/1080","mode":"fullscreen","seconds":15}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `source` | string | required | Pfad, http(s)-URL oder data:-URI |
-| `base64` | string |  | Alternativ: Base64-Daten |
-| `fit` | string | `"contain"` | Skalierung (`contain`, `stretch`, `center`) |
-| `mode` | string | `"popup"` | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (`popup`, `fullscreen`, `corner`) |
-| `seconds` | number |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
-| `monitor` | integer | `-1` | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string | `"bottom-right"` | Lage bei mode=corner (`top-left`, `top`, `top-right`, `left`, `center`, `right`, `bottom-left`, `bottom`, `bottom-right`) |
-| `size` | number |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
-| `margin` | integer | `16` | Abstand zum Bildschirmrand in Pixel (mode=corner) |
-| `border` | integer | `2` | Rahmenbreite in Pixel (0 = kein Rahmen) |
-| `border_color` | string | `"#282828"` | Rahmenfarbe, z.B. #ff0000 |
-| `caption_size` | number | `11` | Schriftgröße der Beschriftung |
-| `caption_color` | string | `"#ffffff"` | Farbe der Beschriftung |
-| `caption` | string |  | Beschriftung unter dem Inhalt |
-| `slot` | string |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
-| `click_close` | boolean |  | Klick schließt das Popup |
-| `opacity` | number |  | Deckkraft 0.1 - 1 |
-| `activate` | boolean | `false` | Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten) |
-| `bg` | string |  | Hintergrundfarbe, z.B. #000000 |
-
-</details>
-
-<details>
-<summary><code>show_video</code> – Spielt ein Video ab (Datei oder URL, mp4/H.264 empfohlen)</summary>
-
-Data point: `cmd.show_video` – input – JSON, short form or `true` (= default options)  
-Short form: `source`
-
-Examples:
-
-```
-http://server/video.mp4
-{"source":"http://server/video.mp4","mode":"corner","position":"bottom-left","size":25,"muted":true,"loop":true}
-{"source":"C:\\Videos\\intro.mp4","mode":"fullscreen","close_when_done":true}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `source` | string | required | Pfad oder URL |
-| `loop` | boolean | `false` | Endlosschleife |
-| `muted` | boolean | `false` | Ohne Ton |
-| `volume` | number | `1` | 0 - 1 |
-| `controls` | boolean | `false` | Bedienelemente anzeigen |
-| `close_when_done` | boolean | `true` | Nach Ende schließen |
-| `mode` | string | `"popup"` | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (`popup`, `fullscreen`, `corner`) |
-| `seconds` | number |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
-| `monitor` | integer | `-1` | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string | `"bottom-right"` | Lage bei mode=corner (`top-left`, `top`, `top-right`, `left`, `center`, `right`, `bottom-left`, `bottom`, `bottom-right`) |
-| `size` | number |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
-| `margin` | integer | `16` | Abstand zum Bildschirmrand in Pixel (mode=corner) |
-| `border` | integer | `2` | Rahmenbreite in Pixel (0 = kein Rahmen) |
-| `border_color` | string | `"#282828"` | Rahmenfarbe, z.B. #ff0000 |
-| `caption_size` | number | `11` | Schriftgröße der Beschriftung |
-| `caption_color` | string | `"#ffffff"` | Farbe der Beschriftung |
-| `caption` | string |  | Beschriftung unter dem Inhalt |
-| `slot` | string |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
-| `click_close` | boolean |  | Klick schließt das Popup |
-| `opacity` | number |  | Deckkraft 0.1 - 1 |
-| `activate` | boolean | `false` | Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten) |
-| `bg` | string |  | Hintergrundfarbe, z.B. #000000 |
-
-</details>
-
-<details>
-<summary><code>show_web</code> – Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild</summary>
-
-Data point: `cmd.show_web` – input – JSON, short form or `true` (= default options)  
-Short form: `url`
-
-Examples:
-
-```
-http://192.168.1.5:8082/vis/
-{"url":"http://192.168.1.5:8082/vis/","mode":"fullscreen"}
-{"url":"http://kamera/stream","mode":"corner","size":35,"seconds":30,"slot":"kamera"}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `url` | string | required | Adresse |
-| `mode` | string | `"popup"` | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (`popup`, `fullscreen`, `corner`) |
-| `seconds` | number |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
-| `monitor` | integer | `-1` | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string | `"bottom-right"` | Lage bei mode=corner (`top-left`, `top`, `top-right`, `left`, `center`, `right`, `bottom-left`, `bottom`, `bottom-right`) |
-| `size` | number |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
-| `margin` | integer | `16` | Abstand zum Bildschirmrand in Pixel (mode=corner) |
-| `border` | integer | `2` | Rahmenbreite in Pixel (0 = kein Rahmen) |
-| `border_color` | string | `"#282828"` | Rahmenfarbe, z.B. #ff0000 |
-| `caption_size` | number | `11` | Schriftgröße der Beschriftung |
-| `caption_color` | string | `"#ffffff"` | Farbe der Beschriftung |
-| `caption` | string |  | Beschriftung unter dem Inhalt |
-| `slot` | string |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
-| `click_close` | boolean |  | Klick schließt das Popup |
-| `opacity` | number |  | Deckkraft 0.1 - 1 |
-| `activate` | boolean | `false` | Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten) |
-| `bg` | string |  | Hintergrundfarbe, z.B. #000000 |
-
-</details>
-
-<details>
-<summary><code>show_text</code> – Blendet Text als Overlay ein (klickdurchlässig)</summary>
-
-Data point: `cmd.show_text` – input – JSON, short form or `true` (= default options)  
-Short form: `text`
-
-Examples:
-
-```
-Waschmaschine fertig
-{"text":"Alarm!","size":60,"color":"#ffffff","bg":"#c00000","position":"center","seconds":10}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `text` | string | required | Text |
-| `seconds` | number | `5` | Anzeigedauer |
-| `size` | number | `40` | Schriftgröße |
-| `color` | string | `"#ffffff"` | Textfarbe |
-| `bg` | string | `"#202020"` | Hintergrund |
-| `opacity` | number | `0.9` | Deckkraft |
-| `position` | string | `"bottom"` | Lage (`top`, `center`, `bottom`) |
-| `monitor` | integer | `-1` | Monitor-Index |
-| `bold` | boolean | `true` | Fett |
-| `font` | string | `"Segoe UI"` | Schriftart |
-| `click_through` | boolean | `true` | Mausklicks gehen durch |
-| `slot` | string |  | Ersetzt Overlay mit gleichem Slot |
-| `max_width` | number | `80` | Maximale Breite in % des Bildschirms (Text bricht um) |
-| `padding` | integer | `24` | Innenabstand in Pixel |
-| `margin` | integer |  | Abstand zum Rand in Pixel (top: 40, bottom: 60) |
-
-</details>
-
-<details>
-<summary><code>ask</code> – Zeigt einen Dialog mit Buttons/Eingabefeld und liefert die Antwort im result zurück</summary>
-
-Data point: `cmd.ask` – input – JSON, short form or `true` (= default options)  
-Short form: `text`
-
-Examples:
-
-```
-Licht ausschalten?
-{"text":"Kinomodus starten?","buttons":["Ja","Nein"],"timeout":30}
-{"text":"Wie warm soll es werden?","input":true,"default":"21","buttons":["OK","Abbrechen"]}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `text` | string | required | Fragetext |
-| `title` | string |  | Titel |
-| `buttons` | array | `["OK"]` | Beschriftungen, z.B. ["Ja","Nein"] |
-| `input` | boolean | `false` | Texteingabefeld anzeigen |
-| `default` | string |  | Vorgabe im Eingabefeld |
-| `password` | boolean | `false` | Eingabe verdecken |
-| `timeout` | integer | `0` | Sekunden bis automatisch geschlossen (0 = nie) |
-| `width` | integer | `460` | Breite des Dialogs in Pixel |
-| `font_size` | number | `10` | Schriftgröße |
-| `monitor` | integer | `-1` | Monitor-Index (-1 = Hauptmonitor) |
-
-</details>
-
-<details>
-<summary><code>notify</code> – Zeigt eine Windows-Benachrichtigung</summary>
-
-Data point: `cmd.notify` – input – JSON, short form or `true` (= default options)  
-Short form: `text`
-
-Examples:
-
-```
-Paket ist angekommen
-{"text":"Fenster offen","title":"Heizung","icon":"warning","seconds":10}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `text` | string | required | Text |
-| `title` | string | `"WinCtl"` | Titel |
-| `icon` | string | `"info"` | Symbol (`info`, `warning`, `error`, `none`) |
-| `seconds` | integer | `5` | Dauer |
-
-</details>
-
-<details>
-<summary><code>close_popups</code> – Schließt alle Popups/Overlays/Dialoge von WinCtl</summary>
-
-Data point: `cmd.close_popups` – button – click to run  
-
-</details>
-
-<details>
-<summary><code>screenshot</code> – Macht einen Screenshot und veröffentlicht das Bild (JPEG/PNG-Rohdaten) auf <base>/<id>/screenshot</summary>
-
-Data point: `cmd.screenshot` – input – JSON, short form or `true` (= default options)  
-
-Examples:
-
-```
-{"monitor":0,"scale":1,"format":"png"}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `monitor` | integer | `-1` | -1 = alle Monitore, 0 = erster ... |
-| `scale` | number | `0.5` | Verkleinerung 0.05 - 1 |
-| `quality` | integer | `70` | JPEG-Qualität |
-| `format` | string | `"jpeg"` | Bildformat (`jpeg`, `png`) |
-| `inline` | boolean | `false` | Base64 zusätzlich im result mitsenden |
-
-</details>
-
-<details>
-<summary><code>set_wallpaper</code> – Setzt das Desktop-Hintergrundbild (Pfad oder URL)</summary>
-
-Data point: `cmd.set_wallpaper` – input – JSON, short form or `true` (= default options)  
-Short form: `source`
-
-Examples:
-
-```
-https://picsum.photos/1920/1080
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `source` | string | required | Pfad oder URL |
-
-</details>
-
-<details>
-<summary><code>brightness</code> – Setzt die Helligkeit (nur interne Laptop-Displays, 0-100)</summary>
-
-Data point: `cmd.brightness` – input – JSON, short form or `true` (= default options)  
-Short form: `level`
-
-Examples:
-
-```
-60
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `level` | integer | required | 0 - 100 |
-
-</details>
+| Command | Description | Data point | Short form | Options |
+|---|---|---|---|---|
+| `show_image` | Shows an image as popup, full screen or in a corner | input | `source` | `source`*, `base64`, `fit` (contain/stretch/center), `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
+| `show_video` | Plays a video (mp4/H.264) | input | `source` | `source`*, `loop`, `muted`, `volume`, `controls`, `close_when_done`, `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
+| `show_web` | Shows a web page (dashboard, camera stream) in a window or full screen | input | `url` | `url`*, `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
+| `show_text` | Shows text as an overlay | input | `text` | `text`*, `seconds`, `size`, `color`, `bg`, `opacity`, `position` (top/center/bottom), `monitor`, `bold`, `font`, `click_through`, `slot`, `max_width`, `padding`, `margin` |
+| `ask` | Shows a dialog with buttons/input and returns the answer | input | `text` | `text`*, `title`, `buttons`, `input`, `default`, `password`, `timeout`, `width`, `font_size`, `monitor` |
+| `notify` | Shows a Windows notification | input | `text` | `text`*, `title`, `icon` (info/warning/error/none), `seconds` |
+| `close_popups` | Closes all popups, overlays and dialogs | button |  |  |
+| `screenshot` | Takes a screenshot (stored in the ioBroker file storage) | input |  | `monitor`, `scale`, `quality`, `format` (jpeg/png), `inline` |
+| `set_wallpaper` | Sets the desktop wallpaper | input | `source` | `source`* |
+| `brightness` | Sets the brightness (internal laptop displays only) | input | `level` | `level`* |
 
 #### Input
 
-<details>
-<summary><code>send_keys</code> – Sendet Tastendrücke (SendKeys-Syntax: ^=Strg, %=Alt, +=Umschalt, {ENTER}, {F5} ...)</summary>
+| Command | Description | Data point | Short form | Options |
+|---|---|---|---|---|
+| `send_keys` | Sends key presses (SendKeys syntax) | input | `keys` | `keys`* |
+| `type_text` | Types text into the active window | input | `text` | `text`* |
+| `mouse` | Moves/clicks the mouse | input |  | `x`, `y`, `relative`, `click` (none/single/double), `button` (left/right/middle), `wheel` |
+| `clipboard_set` | Sets the clipboard text | input | `text` | `text`* |
+| `clipboard_get` | Reads the clipboard text | button |  |  |
 
-Data point: `cmd.send_keys` – input – JSON, short form or `true` (= default options)  
-Short form: `keys`
-
-Examples:
-
-```
-^c
-%{F4}
-{ENTER}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `keys` | string | required | z.B. ^c oder %{F4} oder {ENTER} |
-
-</details>
-
-<details>
-<summary><code>type_text</code> – Tippt Text in das aktive Fenster</summary>
-
-Data point: `cmd.type_text` – input – JSON, short form or `true` (= default options)  
-Short form: `text`
-
-Examples:
-
-```
-Hallo Welt
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `text` | string | required | Text |
-
-</details>
-
-<details>
-<summary><code>mouse</code> – Bewegt/klickt die Maus</summary>
-
-Data point: `cmd.mouse` – input – JSON, short form or `true` (= default options)  
-
-Examples:
-
-```
-{"x":100,"y":200,"click":"single"}
-{"wheel":-3}
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `x` | integer |  | X-Koordinate |
-| `y` | integer |  | Y-Koordinate |
-| `relative` | boolean | `false` | Relativ zur aktuellen Position |
-| `click` | string | `"none"` | Klickart (`none`, `single`, `double`) |
-| `button` | string | `"left"` | Taste (`left`, `right`, `middle`) |
-| `wheel` | integer |  | Scrollrad-Schritte (+ hoch / - runter) |
-
-</details>
-
-<details>
-<summary><code>clipboard_set</code> – Setzt den Text der Zwischenablage</summary>
-
-Data point: `cmd.clipboard_set` – input – JSON, short form or `true` (= default options)  
-Short form: `text`
-
-Examples:
-
-```
-Text für die Zwischenablage
-```
-
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `text` | string | required | Text |
-
-</details>
-
-<details>
-<summary><code>clipboard_get</code> – Liest den Text der Zwischenablage</summary>
-
-Data point: `cmd.clipboard_get` – button – click to run  
-
-</details>
+\* = required
 
 ### States (`<pc>.state.*`)
 
 | Data point | Type | Unit | Writable | Description |
 |---|---|---|---|---|
-| `state.locked` | boolean |  |  | Bildschirm gesperrt |
-| `state.user_present` | boolean |  |  | Benutzer aktiv (nicht gesperrt und Eingabe innerhalb der Idle-Schwelle) |
-| `state.idle` | number | s |  | Sekunden seit der letzten Maus-/Tastatureingabe |
-| `state.active_window` | string |  |  | Titel des aktiven Fensters |
-| `state.active_process` | string |  |  | Prozess des aktiven Fensters |
-| `state.volume` | number | % | yes | Master-Lautstärke |
-| `state.muted` | boolean |  | yes | Stummgeschaltet |
-| `state.cpu` | number | % |  | CPU-Auslastung |
-| `state.ram` | number | % |  | RAM-Auslastung |
-| `state.ram_free_gb` | number | GB |  | Freier Arbeitsspeicher |
-| `state.uptime_min` | number | min |  | Laufzeit seit Windows-Start |
-| `state.battery` | number | % |  | Akkustand (nur Geräte mit Akku) |
-| `state.charging` | boolean |  |  | Netzteil angeschlossen (nur Geräte mit Akku) |
-| `state.monitors` | number |  |  | Anzahl Monitore |
-| `state.ip` | string |  |  | Lokale IPv4-Adresse |
-| `state.user` | string |  |  | Angemeldeter Benutzer |
-| `state.keep_awake` | boolean |  | yes | keep_awake aktiv |
-| `state.disk.<laufwerk>_free_gb` | number | GB |  | Freier Platz je Festplatte (dynamisch) |
-| `state.disk.<laufwerk>_used_percent` | number | % |  | Belegung je Festplatte (dynamisch) |
-| `state.proc.<name>` | boolean |  |  | Prozess läuft (aus Config 'WatchProcesses', dynamisch) |
+| `state.locked` | boolean |  |  | Screen locked |
+| `state.user_present` | boolean |  |  | User active (not locked and input within the idle threshold) |
+| `state.idle` | number | s |  | Seconds since the last mouse/keyboard input |
+| `state.active_window` | string |  |  | Title of the active window |
+| `state.active_process` | string |  |  | Process of the active window |
+| `state.volume` | number | % | yes | Master volume |
+| `state.muted` | boolean |  | yes | Muted |
+| `state.cpu` | number | % |  | CPU load |
+| `state.ram` | number | % |  | RAM usage |
+| `state.ram_free_gb` | number | GB |  | Free memory |
+| `state.uptime_min` | number | min |  | Time since Windows start |
+| `state.battery` | number | % |  | Battery level (devices with battery only) |
+| `state.charging` | boolean |  |  | Power supply connected (devices with battery only) |
+| `state.monitors` | number |  |  | Number of monitors |
+| `state.ip` | string |  |  | Local IPv4 address |
+| `state.user` | string |  |  | Logged-in user |
+| `state.keep_awake` | boolean |  | yes | keep_awake active |
+| `state.disk.<laufwerk>_free_gb` | number | GB |  | Free space per drive, e.g. `disk.C_free_gb` |
+| `state.disk.<laufwerk>_used_percent` | number | % |  | Usage per drive, e.g. `disk.C_used_percent` |
+| `state.proc.<name>` | boolean |  |  | Watched program is running (agent settings "Processes") |
 <!-- generated:end -->
 
 ## Scripts (sendTo)

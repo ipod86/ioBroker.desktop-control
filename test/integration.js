@@ -229,8 +229,9 @@ tests.integration(path.join(__dirname, '..'), {
 					brokerPort: port,
 					brokerBind: '127.0.0.1',
 					host: '',
+					// the password is stored encrypted, so the test uses a login with an empty password
 					username: 'agent',
-					password: 'secret',
+					password: '',
 					topicBase: 'winctl',
 				});
 				await harness.objects.setObjectAsync(obj._id, obj);
@@ -250,7 +251,7 @@ tests.integration(path.join(__dirname, '..'), {
 					url: `mqtt://127.0.0.1:${port}`,
 					device: 'built-in-pc',
 					username: 'agent',
-					password: 'secret',
+					password: '',
 				});
 				try {
 					let online;
@@ -275,7 +276,7 @@ tests.integration(path.join(__dirname, '..'), {
 					await startFakeAgent({
 						url: `mqtt://127.0.0.1:${port}`,
 						device: 'intruder',
-						username: 'agent',
+						username: 'intruder',
 						password: 'wrong',
 					});
 				} catch (e) {
