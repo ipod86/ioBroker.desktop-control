@@ -48,7 +48,7 @@ function manifest(device, base) {
 /**
  * Starts the fake agent.
  *
- * @param {{url?: string, device?: string, base?: string}} [opts] options
+ * @param {{url?: string, device?: string, base?: string, username?: string, password?: string}} [opts] options
  * @returns {Promise<{client: import('mqtt').MqttClient, stop: () => Promise<void>, state: Record<string, unknown>}>} agent
  */
 async function startFakeAgent(opts = {}) {
@@ -60,6 +60,8 @@ async function startFakeAgent(opts = {}) {
 
 	const client = await mqtt.connectAsync(url, {
 		clientId: `fake-agent-${device}`,
+		username: opts.username,
+		password: opts.password,
 		will: { topic: `${t}/online`, payload: 'false', retain: true, qos: 1 },
 	});
 	// states are plain text (true/false, number, string), everything else JSON

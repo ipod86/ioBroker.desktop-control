@@ -4,6 +4,10 @@
 declare global {
 	namespace ioBroker {
 		interface AdapterConfig {
+			/** 'internal' = built-in broker, 'external' = existing broker */
+			brokerMode: 'internal' | 'external';
+			brokerPort: number;
+			brokerBind: string;
 			host: string;
 			port: number;
 			username: string;

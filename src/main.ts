@@ -5,6 +5,7 @@
 
 import * as utils from '@iobroker/adapter-core';
 import mqtt, { type IClientOptions, type MqttClient } from 'mqtt';
+import { startBroker, type RunningBroker } from './lib/broker';
 import { Correlator } from './lib/correlator';
 import {
 	commandForStateWrite,
@@ -52,6 +53,7 @@ class DesktopControl extends utils.Adapter {
 	/** object ids already created/updated in this run */
 	private readonly known = new Set<string>();
 	private lastError = '';
+	private broker?: RunningBroker;
 	/** messages are handled one after another, so a manifest is complete before the states that follow it */
 	private queue: Promise<void> = Promise.resolve();
 
@@ -73,7 +75,26 @@ class DesktopControl extends utils.Adapter {
 			clear: handle => this.clearTimeout(handle as ioBroker.Timeout),
 		});
 		this.base = String(this.config.topicBase || 'winctl').replace(/^\/+|\/+$/g, '') || 'winctl';
-		if (!this.config.host) {
+		const cfg = this.config;
+		// instances from before the built-in broker: keep an entered external broker
+		const mode = cfg.brokerMode || (cfg.host ? 'external' : 'internal');
+		if (mode === 'internal') {
+			const port = Number(cfg.brokerPort) || 1886;
+			try {
+				this.broker = await startBroker({
+					port,
+					bind: cfg.brokerBind || '0.0.0.0',
+					username: cfg.username,
+					password: cfg.password,
+				});
+			} catch (e) {
+				this.log.error(
+					`Cannot start the built-in MQTT broker on port ${port}: ${(e as Error).message} – is the port used by another program?`,
+				);
+				return;
+			}
+			this.log.info(`Built-in MQTT broker listens on ${cfg.brokerBind || '0.0.0.0'}:${port}`);
+		} else if (!cfg.host) {
 			this.log.error('No MQTT broker configured – please enter the broker host in the adapter settings.');
 			return;
 		}
@@ -105,10 +126,13 @@ class DesktopControl extends utils.Adapter {
 
 	private connect(): void {
 		const cfg = this.config;
+		// with the built-in broker the adapter connects locally without TLS
+		const local = !!this.broker;
+		const tls = !local && cfg.tls;
 		const options: IClientOptions = {
-			host: cfg.host,
-			port: Number(cfg.port) || (cfg.tls ? 8883 : 1883),
-			protocol: cfg.tls ? 'mqtts' : 'mqtt',
+			host: local ? '127.0.0.1' : cfg.host,
+			port: local ? Number(cfg.brokerPort) || 1886 : Number(cfg.port) || (tls ? 8883 : 1883),
+			protocol: tls ? 'mqtts' : 'mqtt',
 			username: cfg.username || undefined,
 			password: cfg.password || undefined,
 			clientId: cfg.clientId || `iobroker_${this.namespace}_${Math.random().toString(16).slice(2, 8)}`,
@@ -655,6 +679,7 @@ class DesktopControl extends utils.Adapter {
 		try {
 			this.correlator?.rejectAll('adapter stopped');
 			this.client?.end(true);
+			void this.broker?.close();
 			void this.setState('info.connection', false, true);
 			callback();
 		} catch {

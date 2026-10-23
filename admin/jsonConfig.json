@@ -6,15 +6,71 @@
 			"type": "panel",
 			"label": "MQTT broker",
 			"items": {
-				"_hint": {
+				"brokerMode": {
+					"type": "select",
+					"label": "Broker",
+					"newLine": true,
+					"options": [
+						{
+							"label": "brokerModeInternal",
+							"value": "internal"
+						},
+						{
+							"label": "brokerModeExternal",
+							"value": "external"
+						}
+					],
+					"xs": 12,
+					"sm": 12,
+					"md": 8,
+					"lg": 6,
+					"xl": 6
+				},
+				"_hintInternal": {
 					"type": "staticText",
-					"text": "brokerHint",
+					"text": "brokerHintInternal",
+					"hidden": "data.brokerMode !== 'internal'",
 					"newLine": true,
 					"xs": 12,
 					"sm": 12,
 					"md": 12,
 					"lg": 12,
 					"xl": 12
+				},
+				"_hint": {
+					"type": "staticText",
+					"text": "brokerHintExternal",
+					"newLine": true,
+					"xs": 12,
+					"sm": 12,
+					"md": 12,
+					"lg": 12,
+					"xl": 12,
+					"hidden": "data.brokerMode === 'internal'"
+				},
+				"brokerPort": {
+					"type": "number",
+					"label": "Port",
+					"min": 1,
+					"max": 65535,
+					"hidden": "data.brokerMode !== 'internal'",
+					"newLine": true,
+					"xs": 12,
+					"sm": 12,
+					"md": 4,
+					"lg": 2,
+					"xl": 2
+				},
+				"brokerBind": {
+					"type": "text",
+					"label": "Listen on",
+					"help": "bindHelp",
+					"hidden": "data.brokerMode !== 'internal'",
+					"xs": 12,
+					"sm": 12,
+					"md": 8,
+					"lg": 4,
+					"xl": 4
 				},
 				"host": {
 					"type": "text",
@@ -25,7 +81,8 @@
 					"sm": 12,
 					"md": 8,
 					"lg": 6,
-					"xl": 6
+					"xl": 6,
+					"hidden": "data.brokerMode === 'internal'"
 				},
 				"port": {
 					"type": "number",
@@ -36,7 +93,8 @@
 					"sm": 12,
 					"md": 4,
 					"lg": 2,
-					"xl": 2
+					"xl": 2,
+					"hidden": "data.brokerMode === 'internal'"
 				},
 				"username": {
 					"type": "text",
@@ -46,7 +104,8 @@
 					"sm": 12,
 					"md": 6,
 					"lg": 4,
-					"xl": 4
+					"xl": 4,
+					"help": "loginHelp"
 				},
 				"password": {
 					"type": "password",
@@ -67,12 +126,13 @@
 					"sm": 12,
 					"md": 6,
 					"lg": 4,
-					"xl": 4
+					"xl": 4,
+					"hidden": "data.brokerMode === 'internal'"
 				},
 				"rejectUnauthorized": {
 					"type": "checkbox",
 					"label": "Verify the broker certificate",
-					"hidden": "!data.tls",
+					"hidden": "data.brokerMode === 'internal' || !data.tls",
 					"xs": 12,
 					"sm": 12,
 					"md": 6,
@@ -88,7 +148,8 @@
 					"sm": 12,
 					"md": 6,
 					"lg": 4,
-					"xl": 4
+					"xl": 4,
+					"hidden": "data.brokerMode === 'internal'"
 				}
 			}
 		},

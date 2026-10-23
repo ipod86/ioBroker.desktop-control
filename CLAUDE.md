@@ -8,7 +8,7 @@ The adapter knows no command lists: everything comes from the manifest the agent
 ## Architecture
 
 ```
-WinCtl.exe (per PC) ──MQTT──> broker <──MQTT── desktop-control adapter ──> ioBroker objects/states
+WinCtl.exe (per PC) ──MQTT──> broker (built-in or external) <──MQTT── desktop-control adapter ──> ioBroker objects/states
 ```
 
 - `src/lib/protocol.ts` – pure functions: topic parsing, manifest normalisation, state common, command kinds, parameter parsing (short form), results, screenshot detection. Unit-tested.
@@ -27,6 +27,7 @@ WinCtl.exe (per PC) ──MQTT──> broker <──MQTT── desktop-control a
 - Writable states: `volume` → `volume{level}`, `muted` → `mute{state}`, `keep_awake` → `keep_awake{state}` (`WRITABLE_COMMANDS`).
 - MQTT messages are processed one after another (`queue` in main.ts), so the manifest is applied before the states that follow it.
 - Screenshots: raw image bytes → file storage `desktop-control.0/screenshots/<device>.<ext>`; the instance meta object is created in `onReady`.
+- Built-in broker (aedes, `src/lib/broker.ts`) is the default (`brokerMode: internal`, port 1886); the adapter connects to it on 127.0.0.1. User name/password of the settings are then the login the agents must use. Old instances without `brokerMode` stay external when a host is set. aedes is ESM: esbuild turns `import()` into `require()`, which needs Node >= 22.12 (require(esm)).
 - Protocol version > 1 in the manifest → warning in the log, no hard stop.
 
 ## Commands

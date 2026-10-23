@@ -1,7 +1,6 @@
 {
 	"desktop-control adapter settings": "Adapter settings for desktop-control",
 	"MQTT broker": "MQTT broker",
-	"brokerHint": "The adapter connects to an existing MQTT broker (e.g. Mosquitto or the ioBroker MQTT adapter in server mode). The DesktopControl agents on the Windows PCs connect to the same broker.",
 	"Host": "Host",
 	"hostHelp": "IP address or host name of the broker",
 	"Port": "Port",
@@ -16,5 +15,13 @@
 	"topicBaseHelp": "Must match the agents (currently \"winctl\")",
 	"Command timeout (s)": "Command timeout (s)",
 	"Timeout for dialogs (ask) (s)": "Timeout for dialogs (ask) (s)",
-	"askTimeoutHelp": "How long the adapter waits for the answer of a dialog on the PC"
+	"askTimeoutHelp": "How long the adapter waits for the answer of a dialog on the PC",
+	"brokerHintExternal": "The adapter connects to an existing MQTT broker (e.g. Mosquitto or the ioBroker MQTT adapter in server mode). The DesktopControl agents on the Windows PCs connect to the same broker.",
+	"brokerModeInternal": "Built-in broker (no extra software)",
+	"brokerModeExternal": "Existing broker (Mosquitto, MQTT adapter, …)",
+	"brokerHintInternal": "The adapter runs its own MQTT broker. In the WinCtl agents on the PCs enter the IP address of the ioBroker server and this port (and the login, if set below).",
+	"Listen on": "Listen on",
+	"bindHelp": "0.0.0.0 = all network interfaces",
+	"loginHelp": "Built-in broker: optional – if set, the agents have to log in with it",
+	"Broker": "Broker"
 }

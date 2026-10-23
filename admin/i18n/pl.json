@@ -1,7 +1,6 @@
 {
 	"desktop-control adapter settings": "Ustawienia adaptera dla desktop-control",
 	"MQTT broker": "Broker MQTT",
-	"brokerHint": "Adapter łączy się z istniejącym brokerem MQTT (np. Mosquitto lub adapterem MQTT ioBroker w trybie serwera). Agenci DesktopControl na komputerach z Windows łączą się z tym samym brokerem.",
 	"Host": "Host",
 	"hostHelp": "Adres IP lub nazwa hosta brokera",
 	"Port": "Port",
@@ -16,5 +15,13 @@
 	"topicBaseHelp": "Musi pasować do agentów (obecnie „winctl”)",
 	"Command timeout (s)": "Limit czasu poleceń (s)",
 	"Timeout for dialogs (ask) (s)": "Limit czasu okien dialogowych (ask) (s)",
-	"askTimeoutHelp": "Jak długo adapter czeka na odpowiedź okna dialogowego na komputerze"
+	"askTimeoutHelp": "Jak długo adapter czeka na odpowiedź okna dialogowego na komputerze",
+	"brokerHintExternal": "Adapter łączy się z istniejącym brokerem MQTT (np. Mosquitto lub adapterem MQTT ioBroker w trybie serwera). Agenci DesktopControl na komputerach z Windows łączą się z tym samym brokerem.",
+	"brokerModeInternal": "Wbudowany broker (bez dodatkowego oprogramowania)",
+	"brokerModeExternal": "Istniejący broker (Mosquitto, adapter MQTT, …)",
+	"brokerHintInternal": "Adapter uruchamia własny broker MQTT. W agentach WinCtl na komputerach wpisz adres IP serwera ioBroker i ten port (oraz login, jeśli ustawiono poniżej).",
+	"Listen on": "Nasłuchuj na",
+	"bindHelp": "0.0.0.0 = wszystkie interfejsy sieciowe",
+	"loginHelp": "Wbudowany broker: opcjonalnie – jeśli ustawiony, agenci muszą się nim logować",
+	"Broker": "Broker"
 }

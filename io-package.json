@@ -86,6 +86,9 @@
 		"messagebox": true
 	},
 	"native": {
+		"brokerMode": "internal",
+		"brokerPort": 1886,
+		"brokerBind": "0.0.0.0",
 		"host": "",
 		"port": 1883,
 		"username": "",

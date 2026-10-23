@@ -18,14 +18,16 @@ The agent describes itself: it publishes all its commands, parameters and states
 
 ## Requirements
 
-- An MQTT broker (e.g. Mosquitto or the ioBroker MQTT adapter in broker mode)
-- The WinCtl agent on every PC to control, connected to the same broker
+- The WinCtl agent on every PC to control: download `WinCtl.exe` from [the releases](https://github.com/ipod86/WinCtl/releases)
+- Nothing else: the adapter has a built-in MQTT broker. An existing broker (Mosquitto, ioBroker MQTT adapter) can be used instead.
 
 ## Setup
 
-1. Start the agent on the PC and enter broker, user/password and (optionally) the device id in its settings dialog.
-2. In the adapter settings enter the same broker and the same topic base (default `winctl`).
+1. Adapter settings: keep "Built-in broker" (port 1886 by default). Optionally set a user name and password – the agents then have to use them.
+2. Start `WinCtl.exe` on the PC. In its settings enter the **IP address of the ioBroker server**, the port (1886) and the login.
 3. Each PC appears as a device as soon as it connects.
+
+With an existing broker select "Existing broker" in the adapter and enter the same broker in adapter and agents.
 
 ## Data points per PC
 
@@ -77,6 +79,7 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 -->
 ### **WORK IN PROGRESS**
 * (ipod86) initial release
+* (ipod86) built-in MQTT broker
 
 Older changelogs are available in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).
 

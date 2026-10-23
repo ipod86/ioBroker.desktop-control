@@ -1,7 +1,6 @@
 {
 	"desktop-control adapter settings": "Adapterinstellingen voor desktop-control",
 	"MQTT broker": "MQTT-broker",
-	"brokerHint": "De adapter verbindt met een bestaande MQTT-broker (bijv. Mosquitto of de ioBroker-MQTT-adapter in servermodus). De DesktopControl-agents op de Windows-pc's verbinden met dezelfde broker.",
 	"Host": "Host",
 	"hostHelp": "IP-adres of hostnaam van de broker",
 	"Port": "Poort",
@@ -16,5 +15,13 @@
 	"topicBaseHelp": "Moet overeenkomen met de agents (momenteel \"winctl\")",
 	"Command timeout (s)": "Time-out voor opdrachten (s)",
 	"Timeout for dialogs (ask) (s)": "Time-out voor dialogen (ask) (s)",
-	"askTimeoutHelp": "Hoe lang de adapter wacht op het antwoord van een dialoog op de pc"
+	"askTimeoutHelp": "Hoe lang de adapter wacht op het antwoord van een dialoog op de pc",
+	"brokerHintExternal": "De adapter verbindt met een bestaande MQTT-broker (bijv. Mosquitto of de ioBroker-MQTT-adapter in servermodus). De DesktopControl-agents op de Windows-pc's verbinden met dezelfde broker.",
+	"brokerModeInternal": "Ingebouwde broker (geen extra software)",
+	"brokerModeExternal": "Bestaande broker (Mosquitto, MQTT-adapter, …)",
+	"brokerHintInternal": "De adapter draait een eigen MQTT-broker. Vul in de WinCtl-agents op de pc's het IP-adres van de ioBroker-server en deze poort in (en de login, als die hieronder is ingesteld).",
+	"Listen on": "Luisteren op",
+	"bindHelp": "0.0.0.0 = alle netwerkinterfaces",
+	"loginHelp": "Ingebouwde broker: optioneel – indien ingesteld moeten de agents hiermee inloggen",
+	"Broker": "Broker"
 }

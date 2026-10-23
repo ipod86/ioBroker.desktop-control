@@ -54,7 +54,13 @@ tests.integration(path.join(__dirname, '..'), {
 				const obj = await harness.objects.getObjectAsync(`system.adapter.${NS}`);
 				// the cached test installation may still have an instance object from before messagebox was enabled
 				obj.common.messagebox = true;
-				Object.assign(obj.native, { host: '127.0.0.1', port, topicBase: 'winctl', cmdTimeout: 5 });
+				Object.assign(obj.native, {
+					brokerMode: 'external',
+					host: '127.0.0.1',
+					port,
+					topicBase: 'winctl',
+					cmdTimeout: 5,
+				});
 				await harness.objects.setObjectAsync(obj._id, obj);
 				agent = await startFakeAgent({ url: `mqtt://127.0.0.1:${port}`, device: 'fake-pc' });
 				await harness.startAdapterAndWait();
@@ -191,6 +197,88 @@ tests.integration(path.join(__dirname, '..'), {
 				const res = await sendTo('cmd', { device: 'fake-pc', command: 'ping' });
 				expect(res.ok).to.equal(false);
 				expect(res.error).to.match(/offline/);
+			});
+		});
+
+		suite('With the built-in broker', getHarness => {
+			const NS = 'desktop-control.0';
+			const wait = ms => new Promise(r => setTimeout(r, ms));
+			let harness;
+			let port;
+
+			const freePort = () =>
+				new Promise(resolve => {
+					const srv = net.createServer();
+					srv.listen(0, '127.0.0.1', () => {
+						const p = srv.address().port;
+						srv.close(() => resolve(p));
+					});
+				});
+
+			before(async function () {
+				this.timeout(60000);
+				port = await freePort();
+				harness = getHarness();
+				const obj = await harness.objects.getObjectAsync(`system.adapter.${NS}`);
+				obj.common.messagebox = true;
+				Object.assign(obj.native, {
+					brokerMode: 'internal',
+					brokerPort: port,
+					brokerBind: '127.0.0.1',
+					host: '',
+					username: 'agent',
+					password: 'secret',
+					topicBase: 'winctl',
+				});
+				await harness.objects.setObjectAsync(obj._id, obj);
+				await harness.startAdapterAndWait();
+				await harness.enableSendTo();
+			});
+
+			it('lets agents with the right login connect', async function () {
+				this.timeout(30000);
+				let conn;
+				for (let i = 0; i < 50 && !(conn && conn.val); i++) {
+					await wait(200);
+					conn = await harness.states.getStateAsync(`${NS}.info.connection`);
+				}
+				expect(conn.val).to.equal(true);
+				const agent = await startFakeAgent({
+					url: `mqtt://127.0.0.1:${port}`,
+					device: 'built-in-pc',
+					username: 'agent',
+					password: 'secret',
+				});
+				try {
+					let online;
+					for (let i = 0; i < 50 && !(online && online.val); i++) {
+						await wait(200);
+						online = await harness.states.getStateAsync(`${NS}.built-in-pc.online`);
+					}
+					expect(online.val).to.equal(true);
+					const res = await new Promise(resolve =>
+						harness.sendTo(NS, 'cmd', { device: 'built-in-pc', command: 'ping' }, resolve),
+					);
+					expect(res.ok).to.equal(true);
+				} finally {
+					await agent.client.endAsync(true);
+				}
+			});
+
+			it('rejects agents with a wrong login', async function () {
+				this.timeout(15000);
+				let error;
+				try {
+					await startFakeAgent({
+						url: `mqtt://127.0.0.1:${port}`,
+						device: 'intruder',
+						username: 'agent',
+						password: 'wrong',
+					});
+				} catch (e) {
+					error = e;
+				}
+				expect(error).to.be.an('error');
 			});
 		});
 	},

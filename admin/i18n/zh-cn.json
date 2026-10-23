@@ -1,7 +1,6 @@
 {
 	"desktop-control adapter settings": "desktop-control的适配器设置",
 	"MQTT broker": "MQTT 代理",
-	"brokerHint": "适配器连接到现有的 MQTT 代理（例如 Mosquitto 或服务器模式下的 ioBroker MQTT 适配器）。Windows 电脑上的 DesktopControl 代理连接到同一个代理。",
 	"Host": "主机",
 	"hostHelp": "代理的 IP 地址或主机名",
 	"Port": "端口",
@@ -16,5 +15,13 @@
 	"topicBaseHelp": "必须与代理程序一致（当前为 \"winctl\"）",
 	"Command timeout (s)": "命令超时（秒）",
 	"Timeout for dialogs (ask) (s)": "对话框超时 (ask)（秒）",
-	"askTimeoutHelp": "适配器等待电脑上对话框答复的时间"
+	"askTimeoutHelp": "适配器等待电脑上对话框答复的时间",
+	"brokerHintExternal": "适配器连接到现有的 MQTT 代理（例如 Mosquitto 或服务器模式下的 ioBroker MQTT 适配器）。Windows 电脑上的 DesktopControl 代理连接到同一个代理。",
+	"brokerModeInternal": "内置代理（无需额外软件）",
+	"brokerModeExternal": "现有代理（Mosquitto、MQTT 适配器等）",
+	"brokerHintInternal": "适配器运行自己的 MQTT 代理。在电脑上的 WinCtl 代理中输入 ioBroker 服务器的 IP 地址和此端口（如下方设置了登录信息，也一并填写）。",
+	"Listen on": "监听地址",
+	"bindHelp": "0.0.0.0 = 所有网络接口",
+	"loginHelp": "内置代理：可选——如果设置，代理必须使用它登录",
+	"Broker": "代理"
 }

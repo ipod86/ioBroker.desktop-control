@@ -23,6 +23,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var utils = __toESM(require("@iobroker/adapter-core"));
 var import_mqtt = __toESM(require("mqtt"));
+var import_broker = require("./lib/broker");
 var import_correlator = require("./lib/correlator");
 var import_protocol = require("./lib/protocol");
 const DIALOG_COMMANDS = ["ask"];
@@ -37,6 +38,7 @@ class DesktopControl extends utils.Adapter {
   /** object ids already created/updated in this run */
   known = /* @__PURE__ */ new Set();
   lastError = "";
+  broker;
   /** messages are handled one after another, so a manifest is complete before the states that follow it */
   queue = Promise.resolve();
   constructor(options = {}) {
@@ -56,7 +58,25 @@ class DesktopControl extends utils.Adapter {
       clear: (handle) => this.clearTimeout(handle)
     });
     this.base = String(this.config.topicBase || "winctl").replace(/^\/+|\/+$/g, "") || "winctl";
-    if (!this.config.host) {
+    const cfg = this.config;
+    const mode = cfg.brokerMode || (cfg.host ? "external" : "internal");
+    if (mode === "internal") {
+      const port = Number(cfg.brokerPort) || 1886;
+      try {
+        this.broker = await (0, import_broker.startBroker)({
+          port,
+          bind: cfg.brokerBind || "0.0.0.0",
+          username: cfg.username,
+          password: cfg.password
+        });
+      } catch (e) {
+        this.log.error(
+          `Cannot start the built-in MQTT broker on port ${port}: ${e.message} \u2013 is the port used by another program?`
+        );
+        return;
+      }
+      this.log.info(`Built-in MQTT broker listens on ${cfg.brokerBind || "0.0.0.0"}:${port}`);
+    } else if (!cfg.host) {
       this.log.error("No MQTT broker configured \u2013 please enter the broker host in the adapter settings.");
       return;
     }
@@ -85,10 +105,12 @@ class DesktopControl extends utils.Adapter {
   }
   connect() {
     const cfg = this.config;
+    const local = !!this.broker;
+    const tls = !local && cfg.tls;
     const options = {
-      host: cfg.host,
-      port: Number(cfg.port) || (cfg.tls ? 8883 : 1883),
-      protocol: cfg.tls ? "mqtts" : "mqtt",
+      host: local ? "127.0.0.1" : cfg.host,
+      port: local ? Number(cfg.brokerPort) || 1886 : Number(cfg.port) || (tls ? 8883 : 1883),
+      protocol: tls ? "mqtts" : "mqtt",
       username: cfg.username || void 0,
       password: cfg.password || void 0,
       clientId: cfg.clientId || `iobroker_${this.namespace}_${Math.random().toString(16).slice(2, 8)}`,
@@ -605,10 +627,11 @@ class DesktopControl extends utils.Adapter {
     throw new Error(`unknown device "${name}"`);
   }
   onUnload(callback) {
-    var _a, _b;
+    var _a, _b, _c;
     try {
       (_a = this.correlator) == null ? void 0 : _a.rejectAll("adapter stopped");
       (_b = this.client) == null ? void 0 : _b.end(true);
+      void ((_c = this.broker) == null ? void 0 : _c.close());
       void this.setState("info.connection", false, true);
       callback();
     } catch {
