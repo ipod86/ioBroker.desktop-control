@@ -233,7 +233,7 @@ Older changelogs are available in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).
 ## License
 MIT License
 
-Copyright (c) 2026 David <david@graef.email>
+Copyright (c) 2026 ipod86 <david@graef.email>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

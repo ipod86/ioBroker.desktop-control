@@ -44,7 +44,7 @@
 			"zh-cn": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT"
 		},
 		"authors": [
-			"David <david@graef.email>"
+			"ipod86 <david@graef.email>"
 		],
 		"keywords": [
 			"windows",

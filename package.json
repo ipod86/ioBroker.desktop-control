@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
   "author": {
-    "name": "David",
+    "name": "ipod86",
     "email": "david@graef.email"
   },
   "contributors": [],
