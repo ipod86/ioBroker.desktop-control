@@ -93,6 +93,8 @@ export interface Manifest {
 	protocol: number;
 	/** run/open aliases allowed by the agent config */
 	apps: string[];
+	/** agent may start any program (not only aliases) */
+	allowAnyRun: boolean;
 	/** announced states */
 	states: ManifestState[];
 	/** announced commands */
@@ -247,6 +249,9 @@ export const WRITABLE_COMMANDS: Record<string, { command: string; param: string 
 
 const TYPES = ['number', 'string', 'boolean', 'json', 'array', 'object', 'mixed'];
 
+/** Dangerous commands that get a data point anyway while the agent only starts programs from its alias list */
+export const ALIAS_LIMITED = ['run', 'kill'];
+
 /**
  * Normalises the info manifest (tolerant about objects vs. arrays and missing fields).
  *
@@ -300,7 +305,8 @@ export function normalizeManifest(raw: unknown): Manifest {
 			required: p.required === true,
 			enum: Array.isArray(p.enum) ? p.enum.map(str) : undefined,
 		})),
-		dangerous: e.dangerous === true,
+		// run/kill are only flagged because of AllowAnyRun; with alias-only run the agent itself limits them
+		dangerous: e.dangerous === true && !(ALIAS_LIMITED.includes(name) && security.allow_any_run === false),
 		needsGui: e.needs_gui === true || e.needsGui === true,
 		description: str(e.description),
 		primary: e.primary ? str(e.primary) : undefined,
@@ -317,6 +323,7 @@ export function normalizeManifest(raw: unknown): Manifest {
 		started: str(m.started),
 		protocol: typeof m.protocol === 'number' ? m.protocol : 0,
 		apps: Array.isArray(security.apps) ? security.apps.map(str) : [],
+		allowAnyRun: security.allow_any_run === true,
 		states,
 		commands,
 		events,

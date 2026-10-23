@@ -117,6 +117,9 @@ tests.integration(path.join(__dirname, '..'), {
 				expect(vol.common.role).to.equal('json');
 				const shell = await harness.objects.getObjectAsync(`${NS}.fake-pc.cmd.shell`);
 				expect(shell).to.equal(null);
+				// run is limited to the aliases of the agent, so it gets a data point with them as a list
+				const run = await harness.objects.getObjectAsync(`${NS}.fake-pc.cmd.run`);
+				expect(run.common.states).to.deep.equal({ notepad: 'notepad', calc: 'calc' });
 				// switched off in the agent config
 				const beep = await harness.objects.getObjectAsync(`${NS}.fake-pc.cmd.beep`);
 				expect(beep).to.equal(null);

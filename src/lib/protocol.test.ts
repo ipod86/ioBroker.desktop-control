@@ -120,6 +120,19 @@ describe('manifest', () => {
 		expect(stateCommon('locked', findStateDef(MANIFEST, 'locked'))).to.not.have.property('unit');
 		expect(stateCommon('proc/x', undefined, true)).to.include({ type: 'boolean', role: 'indicator' });
 	});
+	it('gives run and kill a data point only while the agent is limited to aliases', () => {
+		const commands = [
+			{ name: 'run', dangerous: true, primary: 'path', params: [{ name: 'path', required: true }] },
+			{ name: 'kill', dangerous: true, primary: 'name', params: [{ name: 'name' }] },
+			{ name: 'shell', dangerous: true, params: [{ name: 'command', required: true }] },
+		];
+		const limited = normalizeManifest({ security: { allow_any_run: false }, commands });
+		expect(limited.commands.map(c => commandKind(c))).to.deep.equal(['json', 'button', 'none']);
+		const open = normalizeManifest({ security: { allow_any_run: true }, commands });
+		expect(open.commands.map(c => commandKind(c))).to.deep.equal(['none', 'none', 'none']);
+		// unknown (older agent): stays dangerous
+		expect(commandKind(normalizeManifest({ commands }).commands[0])).to.equal('none');
+	});
 	it('accepts only official roles', () => {
 		const odd = normalizeManifest({ states: [{ name: 'cpu', type: 'number', role: 'value.cpu.custom' }] });
 		expect(odd.states[0].role).to.equal('value');

@@ -43,7 +43,8 @@ With an existing broker select "Existing broker" in the adapter and enter the sa
 
 `all.cmd.*` sends a command to all PCs at once.
 
-Dangerous commands (e.g. `shell`) and commands switched off in the agent get no data point. They can only be sent via `sendTo`.
+Dangerous commands (e.g. `shell`, `shutdown`) and commands switched off in the agent get no data point. They can only be sent via `sendTo`.
+`run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 ## Scripts (sendTo)
 

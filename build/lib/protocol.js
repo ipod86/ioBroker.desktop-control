@@ -18,6 +18,7 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var protocol_exports = {};
 __export(protocol_exports, {
+  ALIAS_LIMITED: () => ALIAS_LIMITED,
   WRITABLE_COMMANDS: () => WRITABLE_COMMANDS,
   commandForStateWrite: () => commandForStateWrite,
   commandKind: () => commandKind,
@@ -125,6 +126,7 @@ const WRITABLE_COMMANDS = {
   keep_awake: { command: "keep_awake", param: "state" }
 };
 const TYPES = ["number", "string", "boolean", "json", "array", "object", "mixed"];
+const ALIAS_LIMITED = ["run", "kill"];
 function normalizeManifest(raw) {
   const m = raw && typeof raw === "object" ? raw : {};
   const str = text;
@@ -167,7 +169,8 @@ function normalizeManifest(raw) {
       required: p.required === true,
       enum: Array.isArray(p.enum) ? p.enum.map(str) : void 0
     })),
-    dangerous: e.dangerous === true,
+    // run/kill are only flagged because of AllowAnyRun; with alias-only run the agent itself limits them
+    dangerous: e.dangerous === true && !(ALIAS_LIMITED.includes(name) && security.allow_any_run === false),
     needsGui: e.needs_gui === true || e.needsGui === true,
     description: str(e.description),
     primary: e.primary ? str(e.primary) : void 0,
@@ -184,6 +187,7 @@ function normalizeManifest(raw) {
     started: str(m.started),
     protocol: typeof m.protocol === "number" ? m.protocol : 0,
     apps: Array.isArray(security.apps) ? security.apps.map(str) : [],
+    allowAnyRun: security.allow_any_run === true,
     states,
     commands,
     events
@@ -334,6 +338,7 @@ function parseScreenshot(payload) {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  ALIAS_LIMITED,
   WRITABLE_COMMANDS,
   commandForStateWrite,
   commandKind,

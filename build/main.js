@@ -374,7 +374,7 @@ class DesktopControl extends utils.Adapter {
       this.known.delete(id);
       await this.ensureObject(id, {
         type: "state",
-        common: this.commandCommon(c, kind),
+        common: this.commandCommon(c, kind, m.apps),
         native: { command: c.name }
       });
     }
@@ -399,10 +399,21 @@ class DesktopControl extends utils.Adapter {
    *
    * @param c command
    * @param kind button or json
+   * @param apps aliases of the agent (selection list for run)
    */
-  commandCommon(c, kind) {
+  commandCommon(c, kind, apps) {
     const desc = c.description || (c.params.length ? `Parameters: ${c.params.map((p) => `${p.name}${p.required ? "*" : ""}`).join(", ")}` : "");
-    return kind === "button" ? { name: c.name, desc, type: "boolean", role: "button", read: false, write: true } : { name: c.name, desc, type: "string", role: "json", read: true, write: true, def: "{}" };
+    return kind === "button" ? { name: c.name, desc, type: "boolean", role: "button", read: false, write: true } : {
+      name: c.name,
+      desc,
+      type: "string",
+      role: "json",
+      read: true,
+      write: true,
+      def: "{}",
+      // run: the aliases of the agent as a selection list (short form)
+      ...c.name === "run" && (apps == null ? void 0 : apps.length) ? { states: Object.fromEntries(apps.map((a) => [a, a])) } : {}
+    };
   }
   /** all.cmd.*: commands every device can do the same way (union of the non-dangerous commands) */
   async updateBroadcastCommands() {

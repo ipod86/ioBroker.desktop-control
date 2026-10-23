@@ -23,7 +23,7 @@ WinCtl.exe (per PC) ──MQTT──> broker (built-in or external) <──MQTT�
 - Topics: `{base}/{id}/online|info|state/<path>|event/<name>|result|screenshot`, commands to `{base}/{id}/cmd/<name>` and `{base}/all/cmd/<name>`.
 - States are plain text; typed with the manifest. `/` in state paths becomes an object level (`disk/C_free_gb` → `state.disk.C_free_gb`). Dynamic states (`<...>` or `/*` in the manifest) are created on the first value.
 - Command data points: no required params → button; otherwise `json` (string). A non-JSON value is the short form for the `primary` parameter.
-- `dangerous` and `disabled_commands` get no data point (only `sendTo`). Stale `cmd.*` objects are removed when the manifest changes.
+- `dangerous` and `disabled_commands` get no data point (only `sendTo`). Exception `ALIAS_LIMITED` (run, kill): data point while `security.allow_any_run === false`; `cmd.run` gets the aliases as `common.states`. Stale `cmd.*` objects are removed when the manifest changes.
 - Writable states: `volume` → `volume{level}`, `muted` → `mute{state}`, `keep_awake` → `keep_awake{state}` (`WRITABLE_COMMANDS`).
 - MQTT messages are processed one after another (`queue` in main.ts), so the manifest is applied before the states that follow it.
 - Screenshots: raw image bytes → file storage `desktop-control.0/screenshots/<device>.<ext>`; the instance meta object is created in `onReady`.

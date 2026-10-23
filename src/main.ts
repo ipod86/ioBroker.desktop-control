@@ -406,7 +406,7 @@ class DesktopControl extends utils.Adapter {
 			this.known.delete(id);
 			await this.ensureObject(id, {
 				type: 'state',
-				common: this.commandCommon(c, kind),
+				common: this.commandCommon(c, kind, m.apps),
 				native: { command: c.name },
 			});
 		}
@@ -432,14 +432,25 @@ class DesktopControl extends utils.Adapter {
 	 *
 	 * @param c command
 	 * @param kind button or json
+	 * @param apps aliases of the agent (selection list for run)
 	 */
-	private commandCommon(c: ManifestCommand, kind: 'button' | 'json'): ioBroker.StateCommon {
+	private commandCommon(c: ManifestCommand, kind: 'button' | 'json', apps?: string[]): ioBroker.StateCommon {
 		const desc =
 			c.description ||
 			(c.params.length ? `Parameters: ${c.params.map(p => `${p.name}${p.required ? '*' : ''}`).join(', ')}` : '');
 		return kind === 'button'
 			? { name: c.name, desc, type: 'boolean', role: 'button', read: false, write: true }
-			: { name: c.name, desc, type: 'string', role: 'json', read: true, write: true, def: '{}' };
+			: {
+					name: c.name,
+					desc,
+					type: 'string',
+					role: 'json',
+					read: true,
+					write: true,
+					def: '{}',
+					// run: the aliases of the agent as a selection list (short form)
+					...(c.name === 'run' && apps?.length ? { states: Object.fromEntries(apps.map(a => [a, a])) } : {}),
+				};
 	}
 
 	/** all.cmd.*: commands every device can do the same way (union of the non-dangerous commands) */

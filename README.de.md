@@ -43,7 +43,8 @@ Mit einem vorhandenen Broker im Adapter „Vorhandener Broker“ wählen und in 
 
 `all.cmd.*` schickt einen Befehl an alle PCs gleichzeitig.
 
-Gefährliche Befehle (z. B. `shell`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt. Sie gehen nur per `sendTo`.
+Gefährliche Befehle (z. B. `shell`, `shutdown`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt. Sie gehen nur per `sendTo`.
+`run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 ## Skripte (sendTo)
 
