@@ -1,6 +1,6 @@
 {
   "protocol": 1,
-  "version": "0.3.2",
+  "version": "0.3.3",
   "states": [
     {
       "name": "locked",
@@ -270,7 +270,6 @@
         }
       ],
       "primary": "delay",
-      "dangerous": true,
       "examples": [
         "60",
         "{\"delay\":0,\"force\":true}"
@@ -297,7 +296,6 @@
         }
       ],
       "primary": "delay",
-      "dangerous": true,
       "examples": [
         "30",
         "{\"delay\":0,\"force\":true}"
@@ -308,7 +306,6 @@
       "category": "power",
       "description": "Meldet den Benutzer ab",
       "params": [],
-      "dangerous": true,
       "examples": [
         "true"
       ]

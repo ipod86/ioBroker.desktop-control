@@ -80,10 +80,10 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
   - `true` – führt den Befehl mit den Standardwerten aus
 - In der Objektbeschreibung jedes Befehls-Datenpunkts stehen seine Optionen und ein Beispiel.
 - Das Ergebnis steht in `<PC>.cmd.result`.
-- Sicherheitsrelevante Befehle (z. B. `shell`, `shutdown`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
+- Sicherheitsrelevante Befehle (z. B. `shell`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 <!-- generated:start -->
-_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.3.2)._
+_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.3.3)._
 
 #### System
 
@@ -162,7 +162,7 @@ Datenpunkt: `cmd.hibernate` – Knopf – Klick führt aus
 <details>
 <summary><code>shutdown</code> – Fährt den PC herunter</summary>
 
-Datenpunkt: `cmd.shutdown` – kein Datenpunkt (sicherheitsrelevant) – nur per `sendTo`  
+Datenpunkt: `cmd.shutdown` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.shutdown_json` für die Optionen  
 Kurzform: `delay`
 
 Beispiele:
@@ -182,7 +182,7 @@ Beispiele:
 <details>
 <summary><code>restart</code> – Startet den PC neu</summary>
 
-Datenpunkt: `cmd.restart` – kein Datenpunkt (sicherheitsrelevant) – nur per `sendTo`  
+Datenpunkt: `cmd.restart` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.restart_json` für die Optionen  
 Kurzform: `delay`
 
 Beispiele:
@@ -202,7 +202,7 @@ Beispiele:
 <details>
 <summary><code>logoff</code> – Meldet den Benutzer ab</summary>
 
-Datenpunkt: `cmd.logoff` – kein Datenpunkt (sicherheitsrelevant) – nur per `sendTo`  
+Datenpunkt: `cmd.logoff` – Knopf – Klick führt aus  
 
 </details>
 

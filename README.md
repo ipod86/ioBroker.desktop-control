@@ -80,10 +80,10 @@ Written on every event (also when the content is the same), so a trigger with `c
   - `true` – runs the command with its default options
 - The object description of every command data point lists its options and an example.
 - The result appears in `<pc>.cmd.result`.
-- Security relevant commands (e.g. `shell`, `shutdown`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
+- Security relevant commands (e.g. `shell`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (agent version 0.3.2). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
+_Generated from the agent (agent version 0.3.3). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
@@ -104,9 +104,9 @@ _Generated from the agent (agent version 0.3.2). Examples and all option descrip
 | `lock` | Locks the screen (Win+L) | button |  |  |
 | `sleep` | Standby | button |  |  |
 | `hibernate` | Hibernate | button |  |  |
-| `shutdown` | Shuts the PC down | only `sendTo` | `delay` | `delay`, `force` |
-| `restart` | Restarts the PC | only `sendTo` | `delay` | `delay`, `force` |
-| `logoff` | Logs the user off | only `sendTo` |  |  |
+| `shutdown` | Shuts the PC down | button + `shutdown_json` | `delay` | `delay`, `force` |
+| `restart` | Restarts the PC | button + `restart_json` | `delay` | `delay`, `force` |
+| `logoff` | Logs the user off | button |  |  |
 | `cancel_shutdown` | Cancels a planned shutdown/restart | button |  |  |
 | `monitor_off` | Turns the monitors off | button |  |  |
 | `monitor_on` | Wakes the monitors up | button |  |  |

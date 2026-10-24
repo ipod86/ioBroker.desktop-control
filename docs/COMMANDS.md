@@ -1,6 +1,6 @@
 # Befehlsreferenz
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.3.2). Nicht von Hand ändern._
+_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.3.3). Nicht von Hand ändern._
 
 Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
 
@@ -38,7 +38,7 @@ Standby
 ### `hibernate`
 Ruhezustand  
 
-### `shutdown`  _(⚠ sicherheitsrelevant)_
+### `shutdown`
 Fährt den PC herunter  
 Kurzform: Payload `<text>` entspricht `{"delay": "<text>"}`.  
 
@@ -54,7 +54,7 @@ Beispiele:
 | `delay` | integer |  | 10 | Verzögerung in Sekunden |
 | `force` | boolean |  | false | Programme zwangsweise schließen |
 
-### `restart`  _(⚠ sicherheitsrelevant)_
+### `restart`
 Startet den PC neu  
 Kurzform: Payload `<text>` entspricht `{"delay": "<text>"}`.  
 
@@ -70,7 +70,7 @@ Beispiele:
 | `delay` | integer |  | 10 | Verzögerung in Sekunden |
 | `force` | boolean |  | false | Programme zwangsweise schließen |
 
-### `logoff`  _(⚠ sicherheitsrelevant)_
+### `logoff`
 Meldet den Benutzer ab  
 
 ### `cancel_shutdown`
