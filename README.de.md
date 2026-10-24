@@ -96,7 +96,7 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
 - Sicherheitsrelevante Befehle (z. B. `shell`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 <!-- generated:start -->
-_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.4.1)._
+_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.4.2)._
 
 #### System
 

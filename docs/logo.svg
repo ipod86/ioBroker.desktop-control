@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="512" height="512" role="img" aria-label="ioBroker.desktop-control">
+  <defs><clipPath id="open"><path d="M-2 -2H-.223V-.45H.223V-2H2V2H-2Z"/></clipPath></defs>
+  <rect x="20" y="20" width="960" height="960" rx="240" fill="#164476"/>
+  <g transform="translate(500 500) scale(1.07) translate(-503 -509)">
+    <rect x="270" y="205" width="610" height="420" rx="56" fill="#FFFFFF"/>
+    <rect x="304" y="239" width="542" height="352" rx="26" fill="#3399CC"/>
+    <polygon points="530.0,623 620.0,623 645.0,700 505.0,700" fill="#FFFFFF"/>
+    <rect x="445.0" y="692" width="260" height="50" rx="25" fill="#FFFFFF"/>
+    <g fill="none" stroke="#D6EFFB" stroke-width="25" stroke-linecap="round"><path d="M374.4 453.8 A211 211 0 0 1 480.0 552.2"/><path d="M392.4 411.4 A257 257 0 0 1 521.0 531.3"/><path d="M410.4 369.1 A303 303 0 0 1 562.0 510.4"/></g>
+    <g fill="none" stroke="#D6EFFB" stroke-width="22" stroke-linecap="round"><path d="M647.9 345.1 L613.5 334.6"/><path d="M666.7 320.7 L647.6 290.2"/><path d="M696.9 314.5 L702.5 279.0"/></g>
+    <polygon points="690.0,358.0 690.0,532.2 730.0,494.0 756.3,557.8 785.2,545.0 758.9,483.8 810.7,483.8" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="8" stroke-linejoin="round"/>
+    <circle cx="292" cy="648" r="181" fill="#164476"/>
+    <circle cx="292" cy="648" r="165" fill="#FFFFFF"/>
+    <g transform="translate(292 648) scale(139)">
+      <circle r=".8725" fill="none" stroke="#164476" stroke-width=".255" clip-path="url(#open)"/>
+      <rect x="-.149" y="-1" width=".298" height=".255" rx=".02" fill="#3399CC"/>
+      <rect x="-.149" y="-.654" width=".298" height="1.308" rx=".03" fill="#3399CC"/>
+    </g>
+  </g>
+</svg>
