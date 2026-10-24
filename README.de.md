@@ -27,7 +27,18 @@ Der Agent beschreibt sich selbst: Er veröffentlicht alle Befehle, Parameter und
 2. `WinCtl.exe` auf dem PC starten und in den Einstellungen die **IP-Adresse des ioBroker-Servers**, den Port (1886) und die Anmeldung eintragen.
 3. Jeder PC erscheint als Gerät, sobald er sich verbindet.
 
-Mit einem vorhandenen Broker im Adapter „Vorhandener Broker“ wählen und in Adapter und Agents denselben Broker eintragen.
+### Broker: eingebaut oder vorhandener
+
+Adapter und Agents tauschen alles über einen MQTT-Broker aus. Zwei Möglichkeiten:
+
+| | Eingebauter Broker (Standard) | Vorhandener Broker |
+|---|---|---|
+| Aufbau | `WinCtl.exe` → **Adapter** (Port 1886) | `WinCtl.exe` → Broker ← Adapter |
+| Adapter-Einstellung | „Eingebauter Broker“, Port, optional Benutzer/Passwort | „Vorhandener Broker“ + Adresse, Port, Anmeldung des Brokers |
+| Im Agent eintragen | IP des ioBroker-Servers, Port 1886, Anmeldung aus dem Adapter | Adresse, Port und Anmeldung des Brokers |
+| Geeignet für | die meisten Installationen – nichts weiter zu installieren | wenn schon Mosquitto oder der ioBroker-MQTT-Adapter läuft, ACLs/TLS gewünscht sind oder andere Programme mitlesen sollen |
+
+Der Port des eingebauten Brokers (1886) ist absichtlich nicht 1883, damit er sich nicht mit einem vorhandenen Broker oder dem MQTT-Adapter beißt.
 
 ## Datenpunkte
 
@@ -983,6 +994,29 @@ Die Antwort hat die Form `{ ok, command, result, error }`.
 ## Wake-on-LAN
 
 Der Agent meldet die MAC-Adresse seiner Netzwerkkarte; der Adapter merkt sie sich, damit `cmd.wake` auch nach einem Neustart funktioniert, während der PC aus ist. Voraussetzungen: Wake-on-LAN im BIOS/UEFI und in der Netzwerkkarte aktiviert (Geräte-Manager → Netzwerkkarte → Energieverwaltung / Erweitert), PC per Kabel angeschlossen, ioBroker im selben Netz. Der Windows-„Schnellstart“ kann das Wecken aus dem heruntergefahrenen Zustand verhindern – dann abschalten.
+
+## Agent aktualisieren
+
+Der Agent sucht beim Start und danach alle 12 Stunden auf GitHub nach einer neuen Version (abschaltbar in den Agent-Einstellungen → „Allgemein“). Er **installiert nicht von selbst**, er meldet nur:
+
+- `<PC>.state.update_available` – `true`, wenn eine neuere Version da ist
+- `<PC>.state.latest_version` – neueste Version auf GitHub; die installierte steht in `<PC>.info.version`
+
+Installieren:
+
+- **aus ioBroker:** Knopf `<PC>.cmd.update` – lädt die neue exe, prüft die Prüfsumme, tauscht sie aus und startet den Agent neu. Nach einigen Sekunden ist der PC wieder online, mit neuer Version in `info.version`.
+- **am PC:** Tray-Symbol → „Nach Update suchen …“ – zeigt die Neuerungen und fragt, ob installiert werden soll.
+- `<PC>.cmd.check_update` prüft sofort, ohne zu installieren.
+
+Automatisch per Skript, z. B. nachts:
+
+```js
+on({ id: /^desktop-control\.0\.[^.]+\.state\.update_available$/, val: true }, obj => {
+    setState(obj.id.replace('state.update_available', 'cmd.update'), true);
+});
+```
+
+Voraussetzung: Die exe liegt in einem Ordner, in den der Benutzer schreiben darf (z. B. `C:\Tools\WinCtl` oder Downloads, nicht `C:\Program Files`).
 
 ## Sicherheit
 

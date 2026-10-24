@@ -27,7 +27,18 @@ The agent describes itself: it publishes all its commands, parameters and states
 2. Start `WinCtl.exe` on the PC. In its settings enter the **IP address of the ioBroker server**, the port (1886) and the login.
 3. Each PC appears as a device as soon as it connects.
 
-With an existing broker select "Existing broker" in the adapter and enter the same broker in adapter and agents.
+### Broker: built-in or existing
+
+Adapter and agents exchange everything through an MQTT broker. Two options:
+
+| | Built-in broker (default) | Existing broker |
+|---|---|---|
+| Layout | `WinCtl.exe` → **adapter** (port 1886) | `WinCtl.exe` → broker ← adapter |
+| Adapter setting | "Built-in broker", port, optional user/password | "Existing broker" + address, port and login of the broker |
+| In the agent | IP of the ioBroker server, port 1886, login from the adapter | address, port and login of the broker |
+| Good for | most installations – nothing else to install | Mosquitto or the ioBroker MQTT adapter already runs, ACLs/TLS wanted, or other programs should read along |
+
+The built-in broker uses port 1886 on purpose, not 1883, so it does not clash with an existing broker or the MQTT adapter.
 
 ## Data points
 
@@ -228,6 +239,29 @@ The answer has the form `{ ok, command, result, error }`.
 ## Wake-on-LAN
 
 The agent reports the MAC address of its network card; the adapter keeps it, so `cmd.wake` also works after a restart while the PC is off. Requirements: Wake-on-LAN enabled in the BIOS/UEFI and in the network card settings (Device Manager → network card → Power Management / Advanced), PC connected by cable, ioBroker in the same network. Windows "Fast startup" can prevent waking from shutdown – switch it off if needed.
+
+## Updating the agent
+
+The agent checks GitHub for a new version at start and every 12 hours (can be switched off in the agent settings, first tab after the connection). It **does not install by itself**, it only reports:
+
+- `<pc>.state.update_available` – `true` when a newer version exists
+- `<pc>.state.latest_version` – newest version on GitHub; the installed one is in `<pc>.info.version`
+
+Installing:
+
+- **from ioBroker:** button `<pc>.cmd.update` – downloads the new exe, checks the checksum, swaps it and restarts the agent. After a few seconds the PC is online again with the new version in `info.version`.
+- **on the PC:** tray icon → menu entry to check for updates – shows the changes and asks whether to install.
+- `<pc>.cmd.check_update` checks right away without installing.
+
+Automatically with a script:
+
+```js
+on({ id: /^desktop-control\.0\.[^.]+\.state\.update_available$/, val: true }, obj => {
+    setState(obj.id.replace('state.update_available', 'cmd.update'), true);
+});
+```
+
+Requirement: the exe is in a folder the user can write to (e.g. `C:\Tools\WinCtl` or Downloads, not `C:\Program Files`).
 
 ## Security
 
