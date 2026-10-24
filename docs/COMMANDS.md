@@ -1,6 +1,6 @@
 # Befehlsreferenz
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.3.3). Nicht von Hand ändern._
+_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.4.0). Nicht von Hand ändern._
 
 Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
 
@@ -659,6 +659,10 @@ Liest den Text der Zwischenablage
 | `ip` | string |  | `text` | Lokale IPv4-Adresse |
 | `user` | string |  | `text` | Angemeldeter Benutzer |
 | `keep_awake` | boolean |  | `indicator` | keep_awake aktiv |
+| `webcam_in_use` | boolean |  | `indicator` | Kamera wird gerade benutzt (z.B. Videokonferenz) |
+| `webcam_app` | string |  | `text` | Programm(e), die die Kamera benutzen |
+| `mic_in_use` | boolean |  | `indicator` | Mikrofon wird gerade benutzt |
+| `mic_app` | string |  | `text` | Programm(e), die das Mikrofon benutzen |
 | `update_available` | boolean |  | `indicator` | Neuere WinCtl-Version verfügbar (Prüfung beim Start und alle 12 h) |
 | `latest_version` | string |  | `text` | Neueste WinCtl-Version auf GitHub |
 | `disk/<laufwerk>_free_gb` | number | GB | `value` | Freier Platz je Festplatte (dynamisch) |

@@ -36,6 +36,9 @@ function manifest(device, base) {
 		user: 'tester',
 		os: 'Windows 11 (fake)',
 		ip: '192.0.2.10',
+		// Wake-on-LAN data; the broadcast is localhost so the test does not send into a real network
+		mac: 'aa-bb-cc-dd-ee-01',
+		broadcast: '127.0.0.1',
 		started: new Date().toISOString(),
 		security: { allow_any_run: false, allow_shell: false, apps: ['notepad', 'calc'], disabled_commands: ['beep'] },
 		hotkeys: {},

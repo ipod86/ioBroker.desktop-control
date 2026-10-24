@@ -197,6 +197,19 @@ tests.integration(path.join(__dirname, '..'), {
 				expect(file.length).to.be.greaterThan(10);
 			});
 
+			it('offers Wake-on-LAN with the MAC address of the agent', async function () {
+				this.timeout(15000);
+				const mac = await waitForState(`${NS}.fake-pc.info.mac`);
+				expect(mac.val).to.equal('AA:BB:CC:DD:EE:01');
+				const wake = await harness.objects.getObjectAsync(`${NS}.fake-pc.cmd.wake`);
+				expect(wake.common.role).to.equal('button');
+				const dev = await harness.objects.getObjectAsync(`${NS}.fake-pc`);
+				expect(dev.native.mac).to.equal('AA:BB:CC:DD:EE:01');
+				const res = await sendTo('cmd', { device: 'fake-pc', command: 'wake' });
+				expect(res.ok).to.equal(true);
+				expect(res.result.sent).to.include('127.0.0.1');
+			});
+
 			it('answers commands to an offline device immediately with an error', async function () {
 				this.timeout(15000);
 				await agent.stop();

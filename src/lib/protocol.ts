@@ -97,6 +97,10 @@ export interface Manifest {
 	protocol: number;
 	/** run/open aliases allowed by the agent config */
 	apps: string[];
+	/** MAC address of the network card (Wake-on-LAN) */
+	mac: string;
+	/** IPv4 broadcast address of the PC's network (Wake-on-LAN) */
+	broadcast: string;
 	/** agent may start any program (not only aliases) */
 	allowAnyRun: boolean;
 	/** announced states */
@@ -329,6 +333,8 @@ export function normalizeManifest(raw: unknown): Manifest {
 		started: str(m.started),
 		protocol: typeof m.protocol === 'number' ? m.protocol : 0,
 		apps: Array.isArray(security.apps) ? security.apps.map(str) : [],
+		mac: str(m.mac),
+		broadcast: str(m.broadcast),
 		allowAnyRun: security.allow_any_run === true,
 		states,
 		commands,

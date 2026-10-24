@@ -24,9 +24,11 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var utils = __toESM(require("@iobroker/adapter-core"));
 var import_mqtt = __toESM(require("mqtt"));
 var import_broker = require("./lib/broker");
+var import_wol = require("./lib/wol");
 var import_correlator = require("./lib/correlator");
 var import_protocol = require("./lib/protocol");
 const RESULT = "result";
+const WAKE = "wake";
 const DIALOG_COMMANDS = ["ask"];
 class DesktopControl extends utils.Adapter {
   client;
@@ -92,13 +94,20 @@ class DesktopControl extends utils.Adapter {
   }
   /** Reads the devices created in earlier runs (topic id is stored in native) */
   async restoreDevices() {
-    var _a;
+    var _a, _b;
     const objs = await this.getAdapterObjectsAsync();
     for (const [id, obj] of Object.entries(objs)) {
       const rel = id.slice(this.namespace.length + 1);
       if (obj.type === "device" && rel !== "all" && !rel.includes(".")) {
-        const topicId = String(((_a = obj.native) == null ? void 0 : _a.topicId) || rel);
-        this.devices.set(topicId, { topicId, objId: rel, online: false });
+        const native = (_a = obj.native) != null ? _a : {};
+        const topicId = String(native.topicId || rel);
+        this.devices.set(topicId, {
+          topicId,
+          objId: rel,
+          online: false,
+          mac: (_b = (0, import_wol.normalizeMac)(native.mac)) != null ? _b : void 0,
+          broadcast: native.broadcast || void 0
+        });
         this.byObjId.set(rel, topicId);
         await this.setState(`${rel}.online`, false, true);
       }
@@ -320,19 +329,26 @@ class DesktopControl extends utils.Adapter {
    * @param dev device
    */
   async applyManifest(dev) {
+    var _a, _b, _c, _d;
     const m = dev.manifest;
     if (!m) {
       return;
     }
     const o = dev.objId;
-    await this.extendObjectAsync(o, { common: { name: m.hostname || dev.topicId } });
+    dev.mac = (_a = (0, import_wol.normalizeMac)(m.mac)) != null ? _a : dev.mac;
+    dev.broadcast = m.broadcast || dev.broadcast;
+    await this.extendObjectAsync(o, {
+      common: { name: m.hostname || dev.topicId },
+      native: { topicId: dev.topicId, mac: (_b = dev.mac) != null ? _b : "", broadcast: (_c = dev.broadcast) != null ? _c : "" }
+    });
     const infos = [
       ["hostname", "Host name", "info.name"],
       ["ip", "IP address", "info.ip"],
       ["version", "Agent version", "info.firmware"],
       ["os", "Operating system", "text"],
       ["user", "Logged-in user", "text"],
-      ["started", "Agent started", "date"]
+      ["started", "Agent started", "date"],
+      ["mac", "MAC address", "info.mac"]
     ];
     for (const [key, name, role] of infos) {
       await this.ensureObject(`${o}.info.${key}`, {
@@ -340,7 +356,11 @@ class DesktopControl extends utils.Adapter {
         common: { name, type: "string", role, read: true, write: false },
         native: {}
       });
-      await this.setStateChangedAsync(`${o}.info.${key}`, m[key], true);
+      await this.setStateChangedAsync(
+        `${o}.info.${key}`,
+        key === "mac" ? (_d = dev.mac) != null ? _d : "" : m[key],
+        true
+      );
     }
     await this.ensureObject(`${o}.info.apps`, {
       type: "state",
@@ -379,6 +399,14 @@ class DesktopControl extends utils.Adapter {
           native: { command: c.name }
         });
       }
+    }
+    if (dev.mac) {
+      wanted.add(`${o}.cmd.${WAKE}`);
+      await this.ensureObject(`${o}.cmd.${WAKE}`, {
+        type: "state",
+        common: this.wakeCommon(),
+        native: {}
+      });
     }
     const existing = await this.getObjectViewAsync("system", "state", {
       startkey: `${this.namespace}.${o}.cmd.`,
@@ -422,6 +450,32 @@ class DesktopControl extends utils.Adapter {
       ...c.name === "run" && (apps == null ? void 0 : apps.length) ? { states: Object.fromEntries(apps.map((a) => [a, a])) } : {}
     };
   }
+  /** common of the Wake-on-LAN button */
+  wakeCommon() {
+    return {
+      name: "Wake-on-LAN",
+      desc: "Switches the PC on via Wake-on-LAN (works while the PC is off; Wake-on-LAN must be enabled in BIOS/network card)",
+      type: "boolean",
+      role: "button",
+      read: false,
+      write: true
+    };
+  }
+  /**
+   * Wakes a PC via Wake-on-LAN
+   *
+   * @param dev device
+   * @returns addresses the packet was sent to
+   */
+  async wake(dev) {
+    var _a;
+    if (!dev.mac) {
+      throw new Error(`${dev.topicId}: MAC address unknown \u2013 the agent has to be connected once`);
+    }
+    const sent = await (0, import_wol.sendWol)(dev.mac, [(_a = dev.broadcast) != null ? _a : "", "255.255.255.255"]);
+    this.log.info(`${dev.topicId}: Wake-on-LAN sent to ${dev.mac} via ${sent.join(", ")}`);
+    return sent;
+  }
   /** all.cmd.*: commands every device can do the same way (union of the non-dangerous commands) */
   async updateBroadcastCommands() {
     var _a, _b;
@@ -438,6 +492,9 @@ class DesktopControl extends utils.Adapter {
     }
     await this.ensureObject("all", { type: "device", common: { name: "All PCs (broadcast)" }, native: {} });
     await this.ensureObject("all.cmd", { type: "channel", common: { name: "Commands to all PCs" }, native: {} });
+    if ([...this.devices.values()].some((d) => d.mac)) {
+      await this.ensureObject(`all.cmd.${WAKE}`, { type: "state", common: this.wakeCommon(), native: {} });
+    }
     for (const c of cmds.values()) {
       for (const dp of (0, import_protocol.commandDataPoints)(c)) {
         await this.ensureObject(`all.cmd.${(0, import_protocol.sanitizeSegment)(c.name)}${dp.suffix}`, {
@@ -502,6 +559,14 @@ class DesktopControl extends utils.Adapter {
     const rel = id.slice(this.namespace.length + 1);
     const parts = rel.split(".");
     try {
+      if (parts[1] === "cmd" && parts[2] === WAKE && parts.length === 3) {
+        const targets = parts[0] === "all" ? [...this.devices.values()].filter((d) => d.mac && !d.online) : [...this.devices.values()].filter((d) => d.objId === parts[0]);
+        for (const d of targets) {
+          await this.wake(d);
+        }
+        await this.setState(rel, state.val, true);
+        return;
+      }
       if (parts[1] === "cmd" && parts.length === 3 && parts[2] !== RESULT) {
         const obj = await this.getObjectAsync(rel);
         const command = String(((_a = obj == null ? void 0 : obj.native) == null ? void 0 : _a.command) || parts[2]);
@@ -609,6 +674,14 @@ class DesktopControl extends utils.Adapter {
       return p;
     };
     try {
+      if (device === "all" && command === WAKE) {
+        const offline = [...this.devices.values()].filter((d) => d.mac && !d.online);
+        for (const d of offline) {
+          await this.wake(d);
+        }
+        reply({ ok: true, command: WAKE, result: { woken: offline.map((d) => d.topicId) } });
+        return;
+      }
       if (device === "all") {
         const params2 = paramsFor();
         await this.broadcast(command, params2);
@@ -616,6 +689,11 @@ class DesktopControl extends utils.Adapter {
         return;
       }
       const topicId = this.resolveDevice(device);
+      if (command === WAKE) {
+        const sent = await this.wake(this.devices.get(topicId));
+        reply({ ok: true, command: WAKE, result: { sent } });
+        return;
+      }
       const params = paramsFor(topicId);
       const timeout = typeof msg.timeout === "number" && msg.timeout > 0 ? msg.timeout : void 0;
       const result = await this.sendCommand(topicId, command, params, timeout);

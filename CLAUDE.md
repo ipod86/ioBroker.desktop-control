@@ -29,6 +29,7 @@ WinCtl.exe (per PC) ──MQTT──> broker (built-in or external) <──MQTT�
 - MQTT messages are processed one after another (`queue` in main.ts), so the manifest is applied before the states that follow it.
 - Screenshots: raw image bytes → file storage `desktop-control.0/screenshots/<device>.<ext>`; the instance meta object is created in `onReady`.
 - Built-in broker (aedes, `src/lib/broker.ts`) is the default (`brokerMode: internal`, port 1886); the adapter connects to it on 127.0.0.1. User name/password of the settings are then the login the agents must use. Old instances without `brokerMode` stay external when a host is set. aedes is ESM: esbuild turns `import()` into `require()`, which needs Node >= 22.12 (require(esm)).
+- Wake-on-LAN: `cmd.wake` / `all.cmd.wake` / sendTo command `wake` are handled by the adapter (`src/lib/wol.ts`), not the agent; MAC/broadcast from the manifest are kept in the device object's native (built-in broker loses retained messages on restart).
 - Protocol version > 1 in the manifest → warning in the log, no hard stop.
 
 ## Commands

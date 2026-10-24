@@ -1,6 +1,6 @@
 {
   "protocol": 1,
-  "version": "0.3.3",
+  "version": "0.4.0",
   "states": [
     {
       "name": "locked",
@@ -120,6 +120,34 @@
       "role": "indicator",
       "unit": "",
       "description": "keep_awake aktiv"
+    },
+    {
+      "name": "webcam_in_use",
+      "type": "boolean",
+      "role": "indicator",
+      "unit": "",
+      "description": "Kamera wird gerade benutzt (z.B. Videokonferenz)"
+    },
+    {
+      "name": "webcam_app",
+      "type": "string",
+      "role": "text",
+      "unit": "",
+      "description": "Programm(e), die die Kamera benutzen"
+    },
+    {
+      "name": "mic_in_use",
+      "type": "boolean",
+      "role": "indicator",
+      "unit": "",
+      "description": "Mikrofon wird gerade benutzt"
+    },
+    {
+      "name": "mic_app",
+      "type": "string",
+      "role": "text",
+      "unit": "",
+      "description": "Programm(e), die das Mikrofon benutzen"
     },
     {
       "name": "update_available",

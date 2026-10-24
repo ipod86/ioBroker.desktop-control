@@ -44,7 +44,8 @@ Mit einem vorhandenen Broker im Adapter „Vorhandener Broker“ wählen und in 
 | `<PC>.cmd.*` | Ein Datenpunkt je Befehl (siehe [Befehle](#befehle-pccmd)) |
 | `<PC>.cmd.result` | Ergebnis des letzten Befehls, z. B. die Antwort von `ask` |
 | `<PC>.screenshot` | Pfad des letzten Screenshots im ioBroker-Dateispeicher, z. B. `/desktop-control.0/screenshots/<PC>.jpg` |
-| `all.cmd.*` | Schickt einen Befehl an alle PCs gleichzeitig |
+| `<PC>.cmd.wake` | Schaltet den PC per Wake-on-LAN ein – macht der Adapter selbst, funktioniert also auch, wenn der PC aus ist |
+| `all.cmd.*` | Schickt einen Befehl an alle PCs gleichzeitig (`all.cmd.wake` weckt alle ausgeschalteten PCs) |
 
 ### Info (`<PC>.info.*`)
 
@@ -56,6 +57,7 @@ Mit einem vorhandenen Broker im Adapter „Vorhandener Broker“ wählen und in 
 | `os` | Windows-Version |
 | `user` | Angemeldeter Benutzer |
 | `started` | Startzeit des Agents |
+| `mac` | MAC-Adresse der Netzwerkkarte (für Wake-on-LAN) |
 | `apps` | Programm-Aliase, die der Agent starten darf (JSON-Liste) |
 
 ### Ereignisse (`<PC>.event.*`)
@@ -83,7 +85,7 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
 - Sicherheitsrelevante Befehle (z. B. `shell`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 <!-- generated:start -->
-_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.3.3)._
+_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.4.0)._
 
 #### System
 
@@ -944,6 +946,10 @@ Datenpunkt: `cmd.clipboard_get` – Knopf – Klick führt aus
 | `state.ip` | string |  |  | Lokale IPv4-Adresse |
 | `state.user` | string |  |  | Angemeldeter Benutzer |
 | `state.keep_awake` | boolean |  | ja | keep_awake aktiv |
+| `state.webcam_in_use` | boolean |  |  | Kamera wird gerade benutzt (z.B. Videokonferenz) |
+| `state.webcam_app` | string |  |  | Programm(e), die die Kamera benutzen |
+| `state.mic_in_use` | boolean |  |  | Mikrofon wird gerade benutzt |
+| `state.mic_app` | string |  |  | Programm(e), die das Mikrofon benutzen |
 | `state.update_available` | boolean |  |  | Neuere WinCtl-Version verfügbar (Prüfung beim Start und alle 12 h) |
 | `state.latest_version` | string |  |  | Neueste WinCtl-Version auf GitHub |
 | `state.disk.<laufwerk>_free_gb` | number | GB |  | Freier Platz je Festplatte (dynamisch) |
@@ -974,6 +980,10 @@ sendTo('desktop-control.0', 'devices', {}, list => log(JSON.stringify(list)));
 
 Die Antwort hat die Form `{ ok, command, result, error }`.
 
+## Wake-on-LAN
+
+Der Agent meldet die MAC-Adresse seiner Netzwerkkarte; der Adapter merkt sie sich, damit `cmd.wake` auch nach einem Neustart funktioniert, während der PC aus ist. Voraussetzungen: Wake-on-LAN im BIOS/UEFI und in der Netzwerkkarte aktiviert (Geräte-Manager → Netzwerkkarte → Energieverwaltung / Erweitert), PC per Kabel angeschlossen, ioBroker im selben Netz. Der Windows-„Schnellstart“ kann das Wecken aus dem heruntergefahrenen Zustand verhindern – dann abschalten.
+
 ## Sicherheit
 
 Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer/Passwort und ACLs absichern, bei Bedarf TLS nutzen. Standardmäßig startet der Agent nur Programme aus seiner Alias-Liste, und `shell` ist aus.
@@ -986,6 +996,7 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 ### **WORK IN PROGRESS**
 * (ipod86) Erste Version
 * (ipod86) Eingebauter MQTT-Broker
+* (ipod86) Wake-on-LAN (`cmd.wake`), Kamera/Mikrofon in Benutzung (`state.webcam_in_use`, `state.mic_in_use`)
 * (ipod86) Agent-Update aus ioBroker: `state.update_available`, `state.latest_version`, Knopf `cmd.update`
 * (ipod86) Alle Befehlsoptionen über die Datenpunkte einstellbar; Beschreibung mit Optionen und Beispiel; Befehls- und State-Referenz in der README
 

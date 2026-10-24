@@ -44,7 +44,8 @@ With an existing broker select "Existing broker" in the adapter and enter the sa
 | `<pc>.cmd.*` | One data point per command (see [Commands](#commands-pccmd)) |
 | `<pc>.cmd.result` | Result of the last command, e.g. the answer of `ask` |
 | `<pc>.screenshot` | Path of the last screenshot in the ioBroker file storage, e.g. `/desktop-control.0/screenshots/<pc>.jpg` |
-| `all.cmd.*` | Sends a command to all PCs at once |
+| `<pc>.cmd.wake` | Switches the PC on via Wake-on-LAN – handled by the adapter, so it works while the PC is off |
+| `all.cmd.*` | Sends a command to all PCs at once (`all.cmd.wake` wakes all PCs that are off) |
 
 ### Info (`<pc>.info.*`)
 
@@ -56,6 +57,7 @@ With an existing broker select "Existing broker" in the adapter and enter the sa
 | `os` | Windows version |
 | `user` | Logged-in user |
 | `started` | Start time of the agent |
+| `mac` | MAC address of the network card (for Wake-on-LAN) |
 | `apps` | Program aliases the agent may start (JSON list) |
 
 ### Events (`<pc>.event.*`)
@@ -83,7 +85,7 @@ Written on every event (also when the content is the same), so a trigger with `c
 - Security relevant commands (e.g. `shell`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (agent version 0.3.3). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
+_Generated from the agent (agent version 0.4.0). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
@@ -189,6 +191,10 @@ _Generated from the agent (agent version 0.3.3). Examples and all option descrip
 | `state.ip` | string |  |  | Local IPv4 address |
 | `state.user` | string |  |  | Logged-in user |
 | `state.keep_awake` | boolean |  | yes | keep_awake active |
+| `state.webcam_in_use` | boolean |  |  | Camera in use (e.g. video call) |
+| `state.webcam_app` | string |  |  | Program(s) using the camera |
+| `state.mic_in_use` | boolean |  |  | Microphone in use |
+| `state.mic_app` | string |  |  | Program(s) using the microphone |
 | `state.update_available` | boolean |  |  | Newer agent version available (checked at start and every 12 h) |
 | `state.latest_version` | string |  |  | Newest agent version on GitHub |
 | `state.disk.<laufwerk>_free_gb` | number | GB |  | Free space per drive, e.g. `disk.C_free_gb` |
@@ -219,6 +225,10 @@ sendTo('desktop-control.0', 'devices', {}, list => log(JSON.stringify(list)));
 
 The answer has the form `{ ok, command, result, error }`.
 
+## Wake-on-LAN
+
+The agent reports the MAC address of its network card; the adapter keeps it, so `cmd.wake` also works after a restart while the PC is off. Requirements: Wake-on-LAN enabled in the BIOS/UEFI and in the network card settings (Device Manager → network card → Power Management / Advanced), PC connected by cable, ioBroker in the same network. Windows "Fast startup" can prevent waking from shutdown – switch it off if needed.
+
 ## Security
 
 Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with user/password and ACLs, use TLS if needed. By default the agent only starts programs from its alias list and `shell` is off.
@@ -231,6 +241,7 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 ### **WORK IN PROGRESS**
 * (ipod86) initial release
 * (ipod86) built-in MQTT broker
+* (ipod86) Wake-on-LAN (`cmd.wake`), camera/microphone in use (`state.webcam_in_use`, `state.mic_in_use`)
 * (ipod86) agent update from ioBroker: `state.update_available`, `state.latest_version`, button `cmd.update`
 * (ipod86) every command option settable via the data points; description with options and example; command and state reference in the README
 

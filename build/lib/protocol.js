@@ -191,6 +191,8 @@ function normalizeManifest(raw) {
     started: str(m.started),
     protocol: typeof m.protocol === "number" ? m.protocol : 0,
     apps: Array.isArray(security.apps) ? security.apps.map(str) : [],
+    mac: str(m.mac),
+    broadcast: str(m.broadcast),
     allowAnyRun: security.allow_any_run === true,
     states,
     commands,
