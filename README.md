@@ -97,7 +97,7 @@ Written on every event (also when the content is the same), so a trigger with `c
 - Security relevant commands (e.g. `shell`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (agent version 0.6.2). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
+_Generated from the agent (agent version 0.6.3). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
@@ -277,6 +277,7 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (ipod86) `true` on an options data point (e.g. `cmd.list_processes`) runs the command with its defaults instead of using "true" as value; agent 0.6.3: state changes are no longer lost after a reconnect
 * (ipod86) agent 0.6.2: English descriptions in the object texts; roles checked against the official list (deprecated aliases removed) and fitted to type and write flag; ids only with `A-Z a-z 0-9 _ -`
 * (ipod86) object tree without gaps (folders for nested states), English adapter description, broker settings renamed to `port`/`bind` (built-in) and `hostPort` (existing broker; migrated automatically), clean unload of the built-in broker
 * (ipod86) agent 0.6.1: `show_video` uses Microsoft Edge (WebView2) as well

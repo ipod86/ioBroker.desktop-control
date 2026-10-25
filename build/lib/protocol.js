@@ -345,12 +345,12 @@ function parseCommandParams(value, cmd) {
     } catch {
     }
   }
-  if (cmd == null ? void 0 : cmd.primary) {
-    const type = (_a = cmd.params.find((p) => p.name === cmd.primary)) == null ? void 0 : _a.type;
-    return { [cmd.primary]: convertParam(value, type) };
-  }
-  if (value === "true" || value === "{}") {
+  const primaryType = (cmd == null ? void 0 : cmd.primary) ? (_a = cmd.params.find((p) => p.name === cmd.primary)) == null ? void 0 : _a.type : void 0;
+  if (value === "{}" || value === "true" && primaryType !== "boolean") {
     return {};
+  }
+  if (cmd == null ? void 0 : cmd.primary) {
+    return { [cmd.primary]: convertParam(value, primaryType) };
   }
   return "parameters must be a JSON object";
 }

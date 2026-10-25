@@ -217,4 +217,16 @@ describe('commands and results', () => {
 		expect(fitRole('value.battery', 'string', false)).to.equal('text');
 		expect(fitRole('text.url', 'string', false)).to.equal('text.url');
 	});
+
+	it('treats "true" on a JSON data point as "run with defaults" unless the primary parameter is boolean', () => {
+		const list = {
+			name: 'list_processes',
+			params: [{ name: 'filter', type: 'string', required: false }],
+			primary: 'filter',
+		};
+		expect(parseCommandParams('true', list as never)).to.deep.equal({});
+		expect(parseCommandParams('chrome', list as never)).to.deep.equal({ filter: 'chrome' });
+		const flag = { name: 'x', params: [{ name: 'on', type: 'boolean', required: true }], primary: 'on' };
+		expect(parseCommandParams('true', flag as never)).to.deep.equal({ on: true });
+	});
 });

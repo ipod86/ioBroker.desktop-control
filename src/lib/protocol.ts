@@ -567,13 +567,14 @@ export function parseCommandParams(
 			// not JSON: maybe the short form
 		}
 	}
-	if (cmd?.primary) {
-		const type = cmd.params.find(p => p.name === cmd.primary)?.type;
-		return { [cmd.primary]: convertParam(value, type) };
-	}
-	// "true" or "{}" = run with the default options
-	if (value === 'true' || value === '{}') {
+	const primaryType = cmd?.primary ? cmd.params.find(p => p.name === cmd.primary)?.type : undefined;
+	// "true" or "{}" = run with the default options (a JSON data point set to true like a button);
+	// only a boolean primary parameter takes "true" as its value
+	if (value === '{}' || (value === 'true' && primaryType !== 'boolean')) {
 		return {};
+	}
+	if (cmd?.primary) {
+		return { [cmd.primary]: convertParam(value, primaryType) };
 	}
 	return 'parameters must be a JSON object';
 }
