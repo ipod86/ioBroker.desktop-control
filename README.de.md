@@ -1060,18 +1060,7 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
-* (ipod86) `volume`, `muted` und `keep_awake` werden auch aus der Befehlsantwort übernommen und stimmen so auch, wenn die Zustandsmeldung des Agents verspätet ist
-* (ipod86) `true` auf einem Options-Datenpunkt (z. B. `cmd.list_processes`) führt den Befehl mit Standardwerten aus, statt „true“ als Wert zu nehmen; Agent 0.6.3: Zustandsänderungen gehen nach einem Reconnect nicht mehr verloren
-* (ipod86) Agent 0.6.2: englische Beschreibungen in den Objekttexten; Rollen gegen die offizielle Liste geprüft (veraltete entfernt) und an Typ und Schreibrecht angepasst; IDs nur noch mit `A-Z a-z 0-9 _ -`
-* (ipod86) Objektbaum ohne Lücken (Ordner für verschachtelte States), englische Adapterbeschreibung, Broker-Einstellungen umbenannt in `port`/`bind` (eingebauter Broker) und `hostPort` (vorhandener Broker; wird automatisch übernommen), sauberes Beenden des eingebauten Brokers
-* (ipod86) Agent 0.6.1: `show_video` nutzt ebenfalls Microsoft Edge (WebView2)
-* (ipod86) Agent 0.6.0: `show_web` nutzt Microsoft Edge (WebView2), Optionen `zoom` und `engine`, State `web_url`
-* (ipod86) Agent 0.5.0: `show_web` als Diashow, Befehle `screensaver` und `start_menu`
-* (ipod86) Erste Version
-* (ipod86) Eingebauter MQTT-Broker
-* (ipod86) Wake-on-LAN (`cmd.wake`), Kamera/Mikrofon in Benutzung (`state.webcam_in_use`, `state.mic_in_use`)
-* (ipod86) Agent-Update aus ioBroker: `state.update_available`, `state.latest_version`, Knopf `cmd.update`
-* (ipod86) Alle Befehlsoptionen über die Datenpunkte einstellbar; Beschreibung mit Optionen und Beispiel; Befehls- und State-Referenz in der README
+### 0.1.0 (2026-10-25)
+* (ipod86) erste öffentliche Version: steuert Windows-PCs über den WinCtl-Agent per MQTT – eingebauter MQTT-Broker, Popups, Bilder, Videos und Webseiten (Microsoft Edge), Programme, Audio und Sprachausgabe, Screenshots, Energie, Tastatur/Maus, Wake-on-LAN, Kamera/Mikrofon in Benutzung, Agent-Update aus ioBroker
 
 Ältere Einträge stehen in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).

@@ -1,20 +1,20 @@
 {
 	"common": {
 		"name": "desktop-control",
-		"version": "0.0.1",
+		"version": "0.1.0",
 		"news": {
-			"0.0.1": {
-				"en": "initial release",
-				"de": "Erstveröffentlichung",
-				"ru": "Начальная версия",
-				"pt": "lançamento inicial",
-				"nl": "Eerste uitgave",
-				"fr": "Première version",
-				"it": "Versione iniziale",
-				"es": "Versión inicial",
-				"pl": "Pierwsze wydanie",
-				"uk": "Початкова версія",
-				"zh-cn": "首次出版"
+			"0.1.0": {
+				"en": "first public release: controls Windows PCs via the WinCtl agent over MQTT – built-in MQTT broker, popups, images, videos and web pages (Microsoft Edge), programs, audio and text-to-speech, screenshots, power, keyboard/mouse, Wake-on-LAN, camera/microphone in use, agent update from ioBroker",
+				"de": "erste öffentliche Version: steuert Windows-PCs über den WinCtl-Agent per MQTT – eingebauter MQTT-Broker, Popups, Bilder, Videos und Webseiten (Microsoft Edge), Programme, Audio und Sprachausgabe, Screenshots, Energie, Tastatur/Maus, Wake-on-LAN, Kamera/Mikrofon in Benutzung, Agent-Update aus ioBroker",
+				"ru": "первый публичный выпуск: управление ПК с Windows через агент WinCtl по MQTT – встроенный MQTT-брокер, всплывающие окна, изображения, видео и веб-страницы (Microsoft Edge), программы, звук и синтез речи, скриншоты, питание, клавиатура/мышь, Wake-on-LAN, использование камеры/микрофона, обновление агента из ioBroker",
+				"pt": "primeira versão pública: controla PCs com Windows através do agente WinCtl via MQTT – broker MQTT integrado, pop-ups, imagens, vídeos e páginas web (Microsoft Edge), programas, áudio e síntese de voz, capturas de tela, energia, teclado/rato, Wake-on-LAN, câmara/microfone em uso, atualização do agente a partir do ioBroker",
+				"nl": "eerste openbare versie: bestuurt Windows-pc's via de WinCtl-agent over MQTT – ingebouwde MQTT-broker, pop-ups, afbeeldingen, video's en webpagina's (Microsoft Edge), programma's, audio en spraak, schermafbeeldingen, energiebeheer, toetsenbord/muis, Wake-on-LAN, camera/microfoon in gebruik, agent-update vanuit ioBroker",
+				"fr": "première version publique : contrôle des PC Windows via l'agent WinCtl en MQTT – broker MQTT intégré, fenêtres contextuelles, images, vidéos et pages web (Microsoft Edge), programmes, audio et synthèse vocale, captures d'écran, alimentation, clavier/souris, Wake-on-LAN, caméra/microphone utilisés, mise à jour de l'agent depuis ioBroker",
+				"it": "prima versione pubblica: controlla PC Windows tramite l'agente WinCtl via MQTT – broker MQTT integrato, popup, immagini, video e pagine web (Microsoft Edge), programmi, audio e sintesi vocale, screenshot, alimentazione, tastiera/mouse, Wake-on-LAN, fotocamera/microfono in uso, aggiornamento dell'agente da ioBroker",
+				"es": "primera versión pública: controla PC con Windows mediante el agente WinCtl por MQTT – broker MQTT integrado, ventanas emergentes, imágenes, vídeos y páginas web (Microsoft Edge), programas, audio y síntesis de voz, capturas de pantalla, energía, teclado/ratón, Wake-on-LAN, cámara/micrófono en uso, actualización del agente desde ioBroker",
+				"pl": "pierwsze publiczne wydanie: steruje komputerami z Windows przez agenta WinCtl za pomocą MQTT – wbudowany broker MQTT, okna wyskakujące, obrazy, filmy i strony WWW (Microsoft Edge), programy, dźwięk i synteza mowy, zrzuty ekranu, zasilanie, klawiatura/mysz, Wake-on-LAN, używana kamera/mikrofon, aktualizacja agenta z ioBroker",
+				"uk": "перший публічний випуск: керування ПК з Windows через агент WinCtl по MQTT – вбудований MQTT-брокер, спливаючі вікна, зображення, відео та вебсторінки (Microsoft Edge), програми, звук і синтез мовлення, знімки екрана, живлення, клавіатура/миша, Wake-on-LAN, використання камери/мікрофона, оновлення агента з ioBroker",
+				"zh-cn": "首个公开版本：通过 MQTT 和 WinCtl 代理控制 Windows 电脑——内置 MQTT 代理、弹窗、图片、视频和网页（Microsoft Edge）、程序、音频和语音朗读、截图、电源、键盘/鼠标、网络唤醒、摄像头/麦克风使用状态、从 ioBroker 更新代理"
 			}
 		},
 		"titleLang": {

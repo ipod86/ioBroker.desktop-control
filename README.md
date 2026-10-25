@@ -276,19 +276,8 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
-* (ipod86) `volume`, `muted` and `keep_awake` are also taken from the command answer, so they are right even if the agent's state message is late
-* (ipod86) `true` on an options data point (e.g. `cmd.list_processes`) runs the command with its defaults instead of using "true" as value; agent 0.6.3: state changes are no longer lost after a reconnect
-* (ipod86) agent 0.6.2: English descriptions in the object texts; roles checked against the official list (deprecated aliases removed) and fitted to type and write flag; ids only with `A-Z a-z 0-9 _ -`
-* (ipod86) object tree without gaps (folders for nested states), English adapter description, broker settings renamed to `port`/`bind` (built-in) and `hostPort` (existing broker; migrated automatically), clean unload of the built-in broker
-* (ipod86) agent 0.6.1: `show_video` uses Microsoft Edge (WebView2) as well
-* (ipod86) agent 0.6.0: `show_web` uses Microsoft Edge (WebView2), options `zoom` and `engine`, state `web_url`
-* (ipod86) agent 0.5.0: `show_web` slideshow, commands `screensaver` and `start_menu`
-* (ipod86) initial release
-* (ipod86) built-in MQTT broker
-* (ipod86) Wake-on-LAN (`cmd.wake`), camera/microphone in use (`state.webcam_in_use`, `state.mic_in_use`)
-* (ipod86) agent update from ioBroker: `state.update_available`, `state.latest_version`, button `cmd.update`
-* (ipod86) every command option settable via the data points; description with options and example; command and state reference in the README
+### 0.1.0 (2026-10-25)
+* (ipod86) first public release: controls Windows PCs via the WinCtl agent over MQTT – built-in MQTT broker, popups, images, videos and web pages (Microsoft Edge), programs, audio and text-to-speech, screenshots, power, keyboard/mouse, Wake-on-LAN, camera/microphone in use, agent update from ioBroker
 
 Older changelogs are available in [CHANGELOG_OLD.md](CHANGELOG_OLD.md).
 
