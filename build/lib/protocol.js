@@ -37,6 +37,7 @@ __export(protocol_exports, {
   pathToId: () => pathToId,
   sanitizeSegment: () => sanitizeSegment,
   stateCommon: () => stateCommon,
+  stateFromResult: () => stateFromResult,
   text: () => text
 });
 module.exports = __toCommonJS(protocol_exports);
@@ -128,6 +129,20 @@ const WRITABLE_COMMANDS = {
   muted: { command: "mute", param: "state" },
   keep_awake: { command: "keep_awake", param: "state" }
 };
+const RESULT_STATES = {
+  volume: ["volume", "level"],
+  volume_change: ["volume", "level"],
+  mute: ["muted", "muted"],
+  keep_awake: ["keep_awake", "keep_awake"]
+};
+function stateFromResult(result) {
+  const map = RESULT_STATES[result.command];
+  if (!result.ok || !map || !result.result || typeof result.result !== "object") {
+    return null;
+  }
+  const value = result.result[map[1]];
+  return typeof value === "number" || typeof value === "boolean" ? { path: map[0], value } : null;
+}
 const TYPES = ["number", "string", "boolean", "json", "array", "object", "mixed"];
 const ALIAS_LIMITED = ["run", "kill"];
 function normalizeManifest(raw) {
@@ -420,6 +435,7 @@ function parseScreenshot(payload) {
   pathToId,
   sanitizeSegment,
   stateCommon,
+  stateFromResult,
   text
 });
 //# sourceMappingURL=protocol.js.map

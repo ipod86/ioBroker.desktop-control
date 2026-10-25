@@ -1061,6 +1061,7 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (ipod86) `volume`, `muted` und `keep_awake` werden auch aus der Befehlsantwort übernommen und stimmen so auch, wenn die Zustandsmeldung des Agents verspätet ist
 * (ipod86) `true` auf einem Options-Datenpunkt (z. B. `cmd.list_processes`) führt den Befehl mit Standardwerten aus, statt „true“ als Wert zu nehmen; Agent 0.6.3: Zustandsänderungen gehen nach einem Reconnect nicht mehr verloren
 * (ipod86) Agent 0.6.2: englische Beschreibungen in den Objekttexten; Rollen gegen die offizielle Liste geprüft (veraltete entfernt) und an Typ und Schreibrecht angepasst; IDs nur noch mit `A-Z a-z 0-9 _ -`
 * (ipod86) Objektbaum ohne Lücken (Ordner für verschachtelte States), englische Adapterbeschreibung, Broker-Einstellungen umbenannt in `port`/`bind` (eingebauter Broker) und `hostPort` (vorhandener Broker; wird automatisch übernommen), sauberes Beenden des eingebauten Brokers

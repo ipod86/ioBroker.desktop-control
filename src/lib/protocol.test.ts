@@ -14,6 +14,7 @@ import {
 	parseValue,
 	pathToId,
 	stateCommon,
+	stateFromResult,
 } from './protocol';
 import { isOfficialRole } from './roles';
 
@@ -228,5 +229,18 @@ describe('commands and results', () => {
 		expect(parseCommandParams('chrome', list as never)).to.deep.equal({ filter: 'chrome' });
 		const flag = { name: 'x', params: [{ name: 'on', type: 'boolean', required: true }], primary: 'on' };
 		expect(parseCommandParams('true', flag as never)).to.deep.equal({ on: true });
+	});
+
+	it('takes state values from command results', () => {
+		expect(stateFromResult({ id: '1', command: 'mute', ok: true, result: { muted: false } })).to.deep.equal({
+			path: 'muted',
+			value: false,
+		});
+		expect(stateFromResult({ id: '1', command: 'volume_change', ok: true, result: { level: 35 } })).to.deep.equal({
+			path: 'volume',
+			value: 35,
+		});
+		expect(stateFromResult({ id: '1', command: 'mute', ok: false, error: 'x' })).to.equal(null);
+		expect(stateFromResult({ id: '1', command: 'ping', ok: true, result: { pong: true } })).to.equal(null);
 	});
 });

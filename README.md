@@ -277,6 +277,7 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 	### **WORK IN PROGRESS**
 -->
 ### **WORK IN PROGRESS**
+* (ipod86) `volume`, `muted` and `keep_awake` are also taken from the command answer, so they are right even if the agent's state message is late
 * (ipod86) `true` on an options data point (e.g. `cmd.list_processes`) runs the command with its defaults instead of using "true" as value; agent 0.6.3: state changes are no longer lost after a reconnect
 * (ipod86) agent 0.6.2: English descriptions in the object texts; roles checked against the official list (deprecated aliases removed) and fitted to type and write flag; ids only with `A-Z a-z 0-9 _ -`
 * (ipod86) object tree without gaps (folders for nested states), English adapter description, broker settings renamed to `port`/`bind` (built-in) and `hostPort` (existing broker; migrated automatically), clean unload of the built-in broker

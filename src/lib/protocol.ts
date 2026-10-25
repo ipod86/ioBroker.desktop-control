@@ -255,6 +255,30 @@ export const WRITABLE_COMMANDS: Record<string, { command: string; param: string 
 	keep_awake: { command: 'keep_awake', param: 'state' },
 };
 
+/** state a successful command result reports directly: command → [state path, field of the result] */
+const RESULT_STATES: Record<string, [string, string]> = {
+	volume: ['volume', 'level'],
+	volume_change: ['volume', 'level'],
+	mute: ['muted', 'muted'],
+	keep_awake: ['keep_awake', 'keep_awake'],
+};
+
+/**
+ * State value contained in a command result (e.g. mute → `muted`), so the state is right even if the agent's
+ * own state message is late or lost.
+ *
+ * @param result parsed result message
+ * @returns state path and value, or null
+ */
+export function stateFromResult(result: ResultMessage): { path: string; value: ioBroker.StateValue } | null {
+	const map = RESULT_STATES[result.command];
+	if (!result.ok || !map || !result.result || typeof result.result !== 'object') {
+		return null;
+	}
+	const value = (result.result as Record<string, unknown>)[map[1]];
+	return typeof value === 'number' || typeof value === 'boolean' ? { path: map[0], value } : null;
+}
+
 const TYPES = ['number', 'string', 'boolean', 'json', 'array', 'object', 'mixed'];
 
 /** Dangerous commands that get a data point anyway while the agent only starts programs from its alias list */

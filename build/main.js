@@ -330,6 +330,10 @@ class DesktopControl extends utils.Adapter {
         if (result) {
           this.correlator.resolve(result);
           await this.setState(`${o}.cmd.${RESULT}`, JSON.stringify(result), true);
+          const st = (0, import_protocol.stateFromResult)(result);
+          if (st && this.known.has(`${o}.state.${st.path}`)) {
+            await this.setStateChangedAsync(`${o}.state.${st.path}`, st.value, true);
+          }
         }
         break;
       }
