@@ -109,6 +109,7 @@ const EN_CMD = {
 	cancel_shutdown: 'Cancels a planned shutdown/restart',
 	monitor_off: 'Turns the monitors off',
 	monitor_on: 'Wakes the monitors up',
+	screensaver: 'Starts the screen saver (the one set in Windows or a .scr file)',
 	keep_awake: 'Prevents standby and screen saver',
 	run: 'Starts a program (alias from the agent settings)',
 	open: 'Opens a URL, file or folder with the default app',
@@ -131,7 +132,8 @@ const EN_CMD = {
 	beep: 'Simple beep',
 	show_image: 'Shows an image as popup, full screen or in a corner',
 	show_video: 'Plays a video (mp4/H.264)',
-	show_web: 'Shows a web page (dashboard, camera stream) in a window or full screen',
+	show_web:
+		'Shows a web page (dashboard, camera stream) in a window or full screen, also several pages in turn (slideshow)',
 	show_text: 'Shows text as an overlay',
 	ask: 'Shows a dialog with buttons/input and returns the answer',
 	notify: 'Shows a Windows notification',
@@ -144,6 +146,7 @@ const EN_CMD = {
 	mouse: 'Moves/clicks the mouse',
 	clipboard_set: 'Sets the clipboard text',
 	clipboard_get: 'Reads the clipboard text',
+	start_menu: 'Opens or closes the start menu (Windows key)',
 };
 const EN_STATE = {
 	locked: 'Screen locked',

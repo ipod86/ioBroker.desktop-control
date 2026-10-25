@@ -96,7 +96,7 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
 - Sicherheitsrelevante Befehle (z. B. `shell`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 <!-- generated:start -->
-_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.4.2)._
+_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.5.0)._
 
 #### System
 
@@ -237,6 +237,24 @@ Datenpunkt: `cmd.monitor_off` – Knopf – Klick führt aus
 <summary><code>monitor_on</code> – Weckt die Monitore auf</summary>
 
 Datenpunkt: `cmd.monitor_on` – Knopf – Klick führt aus  
+
+</details>
+
+<details>
+<summary><code>screensaver</code> – Startet den Bildschirmschoner (der in Windows eingestellte oder eine .scr-Datei)</summary>
+
+Datenpunkt: `cmd.screensaver` – Knopf (führt mit Standardwerten aus) + Eingabe `cmd.screensaver_json` für die Optionen  
+Kurzform: `file`
+
+Beispiele:
+
+```
+{"file":"C:/Windows/System32/Mystify.scr"}
+```
+
+| Option | Typ | Standard | Beschreibung |
+|---|---|---|---|
+| `file` | string | `""` | Pfad zu einer .scr-Datei (leer = der in Windows eingestellte) |
 
 </details>
 
@@ -665,7 +683,7 @@ http://server/video.mp4
 </details>
 
 <details>
-<summary><code>show_web</code> – Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild</summary>
+<summary><code>show_web</code> – Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)</summary>
 
 Datenpunkt: `cmd.show_web` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
 Kurzform: `url`
@@ -675,12 +693,15 @@ Beispiele:
 ```
 http://192.168.1.5:8082/vis/
 {"url":"http://192.168.1.5:8082/vis/","mode":"fullscreen"}
+{"urls":["http://192.168.1.5:8082/vis/","http://kamera/snapshot.jpg"],"interval":20,"mode":"fullscreen"}
 {"url":"http://kamera/stream","mode":"corner","size":35,"seconds":30,"slot":"kamera"}
 ```
 
 | Option | Typ | Standard | Beschreibung |
 |---|---|---|---|
-| `url` | string | Pflicht | Adresse |
+| `url` | string |  | Adresse (oder 'urls' für eine Diashow) |
+| `urls` | array |  | Diashow: mehrere Adressen, wechseln nach 'interval' Sekunden |
+| `interval` | number | `30` | Diashow: Sekunden je Seite |
 | `mode` | string | `"popup"` | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (`popup`, `fullscreen`, `corner`) |
 | `seconds` | number |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer | `-1` | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
@@ -849,6 +870,13 @@ Beispiele:
 </details>
 
 #### Eingabe
+
+<details>
+<summary><code>start_menu</code> – Öffnet bzw. schließt das Startmenü (Windows-Taste)</summary>
+
+Datenpunkt: `cmd.start_menu` – Knopf – Klick führt aus  
+
+</details>
 
 <details>
 <summary><code>send_keys</code> – Sendet Tastendrücke (SendKeys-Syntax: ^=Strg, %=Alt, +=Umschalt, {ENTER}, {F5} ...)</summary>
@@ -1026,6 +1054,7 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
+* (ipod86) Agent 0.5.0: `show_web` als Diashow, Befehle `screensaver` und `start_menu`
 -->
 ### **WORK IN PROGRESS**
 * (ipod86) Erste Version

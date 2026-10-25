@@ -1,6 +1,6 @@
 # Befehlsreferenz
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.4.2). Nicht von Hand ändern._
+_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.5.0). Nicht von Hand ändern._
 
 Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
 
@@ -81,6 +81,20 @@ Schaltet die Monitore aus
 
 ### `monitor_on`
 Weckt die Monitore auf  
+
+### `screensaver`
+Startet den Bildschirmschoner (der in Windows eingestellte oder eine .scr-Datei)  
+Kurzform: Payload `<text>` entspricht `{"file": "<text>"}`.  
+
+Beispiele:
+
+```
+{"file":"C:/Windows/System32/Mystify.scr"}
+```
+
+| Parameter | Typ | Pflicht | Standard | Beschreibung |
+|---|---|---|---|---|
+| `file` | string |  | "" | Pfad zu einer .scr-Datei (leer = der in Windows eingestellte) |
 
 ### `keep_awake`  _(braucht GUI-Sitzung)_
 Verhindert Standby/Bildschirmschoner (bis auf Widerruf)  
@@ -419,7 +433,7 @@ http://server/video.mp4
 | `bg` | string |  |  | Hintergrundfarbe, z.B. #000000 |
 
 ### `show_web`  _(braucht GUI-Sitzung)_
-Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild  
+Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)  
 Kurzform: Payload `<text>` entspricht `{"url": "<text>"}`.  
 
 Beispiele:
@@ -427,12 +441,15 @@ Beispiele:
 ```
 http://192.168.1.5:8082/vis/
 {"url":"http://192.168.1.5:8082/vis/","mode":"fullscreen"}
+{"urls":["http://192.168.1.5:8082/vis/","http://kamera/snapshot.jpg"],"interval":20,"mode":"fullscreen"}
 {"url":"http://kamera/stream","mode":"corner","size":35,"seconds":30,"slot":"kamera"}
 ```
 
 | Parameter | Typ | Pflicht | Standard | Beschreibung |
 |---|---|---|---|---|
-| `url` | string | ja |  | Adresse |
+| `url` | string |  |  | Adresse (oder 'urls' für eine Diashow) |
+| `urls` | array |  |  | Diashow: mehrere Adressen, wechseln nach 'interval' Sekunden |
+| `interval` | number |  | 30 | Diashow: Sekunden je Seite |
 | `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
 | `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
@@ -571,6 +588,9 @@ Beispiele:
 | `level` | integer | ja |  | 0 - 100 |
 
 ## Eingabe
+
+### `start_menu`
+Öffnet bzw. schließt das Startmenü (Windows-Taste)  
 
 ### `send_keys`  _(braucht GUI-Sitzung)_
 Sendet Tastendrücke (SendKeys-Syntax: ^=Strg, %=Alt, +=Umschalt, {ENTER}, {F5} ...)  

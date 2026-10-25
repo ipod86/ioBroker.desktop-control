@@ -1,6 +1,6 @@
 {
   "protocol": 1,
-  "version": "0.4.2",
+  "version": "0.5.0",
   "states": [
     {
       "name": "locked",
@@ -363,6 +363,25 @@
       "params": [],
       "examples": [
         "true"
+      ]
+    },
+    {
+      "name": "screensaver",
+      "category": "power",
+      "description": "Startet den Bildschirmschoner (der in Windows eingestellte oder eine .scr-Datei)",
+      "params": [
+        {
+          "name": "file",
+          "type": "string",
+          "description": "Pfad zu einer .scr-Datei (leer = der in Windows eingestellte)",
+          "required": false,
+          "default": ""
+        }
+      ],
+      "primary": "file",
+      "examples": [
+        "true",
+        "{\"file\":\"C:/Windows/System32/Mystify.scr\"}"
       ]
     },
     {
@@ -1164,13 +1183,26 @@
     {
       "name": "show_web",
       "category": "display",
-      "description": "Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild",
+      "description": "Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)",
       "params": [
         {
           "name": "url",
           "type": "string",
-          "description": "Adresse",
-          "required": true
+          "description": "Adresse (oder \u0027urls\u0027 für eine Diashow)",
+          "required": false
+        },
+        {
+          "name": "urls",
+          "type": "array",
+          "description": "Diashow: mehrere Adressen, wechseln nach \u0027interval\u0027 Sekunden",
+          "required": false
+        },
+        {
+          "name": "interval",
+          "type": "number",
+          "description": "Diashow: Sekunden je Seite",
+          "required": false,
+          "default": 30
         },
         {
           "name": "mode",
@@ -1299,6 +1331,7 @@
       "examples": [
         "http://192.168.1.5:8082/vis/",
         "{\"url\":\"http://192.168.1.5:8082/vis/\",\"mode\":\"fullscreen\"}",
+        "{\"urls\":[\"http://192.168.1.5:8082/vis/\",\"http://kamera/snapshot.jpg\"],\"interval\":20,\"mode\":\"fullscreen\"}",
         "{\"url\":\"http://kamera/stream\",\"mode\":\"corner\",\"size\":35,\"seconds\":30,\"slot\":\"kamera\"}"
       ]
     },
@@ -1644,6 +1677,15 @@
       "primary": "level",
       "examples": [
         "60"
+      ]
+    },
+    {
+      "name": "start_menu",
+      "category": "input",
+      "description": "Öffnet bzw. schließt das Startmenü (Windows-Taste)",
+      "params": [],
+      "examples": [
+        "true"
       ]
     },
     {
