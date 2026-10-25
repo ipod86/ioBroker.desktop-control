@@ -88,14 +88,17 @@ class DesktopControl extends utils.Adapter {
 		});
 		this.base = String(this.config.topicBase || 'winctl').replace(/^\/+|\/+$/g, '') || 'winctl';
 		const cfg = this.config;
+		if (await this.migrateConfig()) {
+			return; // the changed instance object restarts the adapter
+		}
 		// instances from before the built-in broker: keep an entered external broker
 		const mode = cfg.brokerMode || (cfg.host ? 'external' : 'internal');
 		if (mode === 'internal') {
-			const port = Number(cfg.brokerPort) || 1886;
+			const port = Number(cfg.port) || 1886;
 			try {
 				this.broker = await startBroker({
 					port,
-					bind: cfg.brokerBind || '0.0.0.0',
+					bind: cfg.bind || '0.0.0.0',
 					username: cfg.username,
 					password: cfg.password,
 				});
@@ -105,7 +108,7 @@ class DesktopControl extends utils.Adapter {
 				);
 				return;
 			}
-			this.log.info(`Built-in MQTT broker listens on ${cfg.brokerBind || '0.0.0.0'}:${port}`);
+			this.log.info(`Built-in MQTT broker listens on ${cfg.bind || '0.0.0.0'}:${port}`);
 		} else if (!cfg.host) {
 			this.log.error('No MQTT broker configured – please enter the broker host in the adapter settings.');
 			return;
@@ -120,6 +123,30 @@ class DesktopControl extends utils.Adapter {
 		await this.restoreDevices();
 		await this.subscribeStatesAsync('*');
 		this.connect();
+	}
+
+	/**
+	 * Moves settings of older versions to the current names: the built-in broker used `brokerPort`/`brokerBind`
+	 * and `port` was the port of an existing broker. Returns true when the instance object was changed.
+	 */
+	private async migrateConfig(): Promise<boolean> {
+		const cfg = this.config;
+		if (cfg.brokerPort == null && cfg.brokerBind == null) {
+			return false;
+		}
+		this.log.info(
+			'Moving broker settings to the new names (port/bind = built-in broker, hostPort = existing broker)',
+		);
+		await this.extendForeignObjectAsync(`system.adapter.${this.namespace}`, {
+			native: {
+				port: Number(cfg.brokerPort) || 1886,
+				bind: cfg.brokerBind || '0.0.0.0',
+				hostPort: Number(cfg.port) || 1883,
+				brokerPort: null,
+				brokerBind: null,
+			},
+		});
+		return true;
 	}
 
 	/** Reads the devices created in earlier runs (topic id is stored in native) */
@@ -151,7 +178,7 @@ class DesktopControl extends utils.Adapter {
 		const tls = !local && cfg.tls;
 		const options: IClientOptions = {
 			host: local ? '127.0.0.1' : cfg.host,
-			port: local ? Number(cfg.brokerPort) || 1886 : Number(cfg.port) || (tls ? 8883 : 1883),
+			port: local ? Number(cfg.port) || 1886 : Number(cfg.hostPort) || (tls ? 8883 : 1883),
 			protocol: tls ? 'mqtts' : 'mqtt',
 			username: cfg.username || undefined,
 			password: cfg.password || undefined,
@@ -210,6 +237,22 @@ class DesktopControl extends utils.Adapter {
 		}
 		await this.extendObjectAsync(id, obj);
 		this.known.add(id);
+	}
+
+	/**
+	 * Creates a folder for every level between base and the state id (e.g. `state.disk` for `state.disk.c_free_gb`),
+	 * so the object tree has no gaps
+	 *
+	 * @param base existing parent (e.g. `<pc>.state`)
+	 * @param id full state id below base
+	 */
+	private async ensureParents(base: string, id: string): Promise<void> {
+		const parts = id.slice(base.length + 1).split('.');
+		let cur = base;
+		for (const p of parts.slice(0, -1)) {
+			cur = `${cur}.${p}`;
+			await this.ensureObject(cur, { type: 'folder', common: { name: p }, native: {} });
+		}
 	}
 
 	/**
@@ -302,6 +345,7 @@ class DesktopControl extends utils.Adapter {
 				const def = findStateDef(dev.manifest, parsed.path);
 				const value = parseValue(body, def?.type);
 				const id = `${o}.state.${pathToId(parsed.path)}`;
+				await this.ensureParents(`${o}.state`, id);
 				await this.ensureObject(id, {
 					type: 'state',
 					common: stateCommon(parsed.path, def, value),
@@ -312,6 +356,7 @@ class DesktopControl extends utils.Adapter {
 			}
 			case 'event': {
 				const id = `${o}.event.${pathToId(parsed.path)}`;
+				await this.ensureParents(`${o}.event`, id);
 				await this.ensureObject(id, {
 					type: 'state',
 					common: { name: `Event ${parsed.path}`, type: 'string', role: 'json', read: true, write: false },
@@ -422,6 +467,7 @@ class DesktopControl extends utils.Adapter {
 		for (const s of m.states.filter(st => !st.pattern)) {
 			const id = `${o}.state.${pathToId(s.path)}`;
 			this.known.delete(id); // manifest may have changed type/role
+			await this.ensureParents(`${o}.state`, id);
 			await this.ensureObject(id, { type: 'state', common: stateCommon(s.path, s), native: {} });
 		}
 		// commands: button or JSON, dangerous ones only via sendTo; remove commands the agent no longer has
@@ -787,14 +833,16 @@ class DesktopControl extends utils.Adapter {
 		throw new Error(`unknown device "${name}"`);
 	}
 
-	private onUnload(callback: () => void): void {
+	private async onUnload(callback: () => void): Promise<void> {
 		try {
 			this.correlator?.rejectAll('adapter stopped');
 			this.client?.end(true);
-			void this.broker?.close();
-			void this.setState('info.connection', false, true);
-			callback();
+			// wait until the built-in broker has released its port (compact mode restarts in the same process)
+			await this.broker?.close();
+			await this.setState('info.connection', false, true);
 		} catch {
+			// ignore, the adapter is stopping anyway
+		} finally {
 			callback();
 		}
 	}

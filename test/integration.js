@@ -57,7 +57,9 @@ tests.integration(path.join(__dirname, '..'), {
 				Object.assign(obj.native, {
 					brokerMode: 'external',
 					host: '127.0.0.1',
-					port,
+					hostPort: port,
+					brokerPort: null,
+					brokerBind: null,
 					topicBase: 'winctl',
 					cmdTimeout: 5,
 				});
@@ -244,8 +246,10 @@ tests.integration(path.join(__dirname, '..'), {
 				obj.common.messagebox = true;
 				Object.assign(obj.native, {
 					brokerMode: 'internal',
-					brokerPort: port,
-					brokerBind: '127.0.0.1',
+					port,
+					bind: '127.0.0.1',
+					brokerPort: null,
+					brokerBind: null,
 					host: '',
 					// the password is stored encrypted, so the test uses a login with an empty password
 					username: 'agent',

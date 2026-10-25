@@ -1,6 +1,6 @@
 # Befehlsreferenz
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.6.1). Nicht von Hand ändern._
+_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.6.2). Nicht von Hand ändern._
 
 Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
 

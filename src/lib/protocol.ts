@@ -4,7 +4,7 @@
  * so everything here is unit tested.
  */
 
-import { OFFICIAL_ROLES } from './roles';
+import { isOfficialRole } from './roles';
 
 /** Kind of message a topic carries */
 export type TopicKind = 'online' | 'info' | 'state' | 'event' | 'result' | 'screenshot';
@@ -131,8 +131,8 @@ export function text(v: unknown): string {
 
 const KINDS: TopicKind[] = ['online', 'info', 'state', 'event', 'result', 'screenshot'];
 
-/** characters ioBroker does not allow in ids (same set as adapter.FORBIDDEN_CHARS) */
-const FORBIDDEN = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
+/** only letters, digits, "_" and "-" in id segments (recommended by the ioBroker developer guide) */
+const FORBIDDEN = /[^A-Za-z0-9_-]+/g;
 
 /**
  * Parses an incoming topic.
@@ -165,16 +165,16 @@ export function parseTopic(base: string, topic: string): ParsedTopic | null {
 }
 
 /**
- * One id segment: forbidden characters and dots (they would create levels) become "_".
+ * One id segment: everything except letters, digits, "_" and "-" (also dots, they would create levels) becomes "_".
  *
  * @param segment raw segment
  */
 export function sanitizeSegment(segment: string): string {
-	return segment.replace(FORBIDDEN, '_').replace(/[.\s]/g, '_') || '_';
+	return segment.replace(FORBIDDEN, '_') || '_';
 }
 
 /**
- * Agent path ("disk/C:") → ioBroker id part ("disk.C:")
+ * Agent path ("disk/C_free_gb") → ioBroker id part ("disk.C_free_gb")
  *
  * @param path path with "/"
  */
@@ -285,10 +285,7 @@ export function normalizeManifest(raw: unknown): Manifest {
 		const type = (['json', 'array', 'object'].includes(raw) ? 'string' : raw) as ioBroker.CommonType;
 		// volume, muted, keep_awake can be set from ioBroker (the agent has a command for them)
 		const writable = e.writable === true || path in WRITABLE_COMMANDS;
-		let role = OFFICIAL_ROLES.has(str(e.role)) ? str(e.role) : defaultRole(raw, writable);
-		if (writable && role === 'indicator') {
-			role = 'switch';
-		}
+		const role = fitRole(str(e.role), raw, writable);
 		return {
 			path,
 			type,
@@ -348,6 +345,49 @@ export function normalizeManifest(raw: unknown): Manifest {
  * @param type common type
  * @param writable writable state
  */
+/**
+ * Role from the manifest, checked against the official list and made to fit type and write flag
+ * (stateroles.md: indicator/sensor/value are read-only, switch/level writable, button is a write-only boolean).
+ *
+ * @param role role announced by the agent
+ * @param type manifest type
+ * @param writable whether ioBroker may write the state
+ */
+export function fitRole(role: string, type: string, writable: boolean): string {
+	if (!isOfficialRole(role)) {
+		return defaultRole(type, writable);
+	}
+	const family = role.split('.')[0];
+	const booleanFamily = ['indicator', 'sensor', 'switch', 'button'].includes(family);
+	if (booleanFamily !== (type === 'boolean') && family !== 'level' && family !== 'value') {
+		return defaultRole(type, writable);
+	}
+	if (family === 'button') {
+		return writable ? role : 'indicator';
+	}
+	if (writable) {
+		if (family === 'indicator' || family === 'sensor') {
+			return 'switch';
+		}
+		if (family === 'value') {
+			const level = `level${role.slice('value'.length)}`;
+			return isOfficialRole(level) ? level : defaultRole(type, writable);
+		}
+	} else {
+		if (family === 'switch') {
+			return 'indicator';
+		}
+		if (family === 'level') {
+			const value = `value${role.slice('level'.length)}`;
+			return isOfficialRole(value) ? value : defaultRole(type, writable);
+		}
+	}
+	if ((family === 'level' || family === 'value') && type !== 'number') {
+		return defaultRole(type, writable);
+	}
+	return role;
+}
+
 function defaultRole(type: string, writable: boolean): string {
 	if (type === 'boolean') {
 		return writable ? 'switch' : 'indicator';
@@ -391,7 +431,8 @@ export function stateCommon(
 			name: def.pattern ? path : def.name,
 			type: def.type,
 			role: def.role,
-			read: true,
+			// buttons are write-only (stateroles.md)
+			read: def.role !== 'button' && !def.role.startsWith('button.'),
 			write: def.writable,
 		};
 		if (def.unit) {

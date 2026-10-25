@@ -6,10 +6,16 @@ declare global {
 		interface AdapterConfig {
 			/** 'internal' = built-in broker, 'external' = existing broker */
 			brokerMode: 'internal' | 'external';
-			brokerPort: number;
-			brokerBind: string;
-			host: string;
+			/** port of the built-in broker (own server, therefore "port"/"bind" as required by ioBroker) */
 			port: number;
+			/** listen address of the built-in broker */
+			bind: string;
+			/** existing broker: host and port */
+			host: string;
+			hostPort: number;
+			/** older settings (port/bind of the built-in broker before the rename), migrated on start */
+			brokerPort?: number | null;
+			brokerBind?: string | null;
 			username: string;
 			password: string;
 			tls: boolean;

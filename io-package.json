@@ -31,22 +31,23 @@
 			"zh-cn": "Desktop Control"
 		},
 		"desc": {
-			"en": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"de": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"ru": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"pt": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"nl": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"fr": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"it": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"es": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"pl": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"uk": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
-			"zh-cn": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT"
+			"en": "Controls Windows PCs (popups, programs, audio, screenshots, ...) via the WinCtl agent over MQTT",
+			"de": "Steuert Windows-PCs (Popups, Programme, Audio, Screenshots, ...) über den WinCtl-Agent per MQTT",
+			"ru": "Управляет ПК с Windows (всплывающие окна, программы, звук, скриншоты, ...) через агент WinCtl по MQTT",
+			"pt": "Controla PCs com Windows (pop-ups, programas, áudio, capturas de tela, ...) através do agente WinCtl via MQTT",
+			"nl": "Bestuurt Windows-pc's (pop-ups, programma's, audio, schermafbeeldingen, ...) via de WinCtl-agent over MQTT",
+			"fr": "Contrôle des PC Windows (fenêtres contextuelles, programmes, audio, captures d'écran, ...) via l'agent WinCtl en MQTT",
+			"it": "Controlla PC Windows (popup, programmi, audio, screenshot, ...) tramite l'agente WinCtl via MQTT",
+			"es": "Controla PC con Windows (ventanas emergentes, programas, audio, capturas de pantalla, ...) mediante el agente WinCtl por MQTT",
+			"pl": "Steruje komputerami z Windows (okna wyskakujące, programy, dźwięk, zrzuty ekranu, ...) za pomocą agenta WinCtl przez MQTT",
+			"uk": "Керує ПК з Windows (спливаючі вікна, програми, звук, знімки екрана, ...) через агент WinCtl по MQTT",
+			"zh-cn": "通过 MQTT 和 WinCtl 代理控制 Windows 电脑（弹窗、程序、音频、截图等）"
 		},
 		"authors": [
 			"ipod86 <david@graef.email>"
 		],
 		"keywords": [
+			"ioBroker",
 			"windows",
 			"desktop",
 			"remote control",
@@ -87,10 +88,10 @@
 	},
 	"native": {
 		"brokerMode": "internal",
-		"brokerPort": 1886,
-		"brokerBind": "0.0.0.0",
+		"port": 1886,
+		"bind": "0.0.0.0",
 		"host": "",
-		"port": 1883,
+		"hostPort": 1883,
 		"username": "",
 		"password": "",
 		"tls": false,

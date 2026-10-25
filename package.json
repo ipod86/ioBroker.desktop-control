@@ -1,7 +1,7 @@
 {
   "name": "iobroker.desktop-control",
   "version": "0.0.1",
-  "description": "Steuert Windows-Desktops (Popups, Programme, Audio, Screenshots, ...) über den DesktopControl-Agent per MQTT",
+  "description": "Controls Windows PCs (popups, programs, audio, screenshots, ...) via the WinCtl agent over MQTT",
   "author": {
     "name": "ipod86",
     "email": "david@graef.email"
@@ -23,7 +23,7 @@
     "url": "https://github.com/ipod86/ioBroker.desktop-control.git"
   },
   "engines": {
-    "node": ">= 22"
+    "node": ">= 22.12"
   },
   "dependencies": {
     "@iobroker/adapter-core": "^3.4.3",
@@ -41,7 +41,7 @@
     "@iobroker/testing": "^6.3.1",
     "@tsconfig/node22": "^22.0.5",
     "@types/iobroker": "npm:@iobroker/types@^7.2.5",
-    "@types/node": "^20.19.43",
+    "@types/node": "^22.19.1",
     "rimraf": "^6.1.3",
     "source-map-support": "^0.5.21",
     "ts-node": "^10.9.2",
@@ -52,7 +52,6 @@
     "admin{,/!(src)/**}/!(tsconfig|tsconfig.*|.eslintrc).{json,json5}",
     "admin{,/!(src)/**}/*.{html,css,png,svg,jpg,js}",
     "build/",
-    "www/",
     "io-package.json",
     "LICENSE"
   ],

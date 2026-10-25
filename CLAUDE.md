@@ -13,13 +13,15 @@ WinCtl.exe (per PC) ──MQTT──> broker (built-in or external) <──MQTT�
 
 - `src/lib/protocol.ts` – pure functions: topic parsing, manifest normalisation, state common, command kinds, parameter parsing (short form), results, screenshot detection. Unit-tested.
 - `src/lib/correlator.ts` – maps command ids to `result` messages (timeout, reject on offline/unload).
-- `src/lib/roles.ts` – the official role list (https://www.iobroker.com/docs/dev/stateroles.md). Roles from the manifest that are not in it fall back to a generic role.
+- `src/lib/roles.ts` – the official role list (https://www.iobroker.com/docs/dev/stateroles.md) without the deprecated aliases; `isOfficialRole` also accepts `*.forecast.<n>` and `button.mode.*`/`switch.mode.*`. `fitRole` (protocol.ts) falls back to a generic role for unknown roles and fits the rest to type and write flag (switch↔indicator, level↔value, buttons write-only).
 - `src/main.ts` – MQTT connection, objects, `onStateChange`, `onMessage` (`cmd`, `devices`).
 - `tools/fake-agent.js` – fake agent built from `docs/protocol.json`, used by the integration test and usable by hand (`node tools/fake-agent.js mqtt://host:1883 pc1`).
 - `docs/PROTOCOL.md`, `docs/COMMANDS.md`, `docs/protocol.json` – copied from the agent repo, the source of truth for the protocol. Update them together with the agent.
 
 ## Decisions
 
+- Object ids: segments only `[A-Za-z0-9_-]` (`sanitizeSegment`); every level exists (nested state/event paths get `folder` objects via `ensureParents`, checked with the repochecker object validator, see the maintainer wiki "Konformitäts-Check").
+- Object texts are English: the agent manifest has `description` (English) and `description_de` (German, used for README.de.md/COMMANDS.md).
 - Topics: `{base}/{id}/online|info|state/<path>|event/<name>|result|screenshot`, commands to `{base}/{id}/cmd/<name>` and `{base}/all/cmd/<name>`.
 - States are plain text; typed with the manifest. `/` in state paths becomes an object level (`disk/C_free_gb` → `state.disk.C_free_gb`). Dynamic states (`<...>` or `/*` in the manifest) are created on the first value.
 - Command data points (`commandDataPoints`): no params → button; required param (or primary without default) → `json` input; only optional params → button with defaults + `<name>_json` input. A non-JSON value is the short form for the `primary` parameter; `true`/`{}` = default options. `common.desc` = description | options | example (from the manifest `examples`).
@@ -28,7 +30,7 @@ WinCtl.exe (per PC) ──MQTT──> broker (built-in or external) <──MQTT�
 - Writable states: `volume` → `volume{level}`, `muted` → `mute{state}`, `keep_awake` → `keep_awake{state}` (`WRITABLE_COMMANDS`).
 - MQTT messages are processed one after another (`queue` in main.ts), so the manifest is applied before the states that follow it.
 - Screenshots: raw image bytes → file storage `desktop-control.0/screenshots/<device>.<ext>`; the instance meta object is created in `onReady`.
-- Built-in broker (aedes, `src/lib/broker.ts`) is the default (`brokerMode: internal`, port 1886); the adapter connects to it on 127.0.0.1. User name/password of the settings are then the login the agents must use. Old instances without `brokerMode` stay external when a host is set. aedes is ESM: esbuild turns `import()` into `require()`, which needs Node >= 22.12 (require(esm)).
+- Built-in broker (aedes, `src/lib/broker.ts`) is the default (`brokerMode: internal`, native `port` 1886 / `bind`, the names ioBroker requires for an own server; an existing broker uses `host`/`hostPort`; old `brokerPort`/`brokerBind` are migrated in `migrateConfig`); the adapter connects to it on 127.0.0.1. User name/password of the settings are then the login the agents must use. Old instances without `brokerMode` stay external when a host is set. aedes is ESM: esbuild turns `import()` into `require()`, which needs Node >= 22.12 (require(esm)).
 - Wake-on-LAN: `cmd.wake` / `all.cmd.wake` / sendTo command `wake` are handled by the adapter (`src/lib/wol.ts`), not the agent; MAC/broadcast from the manifest are kept in the device object's native (built-in broker loses retained messages on restart).
 - Protocol version > 1 in the manifest → warning in the log, no hard stop.
 
@@ -47,13 +49,11 @@ No push, no npm publish without the maintainer saying so.
 
 ## Not tested against the real agent yet
 
-- Real Windows agent end-to-end (only the fake agent).
+- Real Windows agent end-to-end only by hand on the maintainer's VM (automated tests use the fake agent).
 - TLS connection, broker with ACLs.
 - Large screenshots (MQTT max packet size of the broker).
 - `ask` with a long timeout while the device goes offline.
 
 ## Open points / agent issues
 
-- `docs/protocol.json` from the agent repo has broken umlauts (`Lautst?rke`): `tools/gen_docs.py` writes the descriptions with a wrong encoding. These descriptions end up in `common.desc`. Fix in the agent repo.
-- The agent repo's git author is `WinCtl <winctl@localhost>`; change it before publishing.
-- Update function for the agent (tray item "Check for updates", GitHub releases) – planned in the agent repo.
+- none known; compliance sources and checks: maintainer wiki ipod86/iobroker-reports, section "Konformitäts-Check".

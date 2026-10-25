@@ -18,16 +18,11 @@ var __copyProps = (to, from, except, desc) => {
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 var roles_exports = {};
 __export(roles_exports, {
-  OFFICIAL_ROLES: () => OFFICIAL_ROLES
+  OFFICIAL_ROLES: () => OFFICIAL_ROLES,
+  isOfficialRole: () => isOfficialRole
 });
 module.exports = __toCommonJS(roles_exports);
 const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
-  "action.close",
-  "action.home",
-  "action.open",
-  "action.open.tilt",
-  "action.play",
-  "action.stop.blind",
   "adapter.messagebox",
   "adapter.wakeup",
   "button",
@@ -81,7 +76,6 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "indicator.alarm.health",
   "indicator.alarm.muted",
   "indicator.alarm.secure",
-  "indicator.battery",
   "indicator.closed",
   "indicator.connected",
   "indicator.direction",
@@ -96,7 +90,6 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "indicator.maintenance.water",
   "indicator.opened",
   "indicator.reachable",
-  "indicator.unreach",
   "indicator.working",
   "indicator.working.test",
   "info.address",
@@ -163,7 +156,6 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "level.temperature",
   "level.temperature.cooling",
   "level.temperature.heating",
-  "level.thermostat",
   "level.tilt",
   "level.timer",
   "level.timer.off",
@@ -178,11 +170,11 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "link.camera",
   "list",
   "location",
-  "media",
   "media.add",
   "media.album",
   "media.artist",
   "media.bitrate",
+  "media.broadcastDate",
   "media.browser",
   "media.clear",
   "media.content",
@@ -216,7 +208,6 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "media.tts",
   "media.url",
   "media.url.announcement",
-  "motion",
   "sensor",
   "sensor.alarm",
   "sensor.alarm.co",
@@ -234,19 +225,7 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "sensor.switch",
   "sensor.window",
   "state",
-  "state.active",
-  "state.co",
-  "state.door",
-  "state.fire",
-  "state.flood",
-  "state.light",
-  "state.window",
   "switch",
-  "switch.active",
-  "switch.autofocus",
-  "switch.autowhitebalance",
-  "switch.boost",
-  "switch.brightness",
   "switch.camera.autofocus",
   "switch.camera.autowhitebalance",
   "switch.camera.brightness",
@@ -266,8 +245,6 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "switch.mode.party",
   "switch.mode.silent",
   "switch.mode.swing",
-  "switch.nightmode",
-  "switch.party",
   "switch.pause",
   "switch.power",
   "switch.power.zone",
@@ -279,6 +256,7 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "time.interval",
   "time.span",
   "time.sunrise",
+  "time.sunset",
   "time.timeout",
   "url",
   "url.audio",
@@ -293,12 +271,13 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "value.blind",
   "value.blood.sugar",
   "value.brightness",
-  "value.brush",
   "value.ch2o",
+  "value.ch2o.level",
   "value.clouds",
   "value.co",
-  "value.co2",
   "value.co.level",
+  "value.co2",
+  "value.co2.level",
   "value.current",
   "value.curtain",
   "value.default",
@@ -342,7 +321,6 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "value.humidity.min",
   "value.humidity.relative",
   "value.interval",
-  "value.latitude",
   "value.lock",
   "value.max",
   "value.min",
@@ -350,11 +328,16 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "value.mode.thermostat",
   "value.no",
   "value.no2",
+  "value.no2.level",
   "value.o3",
+  "value.o3.level",
   "value.open.tilt",
   "value.pm1",
+  "value.pm1.level",
   "value.pm10",
+  "value.pm10.level",
   "value.pm25",
+  "value.pm25.level",
   "value.position",
   "value.power",
   "value.power.active",
@@ -376,18 +359,19 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "value.pressure.tendency",
   "value.progress",
   "value.radiation",
-  "value.radius",
   "value.rain",
   "value.rain.hour",
   "value.rain.today",
   "value.rn",
+  "value.rn.level",
   "value.rssi",
   "value.severity",
   "value.snow",
   "value.snow.hour",
-  "value.snowline",
   "value.snow.today",
+  "value.snowline",
   "value.so2",
+  "value.so2.level",
   "value.speed",
   "value.speed.max.wind",
   "value.speed.min.wind",
@@ -415,6 +399,7 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "value.time",
   "value.timer",
   "value.tvoc",
+  "value.tvoc.level",
   "value.usage.brush",
   "value.usage.brush.side",
   "value.usage.filter",
@@ -449,8 +434,18 @@ const OFFICIAL_ROLES = /* @__PURE__ */ new Set([
   "weather.title.short",
   "weather.type"
 ]);
+function isOfficialRole(role) {
+  if (OFFICIAL_ROLES.has(role)) {
+    return true;
+  }
+  if (/\.forecast\.\d+$/.test(role) && OFFICIAL_ROLES.has(role.replace(/\.forecast\.\d+$/, ".forecast.0"))) {
+    return true;
+  }
+  return /^(button|switch)\.mode\.[a-z0-9_]+$/.test(role);
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  OFFICIAL_ROLES
+  OFFICIAL_ROLES,
+  isOfficialRole
 });
 //# sourceMappingURL=roles.js.map

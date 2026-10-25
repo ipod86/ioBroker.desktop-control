@@ -48,7 +48,7 @@
 					"xl": 12,
 					"hidden": "data.brokerMode === 'internal'"
 				},
-				"brokerPort": {
+				"port": {
 					"type": "number",
 					"label": "Port",
 					"min": 1,
@@ -61,7 +61,7 @@
 					"lg": 2,
 					"xl": 2
 				},
-				"brokerBind": {
+				"bind": {
 					"type": "text",
 					"label": "Listen on",
 					"help": "bindHelp",
@@ -84,7 +84,7 @@
 					"xl": 6,
 					"hidden": "data.brokerMode === 'internal'"
 				},
-				"port": {
+				"hostPort": {
 					"type": "number",
 					"label": "Port",
 					"min": 1,

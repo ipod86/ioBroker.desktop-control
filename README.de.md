@@ -18,6 +18,7 @@ Der Agent beschreibt sich selbst: Er veröffentlicht alle Befehle, Parameter und
 
 ## Voraussetzungen
 
+- Node.js >= 22.12, js-controller >= 6.0.11, Admin >= 7.8.23
 - Der WinCtl-Agent auf jedem zu steuernden PC: `WinCtl.exe` aus [den Releases](https://github.com/ipod86/WinCtl/releases) herunterladen
 - Sonst nichts: Der Adapter hat einen eingebauten MQTT-Broker. Alternativ kann ein vorhandener Broker (Mosquitto, ioBroker-MQTT-Adapter) genutzt werden.
 
@@ -96,7 +97,7 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
 - Sicherheitsrelevante Befehle (z. B. `shell`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 <!-- generated:start -->
-_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.6.1)._
+_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.6.2)._
 
 #### System
 
@@ -1058,11 +1059,13 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
+-->
+### **WORK IN PROGRESS**
+* (ipod86) Agent 0.6.2: englische Beschreibungen in den Objekttexten; Rollen gegen die offizielle Liste geprüft (veraltete entfernt) und an Typ und Schreibrecht angepasst; IDs nur noch mit `A-Z a-z 0-9 _ -`
+* (ipod86) Objektbaum ohne Lücken (Ordner für verschachtelte States), englische Adapterbeschreibung, Broker-Einstellungen umbenannt in `port`/`bind` (eingebauter Broker) und `hostPort` (vorhandener Broker; wird automatisch übernommen), sauberes Beenden des eingebauten Brokers
 * (ipod86) Agent 0.6.1: `show_video` nutzt ebenfalls Microsoft Edge (WebView2)
 * (ipod86) Agent 0.6.0: `show_web` nutzt Microsoft Edge (WebView2), Optionen `zoom` und `engine`, State `web_url`
 * (ipod86) Agent 0.5.0: `show_web` als Diashow, Befehle `screensaver` und `start_menu`
--->
-### **WORK IN PROGRESS**
 * (ipod86) Erste Version
 * (ipod86) Eingebauter MQTT-Broker
 * (ipod86) Wake-on-LAN (`cmd.wake`), Kamera/Mikrofon in Benutzung (`state.webcam_in_use`, `state.mic_in_use`)

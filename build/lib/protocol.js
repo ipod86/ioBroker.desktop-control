@@ -26,6 +26,7 @@ __export(protocol_exports, {
   commandKind: () => commandKind,
   convertParam: () => convertParam,
   findStateDef: () => findStateDef,
+  fitRole: () => fitRole,
   normalizeManifest: () => normalizeManifest,
   parseCommandParams: () => parseCommandParams,
   parseOnline: () => parseOnline,
@@ -53,7 +54,7 @@ function text(v) {
   return typeof v === "number" || typeof v === "boolean" || typeof v === "bigint" ? v.toString() : "";
 }
 const KINDS = ["online", "info", "state", "event", "result", "screenshot"];
-const FORBIDDEN = /[^._\-/ :!#$%&()+=@^{}|~\p{Ll}\p{Lu}\p{Nd}]+/gu;
+const FORBIDDEN = /[^A-Za-z0-9_-]+/g;
 function parseTopic(base, topic) {
   const prefix = `${base}/`;
   if (!topic.startsWith(prefix)) {
@@ -77,7 +78,7 @@ function parseTopic(base, topic) {
   return { device: parts[0], kind, path };
 }
 function sanitizeSegment(segment) {
-  return segment.replace(FORBIDDEN, "_").replace(/[.\s]/g, "_") || "_";
+  return segment.replace(FORBIDDEN, "_") || "_";
 }
 function pathToId(path) {
   return path.split("/").filter((s) => s !== "").map(sanitizeSegment).join(".");
@@ -143,10 +144,7 @@ function normalizeManifest(raw) {
     }
     const type = ["json", "array", "object"].includes(raw2) ? "string" : raw2;
     const writable = e.writable === true || path in WRITABLE_COMMANDS;
-    let role = import_roles.OFFICIAL_ROLES.has(str(e.role)) ? str(e.role) : defaultRole(raw2, writable);
-    if (writable && role === "indicator") {
-      role = "switch";
-    }
+    const role = fitRole(str(e.role), raw2, writable);
     return {
       path,
       type,
@@ -199,6 +197,40 @@ function normalizeManifest(raw) {
     events
   };
 }
+function fitRole(role, type, writable) {
+  if (!(0, import_roles.isOfficialRole)(role)) {
+    return defaultRole(type, writable);
+  }
+  const family = role.split(".")[0];
+  const booleanFamily = ["indicator", "sensor", "switch", "button"].includes(family);
+  if (booleanFamily !== (type === "boolean") && family !== "level" && family !== "value") {
+    return defaultRole(type, writable);
+  }
+  if (family === "button") {
+    return writable ? role : "indicator";
+  }
+  if (writable) {
+    if (family === "indicator" || family === "sensor") {
+      return "switch";
+    }
+    if (family === "value") {
+      const level = `level${role.slice("value".length)}`;
+      return (0, import_roles.isOfficialRole)(level) ? level : defaultRole(type, writable);
+    }
+  } else {
+    if (family === "switch") {
+      return "indicator";
+    }
+    if (family === "level") {
+      const value = `value${role.slice("level".length)}`;
+      return (0, import_roles.isOfficialRole)(value) ? value : defaultRole(type, writable);
+    }
+  }
+  if ((family === "level" || family === "value") && type !== "number") {
+    return defaultRole(type, writable);
+  }
+  return role;
+}
 function defaultRole(type, writable) {
   if (type === "boolean") {
     return writable ? "switch" : "indicator";
@@ -226,7 +258,8 @@ function stateCommon(path, def, value) {
       name: def.pattern ? path : def.name,
       type: def.type,
       role: def.role,
-      read: true,
+      // buttons are write-only (stateroles.md)
+      read: def.role !== "button" && !def.role.startsWith("button."),
       write: def.writable
     };
     if (def.unit) {
@@ -376,6 +409,7 @@ function parseScreenshot(payload) {
   commandKind,
   convertParam,
   findStateDef,
+  fitRole,
   normalizeManifest,
   parseCommandParams,
   parseOnline,

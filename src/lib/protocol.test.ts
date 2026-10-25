@@ -4,6 +4,7 @@ import {
 	commandForStateWrite,
 	commandKind,
 	findStateDef,
+	fitRole,
 	normalizeManifest,
 	parseCommandParams,
 	parseOnline,
@@ -14,6 +15,7 @@ import {
 	pathToId,
 	stateCommon,
 } from './protocol';
+import { isOfficialRole } from './roles';
 
 // shaped like the real agent manifest (docs/PROTOCOL.md): arrays, primary, dynamic state patterns
 const MANIFEST = normalizeManifest({
@@ -199,5 +201,20 @@ describe('commands and results', () => {
 		expect(parseScreenshot(Buffer.from([0x89, 0x50, 0x4e, 0x47, 1, 2]))?.ext).to.equal('png');
 		expect(parseScreenshot(Buffer.from([0xff, 0xd8, 0xff, 1]))?.ext).to.equal('jpg');
 		expect(parseScreenshot(Buffer.from('hello'))).to.equal(null);
+	});
+
+	it('accepts only official roles and fits them to type and write flag', () => {
+		expect(isOfficialRole('level.volume')).to.equal(true);
+		expect(isOfficialRole('value.temperature.forecast.3')).to.equal(true);
+		expect(isOfficialRole('button.mode.eco')).to.equal(true);
+		expect(isOfficialRole('motion')).to.equal(false); // deprecated alias
+		expect(fitRole('motion', 'boolean', false)).to.equal('indicator');
+		expect(fitRole('indicator', 'boolean', true)).to.equal('switch');
+		expect(fitRole('switch', 'boolean', false)).to.equal('indicator');
+		expect(fitRole('value.temperature', 'number', true)).to.equal('level.temperature');
+		expect(fitRole('level.volume', 'number', false)).to.equal('value.volume');
+		expect(fitRole('indicator', 'number', false)).to.equal('value');
+		expect(fitRole('value.battery', 'string', false)).to.equal('text');
+		expect(fitRole('text.url', 'string', false)).to.equal('text.url');
 	});
 });

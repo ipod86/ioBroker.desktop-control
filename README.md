@@ -18,6 +18,7 @@ The agent describes itself: it publishes all its commands, parameters and states
 
 ## Requirements
 
+- Node.js >= 22.12, js-controller >= 6.0.11, admin >= 7.8.23
 - The WinCtl agent on every PC to control: download `WinCtl.exe` from [the releases](https://github.com/ipod86/WinCtl/releases)
 - Nothing else: the adapter has a built-in MQTT broker. An existing broker (Mosquitto, ioBroker MQTT adapter) can be used instead.
 
@@ -96,7 +97,7 @@ Written on every event (also when the content is the same), so a trigger with `c
 - Security relevant commands (e.g. `shell`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (agent version 0.6.1). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
+_Generated from the agent (agent version 0.6.2). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
@@ -274,11 +275,13 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
+-->
+### **WORK IN PROGRESS**
+* (ipod86) agent 0.6.2: English descriptions in the object texts; roles checked against the official list (deprecated aliases removed) and fitted to type and write flag; ids only with `A-Z a-z 0-9 _ -`
+* (ipod86) object tree without gaps (folders for nested states), English adapter description, broker settings renamed to `port`/`bind` (built-in) and `hostPort` (existing broker; migrated automatically), clean unload of the built-in broker
 * (ipod86) agent 0.6.1: `show_video` uses Microsoft Edge (WebView2) as well
 * (ipod86) agent 0.6.0: `show_web` uses Microsoft Edge (WebView2), options `zoom` and `engine`, state `web_url`
 * (ipod86) agent 0.5.0: `show_web` slideshow, commands `screensaver` and `start_menu`
--->
-### **WORK IN PROGRESS**
 * (ipod86) initial release
 * (ipod86) built-in MQTT broker
 * (ipod86) Wake-on-LAN (`cmd.wake`), camera/microphone in use (`state.webcam_in_use`, `state.mic_in_use`)
