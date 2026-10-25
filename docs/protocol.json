@@ -1,6 +1,6 @@
 {
   "protocol": 1,
-  "version": "0.6.0",
+  "version": "0.6.1",
   "states": [
     {
       "name": "locked",
@@ -1014,7 +1014,7 @@
     {
       "name": "show_video",
       "category": "display",
-      "description": "Spielt ein Video ab (Datei oder URL, mp4/H.264 empfohlen)",
+      "description": "Spielt ein Video ab (Datei oder URL; mit Edge mp4/H.264, WebM, Ogg, je nach Windows-Codecs auch HEVC)",
       "params": [
         {
           "name": "source",
@@ -1056,6 +1056,18 @@
           "description": "Nach Ende schließen",
           "required": false,
           "default": true
+        },
+        {
+          "name": "engine",
+          "type": "string",
+          "description": "Player: auto = Edge (WebView2), sonst IE11; edge = nur Edge; ie = altes IE11",
+          "required": false,
+          "default": "auto",
+          "enum": [
+            "auto",
+            "edge",
+            "ie"
+          ]
         },
         {
           "name": "mode",

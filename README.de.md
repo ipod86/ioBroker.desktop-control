@@ -96,7 +96,7 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
 - Sicherheitsrelevante Befehle (z. B. `shell`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 <!-- generated:start -->
-_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.6.0)._
+_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.6.1)._
 
 #### System
 
@@ -642,7 +642,7 @@ http://kamera/snapshot.jpg
 </details>
 
 <details>
-<summary><code>show_video</code> – Spielt ein Video ab (Datei oder URL, mp4/H.264 empfohlen)</summary>
+<summary><code>show_video</code> – Spielt ein Video ab (Datei oder URL; mit Edge mp4/H.264, WebM, Ogg, je nach Windows-Codecs auch HEVC)</summary>
 
 Datenpunkt: `cmd.show_video` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
 Kurzform: `source`
@@ -663,6 +663,7 @@ http://server/video.mp4
 | `volume` | number | `1` | 0 - 1 |
 | `controls` | boolean | `false` | Bedienelemente anzeigen |
 | `close_when_done` | boolean | `true` | Nach Ende schließen |
+| `engine` | string | `"auto"` | Player: auto = Edge (WebView2), sonst IE11; edge = nur Edge; ie = altes IE11 (`auto`, `edge`, `ie`) |
 | `mode` | string | `"popup"` | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (`popup`, `fullscreen`, `corner`) |
 | `seconds` | number |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer | `-1` | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
@@ -1057,6 +1058,7 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
+* (ipod86) Agent 0.6.1: `show_video` nutzt ebenfalls Microsoft Edge (WebView2)
 * (ipod86) Agent 0.6.0: `show_web` nutzt Microsoft Edge (WebView2), Optionen `zoom` und `engine`, State `web_url`
 * (ipod86) Agent 0.5.0: `show_web` als Diashow, Befehle `screensaver` und `start_menu`
 -->

@@ -1,6 +1,6 @@
 # Befehlsreferenz
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.6.0). Nicht von Hand ändern._
+_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.6.1). Nicht von Hand ändern._
 
 Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
 
@@ -396,7 +396,7 @@ http://kamera/snapshot.jpg
 | `bg` | string |  |  | Hintergrundfarbe, z.B. #000000 |
 
 ### `show_video`  _(braucht GUI-Sitzung)_
-Spielt ein Video ab (Datei oder URL, mp4/H.264 empfohlen)  
+Spielt ein Video ab (Datei oder URL; mit Edge mp4/H.264, WebM, Ogg, je nach Windows-Codecs auch HEVC)  
 Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
 
 Beispiele:
@@ -415,6 +415,7 @@ http://server/video.mp4
 | `volume` | number |  | 1 | 0 - 1 |
 | `controls` | boolean |  | false | Bedienelemente anzeigen |
 | `close_when_done` | boolean |  | true | Nach Ende schließen |
+| `engine` | string |  | "auto" | Player: auto = Edge (WebView2), sonst IE11; edge = nur Edge; ie = altes IE11 (auto / edge / ie) |
 | `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
 | `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |

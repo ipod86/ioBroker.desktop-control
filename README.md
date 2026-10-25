@@ -96,7 +96,7 @@ Written on every event (also when the content is the same), so a trigger with `c
 - Security relevant commands (e.g. `shell`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (agent version 0.6.0). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
+_Generated from the agent (agent version 0.6.1). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
@@ -160,7 +160,7 @@ _Generated from the agent (agent version 0.6.0). Examples and all option descrip
 | Command | Description | Data point | Short form | Options |
 |---|---|---|---|---|
 | `show_image` | Shows an image as popup, full screen or in a corner | input | `source` | `source`*, `base64`, `fit` (contain/stretch/center), `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
-| `show_video` | Plays a video (mp4/H.264) | input | `source` | `source`*, `loop`, `muted`, `volume`, `controls`, `close_when_done`, `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
+| `show_video` | Plays a video with Edge/Chromium (mp4, WebM, …) | input | `source` | `source`*, `loop`, `muted`, `volume`, `controls`, `close_when_done`, `engine` (auto/edge/ie), `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
 | `show_web` | Shows a web page (vis, Lovelace, camera stream) with Edge/Chromium in a window or full screen, also several pages in turn (slideshow) | input | `url` | `url`, `urls`, `interval`, `zoom`, `engine` (auto/edge/ie), `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
 | `show_text` | Shows text as an overlay | input | `text` | `text`*, `seconds`, `size`, `color`, `bg`, `opacity`, `position` (top/center/bottom), `monitor`, `bold`, `font`, `click_through`, `slot`, `max_width`, `padding`, `margin` |
 | `ask` | Shows a dialog with buttons/input and returns the answer | input | `text` | `text`*, `title`, `buttons`, `input`, `default`, `password`, `timeout`, `width`, `font_size`, `monitor` |
@@ -274,6 +274,7 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
+* (ipod86) agent 0.6.1: `show_video` uses Microsoft Edge (WebView2) as well
 * (ipod86) agent 0.6.0: `show_web` uses Microsoft Edge (WebView2), options `zoom` and `engine`, state `web_url`
 * (ipod86) agent 0.5.0: `show_web` slideshow, commands `screensaver` and `start_menu`
 -->

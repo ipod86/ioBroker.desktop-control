@@ -131,7 +131,7 @@ const EN_CMD = {
 	stop_sound: 'Stops play_sound / speak',
 	beep: 'Simple beep',
 	show_image: 'Shows an image as popup, full screen or in a corner',
-	show_video: 'Plays a video (mp4/H.264)',
+	show_video: 'Plays a video with Edge/Chromium (mp4, WebM, …)',
 	show_web:
 		'Shows a web page (vis, Lovelace, camera stream) with Edge/Chromium in a window or full screen, also several pages in turn (slideshow)',
 	show_text: 'Shows text as an overlay',
