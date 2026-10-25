@@ -133,7 +133,7 @@ const EN_CMD = {
 	show_image: 'Shows an image as popup, full screen or in a corner',
 	show_video: 'Plays a video (mp4/H.264)',
 	show_web:
-		'Shows a web page (dashboard, camera stream) in a window or full screen, also several pages in turn (slideshow)',
+		'Shows a web page (vis, Lovelace, camera stream) with Edge/Chromium in a window or full screen, also several pages in turn (slideshow)',
 	show_text: 'Shows text as an overlay',
 	ask: 'Shows a dialog with buttons/input and returns the answer',
 	notify: 'Shows a Windows notification',
@@ -175,6 +175,7 @@ const EN_STATE = {
 	'disk/<laufwerk>_free_gb': 'Free space per drive, e.g. `disk.C_free_gb`',
 	'disk/<laufwerk>_used_percent': 'Usage per drive, e.g. `disk.C_used_percent`',
 	'proc/<name>': 'Watched program is running (agent settings "Processes")',
+	web_url: 'Page that show_web currently displays (empty = none)',
 };
 const ALIAS_LIMITED = ['run', 'kill'];
 

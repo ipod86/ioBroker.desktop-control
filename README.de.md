@@ -96,7 +96,7 @@ Wird bei jedem Ereignis geschrieben (auch bei gleichem Inhalt), ein Trigger mit 
 - Sicherheitsrelevante Befehle (z. B. `shell`) und im Agent abgeschaltete Befehle bekommen keinen Datenpunkt; sie gehen nur per `sendTo`. `run` und `kill` bekommen einen Datenpunkt, solange der Agent nur Programme aus seiner Alias-Liste startet („beliebige Programme erlauben“ aus); `cmd.run` bietet die Aliase zur Auswahl an.
 
 <!-- generated:start -->
-_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.5.0)._
+_Erzeugt aus dem Agent (`docs/protocol.json`, Agent-Version 0.6.0)._
 
 #### System
 
@@ -683,7 +683,7 @@ http://server/video.mp4
 </details>
 
 <details>
-<summary><code>show_web</code> – Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)</summary>
+<summary><code>show_web</code> – Zeigt eine Webseite (z.B. vis, Lovelace, Kamera-Stream) mit Edge/Chromium in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)</summary>
 
 Datenpunkt: `cmd.show_web` – Eingabe – JSON, Kurzform oder `true` (= Standardwerte)  
 Kurzform: `url`
@@ -702,6 +702,8 @@ http://192.168.1.5:8082/vis/
 | `url` | string |  | Adresse (oder 'urls' für eine Diashow) |
 | `urls` | array |  | Diashow: mehrere Adressen, wechseln nach 'interval' Sekunden |
 | `interval` | number | `30` | Diashow: Sekunden je Seite |
+| `zoom` | number | `1` | Zoom, z. B. 1.25 = 125 % (nur Edge) |
+| `engine` | string | `"auto"` | Browser: auto = Edge (WebView2), sonst IE11; edge = nur Edge; ie = altes IE11 (`auto`, `edge`, `ie`) |
 | `mode` | string | `"popup"` | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (`popup`, `fullscreen`, `corner`) |
 | `seconds` | number |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer | `-1` | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
@@ -989,6 +991,7 @@ Datenpunkt: `cmd.clipboard_get` – Knopf – Klick führt aus
 | `state.webcam_app` | string |  |  | Programm(e), die die Kamera benutzen |
 | `state.mic_in_use` | boolean |  |  | Mikrofon wird gerade benutzt |
 | `state.mic_app` | string |  |  | Programm(e), die das Mikrofon benutzen |
+| `state.web_url` | string |  |  | Seite, die show_web gerade anzeigt (leer = keine) |
 | `state.update_available` | boolean |  |  | Neuere WinCtl-Version verfügbar (Prüfung beim Start und alle 12 h) |
 | `state.latest_version` | string |  |  | Neueste WinCtl-Version auf GitHub |
 | `state.disk.<laufwerk>_free_gb` | number | GB |  | Freier Platz je Festplatte (dynamisch) |
@@ -1054,6 +1057,7 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
+* (ipod86) Agent 0.6.0: `show_web` nutzt Microsoft Edge (WebView2), Optionen `zoom` und `engine`, State `web_url`
 * (ipod86) Agent 0.5.0: `show_web` als Diashow, Befehle `screensaver` und `start_menu`
 -->
 ### **WORK IN PROGRESS**

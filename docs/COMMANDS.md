@@ -1,6 +1,6 @@
 # Befehlsreferenz
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.5.0). Nicht von Hand ändern._
+_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.6.0). Nicht von Hand ändern._
 
 Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
 
@@ -433,7 +433,7 @@ http://server/video.mp4
 | `bg` | string |  |  | Hintergrundfarbe, z.B. #000000 |
 
 ### `show_web`  _(braucht GUI-Sitzung)_
-Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)  
+Zeigt eine Webseite (z.B. vis, Lovelace, Kamera-Stream) mit Edge/Chromium in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)  
 Kurzform: Payload `<text>` entspricht `{"url": "<text>"}`.  
 
 Beispiele:
@@ -450,6 +450,8 @@ http://192.168.1.5:8082/vis/
 | `url` | string |  |  | Adresse (oder 'urls' für eine Diashow) |
 | `urls` | array |  |  | Diashow: mehrere Adressen, wechseln nach 'interval' Sekunden |
 | `interval` | number |  | 30 | Diashow: Sekunden je Seite |
+| `zoom` | number |  | 1 | Zoom, z. B. 1.25 = 125 % (nur Edge) |
+| `engine` | string |  | "auto" | Browser: auto = Edge (WebView2), sonst IE11; edge = nur Edge; ie = altes IE11 (auto / edge / ie) |
 | `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
 | `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
 | `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
@@ -683,6 +685,7 @@ Liest den Text der Zwischenablage
 | `webcam_app` | string |  | `text` | Programm(e), die die Kamera benutzen |
 | `mic_in_use` | boolean |  | `indicator` | Mikrofon wird gerade benutzt |
 | `mic_app` | string |  | `text` | Programm(e), die das Mikrofon benutzen |
+| `web_url` | string |  | `text.url` | Seite, die show_web gerade anzeigt (leer = keine) |
 | `update_available` | boolean |  | `indicator` | Neuere WinCtl-Version verfügbar (Prüfung beim Start und alle 12 h) |
 | `latest_version` | string |  | `text` | Neueste WinCtl-Version auf GitHub |
 | `disk/<laufwerk>_free_gb` | number | GB | `value` | Freier Platz je Festplatte (dynamisch) |

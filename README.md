@@ -96,7 +96,7 @@ Written on every event (also when the content is the same), so a trigger with `c
 - Security relevant commands (e.g. `shell`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (agent version 0.5.0). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
+_Generated from the agent (agent version 0.6.0). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
@@ -161,7 +161,7 @@ _Generated from the agent (agent version 0.5.0). Examples and all option descrip
 |---|---|---|---|---|
 | `show_image` | Shows an image as popup, full screen or in a corner | input | `source` | `source`*, `base64`, `fit` (contain/stretch/center), `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
 | `show_video` | Plays a video (mp4/H.264) | input | `source` | `source`*, `loop`, `muted`, `volume`, `controls`, `close_when_done`, `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
-| `show_web` | Shows a web page (dashboard, camera stream) in a window or full screen, also several pages in turn (slideshow) | input | `url` | `url`, `urls`, `interval`, `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
+| `show_web` | Shows a web page (vis, Lovelace, camera stream) with Edge/Chromium in a window or full screen, also several pages in turn (slideshow) | input | `url` | `url`, `urls`, `interval`, `zoom`, `engine` (auto/edge/ie), `mode` (popup/fullscreen/corner), `seconds`, `monitor`, `position` (top-left/top/top-right/left/center/right/bottom-left/bottom/bottom-right), `size`, `margin`, `border`, `border_color`, `caption_size`, `caption_color`, `caption`, `slot`, `click_close`, `opacity`, `activate`, `bg` |
 | `show_text` | Shows text as an overlay | input | `text` | `text`*, `seconds`, `size`, `color`, `bg`, `opacity`, `position` (top/center/bottom), `monitor`, `bold`, `font`, `click_through`, `slot`, `max_width`, `padding`, `margin` |
 | `ask` | Shows a dialog with buttons/input and returns the answer | input | `text` | `text`*, `title`, `buttons`, `input`, `default`, `password`, `timeout`, `width`, `font_size`, `monitor` |
 | `notify` | Shows a Windows notification | input | `text` | `text`*, `title`, `icon` (info/warning/error/none), `seconds` |
@@ -208,6 +208,7 @@ _Generated from the agent (agent version 0.5.0). Examples and all option descrip
 | `state.webcam_app` | string |  |  | Program(s) using the camera |
 | `state.mic_in_use` | boolean |  |  | Microphone in use |
 | `state.mic_app` | string |  |  | Program(s) using the microphone |
+| `state.web_url` | string |  |  | Page that show_web currently displays (empty = none) |
 | `state.update_available` | boolean |  |  | Newer agent version available (checked at start and every 12 h) |
 | `state.latest_version` | string |  |  | Newest agent version on GitHub |
 | `state.disk.<laufwerk>_free_gb` | number | GB |  | Free space per drive, e.g. `disk.C_free_gb` |
@@ -273,6 +274,7 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
+* (ipod86) agent 0.6.0: `show_web` uses Microsoft Edge (WebView2), options `zoom` and `engine`, state `web_url`
 * (ipod86) agent 0.5.0: `show_web` slideshow, commands `screensaver` and `start_menu`
 -->
 ### **WORK IN PROGRESS**

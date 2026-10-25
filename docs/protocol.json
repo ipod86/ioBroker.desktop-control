@@ -1,6 +1,6 @@
 {
   "protocol": 1,
-  "version": "0.5.0",
+  "version": "0.6.0",
   "states": [
     {
       "name": "locked",
@@ -148,6 +148,13 @@
       "role": "text",
       "unit": "",
       "description": "Programm(e), die das Mikrofon benutzen"
+    },
+    {
+      "name": "web_url",
+      "type": "string",
+      "role": "text.url",
+      "unit": "",
+      "description": "Seite, die show_web gerade anzeigt (leer = keine)"
     },
     {
       "name": "update_available",
@@ -1183,7 +1190,7 @@
     {
       "name": "show_web",
       "category": "display",
-      "description": "Zeigt eine Webseite (z.B. Dashboard, Kamera-Stream) in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)",
+      "description": "Zeigt eine Webseite (z.B. vis, Lovelace, Kamera-Stream) mit Edge/Chromium in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)",
       "params": [
         {
           "name": "url",
@@ -1203,6 +1210,25 @@
           "description": "Diashow: Sekunden je Seite",
           "required": false,
           "default": 30
+        },
+        {
+          "name": "zoom",
+          "type": "number",
+          "description": "Zoom, z. B. 1.25 = 125 % (nur Edge)",
+          "required": false,
+          "default": 1
+        },
+        {
+          "name": "engine",
+          "type": "string",
+          "description": "Browser: auto = Edge (WebView2), sonst IE11; edge = nur Edge; ie = altes IE11",
+          "required": false,
+          "default": "auto",
+          "enum": [
+            "auto",
+            "edge",
+            "ie"
+          ]
         },
         {
           "name": "mode",
