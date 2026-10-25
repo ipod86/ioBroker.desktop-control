@@ -276,6 +276,9 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### 0.1.1 (2026-10-25)
+* (ipod86) release published by the GitHub workflow (trusted publishing); news only for versions on npm; normalized repository URL
+
 ### 0.1.0 (2026-10-25)
 * (ipod86) first public release: controls Windows PCs via the WinCtl agent over MQTT – built-in MQTT broker, popups, images, videos and web pages (Microsoft Edge), programs, audio and text-to-speech, screenshots, power, keyboard/mouse, Wake-on-LAN, camera/microphone in use, agent update from ioBroker
 

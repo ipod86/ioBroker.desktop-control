@@ -1,6 +1,6 @@
 {
   "name": "iobroker.desktop-control",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Controls Windows PCs (popups, programs, audio, screenshots, ...) via the WinCtl agent over MQTT",
   "author": {
     "name": "ipod86",

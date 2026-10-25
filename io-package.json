@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "desktop-control",
-		"version": "0.1.0",
+		"version": "0.1.1",
 		"news": {
+			"0.1.1": {
+				"en": "release published by the GitHub workflow (trusted publishing); news only for versions on npm; normalized repository URL",
+				"de": "Release über den GitHub-Workflow veröffentlicht (Trusted Publishing); News nur für Versionen auf npm; vereinheitlichte Repository-URL",
+				"ru": "выпуск опубликован через GitHub workflow (trusted publishing); новости только для версий на npm; нормализованный URL репозитория",
+				"pt": "versão publicada pelo workflow do GitHub (trusted publishing); notícias apenas para versões no npm; URL do repositório normalizado",
+				"nl": "release gepubliceerd via de GitHub-workflow (trusted publishing); nieuws alleen voor versies op npm; genormaliseerde repository-URL",
+				"fr": "version publiée par le workflow GitHub (trusted publishing) ; nouveautés uniquement pour les versions sur npm ; URL du dépôt normalisée",
+				"it": "release pubblicata dal workflow GitHub (trusted publishing); novità solo per le versioni su npm; URL del repository normalizzato",
+				"es": "versión publicada por el workflow de GitHub (trusted publishing); novedades solo para versiones en npm; URL del repositorio normalizada",
+				"pl": "wydanie opublikowane przez workflow GitHub (trusted publishing); nowości tylko dla wersji na npm; znormalizowany adres URL repozytorium",
+				"uk": "випуск опубліковано через GitHub workflow (trusted publishing); новини лише для версій на npm; нормалізована URL-адреса репозиторію",
+				"zh-cn": "通过 GitHub 工作流发布（可信发布）；新闻仅保留 npm 上已有的版本；规范化仓库 URL"
+			},
 			"0.1.0": {
 				"en": "first public release: controls Windows PCs via the WinCtl agent over MQTT – built-in MQTT broker, popups, images, videos and web pages (Microsoft Edge), programs, audio and text-to-speech, screenshots, power, keyboard/mouse, Wake-on-LAN, camera/microphone in use, agent update from ioBroker",
 				"de": "erste öffentliche Version: steuert Windows-PCs über den WinCtl-Agent per MQTT – eingebauter MQTT-Broker, Popups, Bilder, Videos und Webseiten (Microsoft Edge), Programme, Audio und Sprachausgabe, Screenshots, Energie, Tastatur/Maus, Wake-on-LAN, Kamera/Mikrofon in Benutzung, Agent-Update aus ioBroker",
