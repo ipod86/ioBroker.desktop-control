@@ -278,7 +278,7 @@ Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with us
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.1.2 (2026-11-12)
 * (ipod86) timeouts are checked in code (invalid values use the default)
 * (ipod86) object ids that differ only in case from existing ones are not created (warning in the log)
 * (ipod86) security hint and startup warning for the built-in broker without login

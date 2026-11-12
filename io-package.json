@@ -1,146 +1,159 @@
 {
-	"common": {
-		"name": "desktop-control",
-		"version": "0.1.1",
-		"news": {
-			"0.1.1": {
-				"en": "release published by the GitHub workflow (trusted publishing); news only for versions on npm; normalized repository URL",
-				"de": "Release über den GitHub-Workflow veröffentlicht (Trusted Publishing); News nur für Versionen auf npm; vereinheitlichte Repository-URL",
-				"ru": "выпуск опубликован через GitHub workflow (trusted publishing); новости только для версий на npm; нормализованный URL репозитория",
-				"pt": "versão publicada pelo workflow do GitHub (trusted publishing); notícias apenas para versões no npm; URL do repositório normalizado",
-				"nl": "release gepubliceerd via de GitHub-workflow (trusted publishing); nieuws alleen voor versies op npm; genormaliseerde repository-URL",
-				"fr": "version publiée par le workflow GitHub (trusted publishing) ; nouveautés uniquement pour les versions sur npm ; URL du dépôt normalisée",
-				"it": "release pubblicata dal workflow GitHub (trusted publishing); novità solo per le versioni su npm; URL del repository normalizzato",
-				"es": "versión publicada por el workflow de GitHub (trusted publishing); novedades solo para versiones en npm; URL del repositorio normalizada",
-				"pl": "wydanie opublikowane przez workflow GitHub (trusted publishing); nowości tylko dla wersji na npm; znormalizowany adres URL repozytorium",
-				"uk": "випуск опубліковано через GitHub workflow (trusted publishing); новини лише для версій на npm; нормалізована URL-адреса репозиторію",
-				"zh-cn": "通过 GitHub 工作流发布（可信发布）；新闻仅保留 npm 上已有的版本；规范化仓库 URL"
-			},
-			"0.1.0": {
-				"en": "first public release: controls Windows PCs via the WinCtl agent over MQTT – built-in MQTT broker, popups, images, videos and web pages (Microsoft Edge), programs, audio and text-to-speech, screenshots, power, keyboard/mouse, Wake-on-LAN, camera/microphone in use, agent update from ioBroker",
-				"de": "erste öffentliche Version: steuert Windows-PCs über den WinCtl-Agent per MQTT – eingebauter MQTT-Broker, Popups, Bilder, Videos und Webseiten (Microsoft Edge), Programme, Audio und Sprachausgabe, Screenshots, Energie, Tastatur/Maus, Wake-on-LAN, Kamera/Mikrofon in Benutzung, Agent-Update aus ioBroker",
-				"ru": "первый публичный выпуск: управление ПК с Windows через агент WinCtl по MQTT – встроенный MQTT-брокер, всплывающие окна, изображения, видео и веб-страницы (Microsoft Edge), программы, звук и синтез речи, скриншоты, питание, клавиатура/мышь, Wake-on-LAN, использование камеры/микрофона, обновление агента из ioBroker",
-				"pt": "primeira versão pública: controla PCs com Windows através do agente WinCtl via MQTT – broker MQTT integrado, pop-ups, imagens, vídeos e páginas web (Microsoft Edge), programas, áudio e síntese de voz, capturas de tela, energia, teclado/rato, Wake-on-LAN, câmara/microfone em uso, atualização do agente a partir do ioBroker",
-				"nl": "eerste openbare versie: bestuurt Windows-pc's via de WinCtl-agent over MQTT – ingebouwde MQTT-broker, pop-ups, afbeeldingen, video's en webpagina's (Microsoft Edge), programma's, audio en spraak, schermafbeeldingen, energiebeheer, toetsenbord/muis, Wake-on-LAN, camera/microfoon in gebruik, agent-update vanuit ioBroker",
-				"fr": "première version publique : contrôle des PC Windows via l'agent WinCtl en MQTT – broker MQTT intégré, fenêtres contextuelles, images, vidéos et pages web (Microsoft Edge), programmes, audio et synthèse vocale, captures d'écran, alimentation, clavier/souris, Wake-on-LAN, caméra/microphone utilisés, mise à jour de l'agent depuis ioBroker",
-				"it": "prima versione pubblica: controlla PC Windows tramite l'agente WinCtl via MQTT – broker MQTT integrato, popup, immagini, video e pagine web (Microsoft Edge), programmi, audio e sintesi vocale, screenshot, alimentazione, tastiera/mouse, Wake-on-LAN, fotocamera/microfono in uso, aggiornamento dell'agente da ioBroker",
-				"es": "primera versión pública: controla PC con Windows mediante el agente WinCtl por MQTT – broker MQTT integrado, ventanas emergentes, imágenes, vídeos y páginas web (Microsoft Edge), programas, audio y síntesis de voz, capturas de pantalla, energía, teclado/ratón, Wake-on-LAN, cámara/micrófono en uso, actualización del agente desde ioBroker",
-				"pl": "pierwsze publiczne wydanie: steruje komputerami z Windows przez agenta WinCtl za pomocą MQTT – wbudowany broker MQTT, okna wyskakujące, obrazy, filmy i strony WWW (Microsoft Edge), programy, dźwięk i synteza mowy, zrzuty ekranu, zasilanie, klawiatura/mysz, Wake-on-LAN, używana kamera/mikrofon, aktualizacja agenta z ioBroker",
-				"uk": "перший публічний випуск: керування ПК з Windows через агент WinCtl по MQTT – вбудований MQTT-брокер, спливаючі вікна, зображення, відео та вебсторінки (Microsoft Edge), програми, звук і синтез мовлення, знімки екрана, живлення, клавіатура/миша, Wake-on-LAN, використання камери/мікрофона, оновлення агента з ioBroker",
-				"zh-cn": "首个公开版本：通过 MQTT 和 WinCtl 代理控制 Windows 电脑——内置 MQTT 代理、弹窗、图片、视频和网页（Microsoft Edge）、程序、音频和语音朗读、截图、电源、键盘/鼠标、网络唤醒、摄像头/麦克风使用状态、从 ioBroker 更新代理"
-			}
-		},
-		"titleLang": {
-			"en": "Desktop Control",
-			"de": "Desktop Control",
-			"ru": "Desktop Control",
-			"pt": "Desktop Control",
-			"nl": "Desktop Control",
-			"fr": "Desktop Control",
-			"it": "Desktop Control",
-			"es": "Desktop Control",
-			"pl": "Desktop Control",
-			"uk": "Desktop Control",
-			"zh-cn": "Desktop Control"
-		},
-		"desc": {
-			"en": "Controls Windows PCs (popups, programs, audio, screenshots, ...) via the WinCtl agent over MQTT",
-			"de": "Steuert Windows-PCs (Popups, Programme, Audio, Screenshots, ...) über den WinCtl-Agent per MQTT",
-			"ru": "Управляет ПК с Windows (всплывающие окна, программы, звук, скриншоты, ...) через агент WinCtl по MQTT",
-			"pt": "Controla PCs com Windows (pop-ups, programas, áudio, capturas de tela, ...) através do agente WinCtl via MQTT",
-			"nl": "Bestuurt Windows-pc's (pop-ups, programma's, audio, schermafbeeldingen, ...) via de WinCtl-agent over MQTT",
-			"fr": "Contrôle des PC Windows (fenêtres contextuelles, programmes, audio, captures d'écran, ...) via l'agent WinCtl en MQTT",
-			"it": "Controlla PC Windows (popup, programmi, audio, screenshot, ...) tramite l'agente WinCtl via MQTT",
-			"es": "Controla PC con Windows (ventanas emergentes, programas, audio, capturas de pantalla, ...) mediante el agente WinCtl por MQTT",
-			"pl": "Steruje komputerami z Windows (okna wyskakujące, programy, dźwięk, zrzuty ekranu, ...) za pomocą agenta WinCtl przez MQTT",
-			"uk": "Керує ПК з Windows (спливаючі вікна, програми, звук, знімки екрана, ...) через агент WinCtl по MQTT",
-			"zh-cn": "通过 MQTT 和 WinCtl 代理控制 Windows 电脑（弹窗、程序、音频、截图等）"
-		},
-		"authors": [
-			"ipod86 <david@graef.email>"
-		],
-		"keywords": [
-			"windows",
-			"desktop",
-			"remote control",
-			"mqtt",
-			"popup",
-			"pc"
-		],
-		"licenseInformation": {
-			"type": "free",
-			"license": "MIT"
-		},
-		"platform": "Javascript/Node.js",
-		"icon": "desktop-control.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/ipod86/ioBroker.desktop-control/main/admin/desktop-control.png",
-		"readme": "https://github.com/ipod86/ioBroker.desktop-control/blob/main/README.md",
-		"loglevel": "info",
-		"tier": 3,
-		"mode": "daemon",
-		"type": "utility",
-		"compact": true,
-		"connectionType": "local",
-		"dataSource": "push",
-		"adminUI": {
-			"config": "json"
-		},
-		"dependencies": [
-			{
-				"js-controller": ">=6.0.11"
-			}
-		],
-		"globalDependencies": [
-			{
-				"admin": ">=7.8.23"
-			}
-		],
-		"messagebox": true
-	},
-	"native": {
-		"brokerMode": "internal",
-		"port": 1886,
-		"bind": "0.0.0.0",
-		"host": "",
-		"hostPort": 1883,
-		"username": "",
-		"password": "",
-		"tls": false,
-		"rejectUnauthorized": true,
-		"topicBase": "winctl",
-		"clientId": "",
-		"cmdTimeout": 10,
-		"askTimeout": 120
-	},
-	"objects": [],
-	"instanceObjects": [
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Information"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.connection",
-			"type": "state",
-			"common": {
-				"role": "indicator.connected",
-				"name": "Device or service connected",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		}
-	],
-	"encryptedNative": [
-		"password"
-	],
-	"protectedNative": [
-		"password"
-	]
+  "common": {
+    "name": "desktop-control",
+    "version": "0.1.2",
+    "news": {
+      "0.1.2": {
+        "en": "timeouts are checked in code (invalid values use the default)\nobject ids that differ only in case from existing ones are not created (warning in the log)\nsecurity hint and startup warning for the built-in broker without login\nrole `media.mute` is kept; manifest states without a command stay read-only\nEnglish documentation (docs/COMMANDS.md, docs/PROTOCOL.md)",
+        "de": "Timeouts sind eingecheckt (Ungültige Standardwerte)\nObjekt-IDs, die sich nur unterscheiden, wenn sie nicht erstellt werden (Warnung im Log)\nSicherheitshinweis und Startwarnung für den eingebauten Broker ohne Login\nRolle `media.mute` bleibt erhalten; Status ohne Befehl sind schreibgeschützt\nEnglische Dokumentation (docs/commands.md, docs/PROTOCOL.md)",
+        "ru": "тайм-ауты проверяются в коде (по умолчанию используются неправильные значения)\nидентификаторы объектов, отличающиеся только в том случае, если они не созданы от существующих (предупреждение в журнале)\nподсказка по безопасности и предупреждение о запуске встроенного брокера без входа в систему\nроль `media.mute` сохранена; состояния манифеста без команды доступны только для чтения\nДокументация на английском языке (docs/Commands.md, docs/Protocol.md)",
+        "pt": "o tempo limite é verificado no código (o padrão é inválido)\nIDs de objetos que diferem apenas se os existentes não forem criados (aviso no log)\ndica de segurança e aviso inicial do broker embutido sem login\nA função `media.mute` é mantida; estados de manifesto sem comando são só de leitura\nDocumentação em inglês (DOCS/COMMANDS.md, DOCS/PROTOCOL.md)",
+        "nl": "time-outs zijn ingecheckt in de code (ongeldige waarden gebruiken de standaardwaarde)\nobject-ID's die alleen verschillen als er geen bestaande ID's worden aangemaakt (waarschuwing in het logboek)\nbeveiligingstip en opstartwaarschuwing voor de ingebouwde makelaar zonder aanmelding\nrol `media.mute` blijft behouden; manifeste staten zonder commando blijven alleen-lezen\nEngelse documentatie (docs/commands.md, docs/protocol.md)",
+        "fr": "les délais sont enregistrés (valeurs non valides par défaut)\ndes identifiants d'objets qui ne diffèrent que s'ils ne sont pas créés (avertissement dans le log)\nindice de sécurité et alerte de démarrage pour le broker intégré sans connexion\nle rôle « media.mute » est conservé ; les états du manifeste sans commande restent en lecture seule\nDocumentation en anglais (Docs/Commands.md, Docs/Protocol.md)",
+        "it": "i timeout sono in codice (i valori non validi sono di default)\nID oggetto diversi solo se non vengono creati (avviso nel log)\nguida di sicurezza e avviso di avvio per il broker integrato senza login\nil ruolo `media.mute` è mantenuto; il manifest è di sola lettura\nDocumenti in inglese (Docs/Commands.md, Docs/Protocol.md)",
+        "es": "los tiempos de espera están marcados (los valores no válidos usan el predeterminado)\nID de objeto que solo difieren en caso de que no se creen los existentes (aviso en el registro)\nconsejo de seguridad y aviso de inicio para el corredor integrado sin inicio de sesión\nel rol `media.mute` se mantiene; los estados del manifiesto sin comando son de solo lectura\nDocumentación en inglés (docs/Commands.md, docs/Protocol.md)",
+        "pl": "limity czasu są zaznaczone w kodzie (nieprawidłowe wartości używają domyślnych)\nidentyfikatory obiektów, które różnią się tylko w przypadku, gdy nie zostaną utworzone od istniejących (ostrzeżenie w dzienniku)\npodpowiedź bezpieczeństwa i ostrzeżenie o uruchomieniu dla wbudowanego brokera bez logowania\nrola „media.mute” jest zachowana; manifestowane stany bez polecenia pozostań tylko do odczytu\nDokumentacja w języku angielskim (docs/Commands.md, Docs/Protocol.md)",
+        "uk": "тайм-аути перевіряються в коді (недійсні значення використовують типове значення)\nідентифікатори об'єктів, які відрізняються лише в разі, якщо від існуючих не створені (попередження в журналі)\nпідказка безпеки та попередження про запуск для вбудованого брокера без входу\nроль `media.mute` зберігається; стани маніфесту без команди залишаються лише для читання\nДокументація англійською мовою (Docs/Commands.md, Docs/Protocol.md)",
+        "zh-cn": "在代码中检查超时（使用默认值无效）\n仅在不创建与现有对象ID时才不同的对象 ID（日志中的警告）\n无需登录的内置代理的安全提示和启动警告\n角色 `media.mute`被保留；没有命令的清单状态保持只读状态\n英文文档（docs/Commands.md、docs/protocol.md）"
+      },
+      "0.1.1": {
+        "en": "release published by the GitHub workflow (trusted publishing); news only for versions on npm; normalized repository URL",
+        "de": "Release über den GitHub-Workflow veröffentlicht (Trusted Publishing); News nur für Versionen auf npm; vereinheitlichte Repository-URL",
+        "ru": "выпуск опубликован через GitHub workflow (trusted publishing); новости только для версий на npm; нормализованный URL репозитория",
+        "pt": "versão publicada pelo workflow do GitHub (trusted publishing); notícias apenas para versões no npm; URL do repositório normalizado",
+        "nl": "release gepubliceerd via de GitHub-workflow (trusted publishing); nieuws alleen voor versies op npm; genormaliseerde repository-URL",
+        "fr": "version publiée par le workflow GitHub (trusted publishing) ; nouveautés uniquement pour les versions sur npm ; URL du dépôt normalisée",
+        "it": "release pubblicata dal workflow GitHub (trusted publishing); novità solo per le versioni su npm; URL del repository normalizzato",
+        "es": "versión publicada por el workflow de GitHub (trusted publishing); novedades solo para versiones en npm; URL del repositorio normalizada",
+        "pl": "wydanie opublikowane przez workflow GitHub (trusted publishing); nowości tylko dla wersji na npm; znormalizowany adres URL repozytorium",
+        "uk": "випуск опубліковано через GitHub workflow (trusted publishing); новини лише для версій на npm; нормалізована URL-адреса репозиторію",
+        "zh-cn": "通过 GitHub 工作流发布（可信发布）；新闻仅保留 npm 上已有的版本；规范化仓库 URL"
+      },
+      "0.1.0": {
+        "en": "first public release: controls Windows PCs via the WinCtl agent over MQTT – built-in MQTT broker, popups, images, videos and web pages (Microsoft Edge), programs, audio and text-to-speech, screenshots, power, keyboard/mouse, Wake-on-LAN, camera/microphone in use, agent update from ioBroker",
+        "de": "erste öffentliche Version: steuert Windows-PCs über den WinCtl-Agent per MQTT – eingebauter MQTT-Broker, Popups, Bilder, Videos und Webseiten (Microsoft Edge), Programme, Audio und Sprachausgabe, Screenshots, Energie, Tastatur/Maus, Wake-on-LAN, Kamera/Mikrofon in Benutzung, Agent-Update aus ioBroker",
+        "ru": "первый публичный выпуск: управление ПК с Windows через агент WinCtl по MQTT – встроенный MQTT-брокер, всплывающие окна, изображения, видео и веб-страницы (Microsoft Edge), программы, звук и синтез речи, скриншоты, питание, клавиатура/мышь, Wake-on-LAN, использование камеры/микрофона, обновление агента из ioBroker",
+        "pt": "primeira versão pública: controla PCs com Windows através do agente WinCtl via MQTT – broker MQTT integrado, pop-ups, imagens, vídeos e páginas web (Microsoft Edge), programas, áudio e síntese de voz, capturas de tela, energia, teclado/rato, Wake-on-LAN, câmara/microfone em uso, atualização do agente a partir do ioBroker",
+        "nl": "eerste openbare versie: bestuurt Windows-pc's via de WinCtl-agent over MQTT – ingebouwde MQTT-broker, pop-ups, afbeeldingen, video's en webpagina's (Microsoft Edge), programma's, audio en spraak, schermafbeeldingen, energiebeheer, toetsenbord/muis, Wake-on-LAN, camera/microfoon in gebruik, agent-update vanuit ioBroker",
+        "fr": "première version publique : contrôle des PC Windows via l'agent WinCtl en MQTT – broker MQTT intégré, fenêtres contextuelles, images, vidéos et pages web (Microsoft Edge), programmes, audio et synthèse vocale, captures d'écran, alimentation, clavier/souris, Wake-on-LAN, caméra/microphone utilisés, mise à jour de l'agent depuis ioBroker",
+        "it": "prima versione pubblica: controlla PC Windows tramite l'agente WinCtl via MQTT – broker MQTT integrato, popup, immagini, video e pagine web (Microsoft Edge), programmi, audio e sintesi vocale, screenshot, alimentazione, tastiera/mouse, Wake-on-LAN, fotocamera/microfono in uso, aggiornamento dell'agente da ioBroker",
+        "es": "primera versión pública: controla PC con Windows mediante el agente WinCtl por MQTT – broker MQTT integrado, ventanas emergentes, imágenes, vídeos y páginas web (Microsoft Edge), programas, audio y síntesis de voz, capturas de pantalla, energía, teclado/ratón, Wake-on-LAN, cámara/micrófono en uso, actualización del agente desde ioBroker",
+        "pl": "pierwsze publiczne wydanie: steruje komputerami z Windows przez agenta WinCtl za pomocą MQTT – wbudowany broker MQTT, okna wyskakujące, obrazy, filmy i strony WWW (Microsoft Edge), programy, dźwięk i synteza mowy, zrzuty ekranu, zasilanie, klawiatura/mysz, Wake-on-LAN, używana kamera/mikrofon, aktualizacja agenta z ioBroker",
+        "uk": "перший публічний випуск: керування ПК з Windows через агент WinCtl по MQTT – вбудований MQTT-брокер, спливаючі вікна, зображення, відео та вебсторінки (Microsoft Edge), програми, звук і синтез мовлення, знімки екрана, живлення, клавіатура/миша, Wake-on-LAN, використання камери/мікрофона, оновлення агента з ioBroker",
+        "zh-cn": "首个公开版本：通过 MQTT 和 WinCtl 代理控制 Windows 电脑——内置 MQTT 代理、弹窗、图片、视频和网页（Microsoft Edge）、程序、音频和语音朗读、截图、电源、键盘/鼠标、网络唤醒、摄像头/麦克风使用状态、从 ioBroker 更新代理"
+      }
+    },
+    "titleLang": {
+      "en": "Desktop Control",
+      "de": "Desktop Control",
+      "ru": "Desktop Control",
+      "pt": "Desktop Control",
+      "nl": "Desktop Control",
+      "fr": "Desktop Control",
+      "it": "Desktop Control",
+      "es": "Desktop Control",
+      "pl": "Desktop Control",
+      "uk": "Desktop Control",
+      "zh-cn": "Desktop Control"
+    },
+    "desc": {
+      "en": "Controls Windows PCs (popups, programs, audio, screenshots, ...) via the WinCtl agent over MQTT",
+      "de": "Steuert Windows-PCs (Popups, Programme, Audio, Screenshots, ...) über den WinCtl-Agent per MQTT",
+      "ru": "Управляет ПК с Windows (всплывающие окна, программы, звук, скриншоты, ...) через агент WinCtl по MQTT",
+      "pt": "Controla PCs com Windows (pop-ups, programas, áudio, capturas de tela, ...) através do agente WinCtl via MQTT",
+      "nl": "Bestuurt Windows-pc's (pop-ups, programma's, audio, schermafbeeldingen, ...) via de WinCtl-agent over MQTT",
+      "fr": "Contrôle des PC Windows (fenêtres contextuelles, programmes, audio, captures d'écran, ...) via l'agent WinCtl en MQTT",
+      "it": "Controlla PC Windows (popup, programmi, audio, screenshot, ...) tramite l'agente WinCtl via MQTT",
+      "es": "Controla PC con Windows (ventanas emergentes, programas, audio, capturas de pantalla, ...) mediante el agente WinCtl por MQTT",
+      "pl": "Steruje komputerami z Windows (okna wyskakujące, programy, dźwięk, zrzuty ekranu, ...) za pomocą agenta WinCtl przez MQTT",
+      "uk": "Керує ПК з Windows (спливаючі вікна, програми, звук, знімки екрана, ...) через агент WinCtl по MQTT",
+      "zh-cn": "通过 MQTT 和 WinCtl 代理控制 Windows 电脑（弹窗、程序、音频、截图等）"
+    },
+    "authors": [
+      "ipod86 <david@graef.email>"
+    ],
+    "keywords": [
+      "windows",
+      "desktop",
+      "remote control",
+      "mqtt",
+      "popup",
+      "pc"
+    ],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "desktop-control.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/ipod86/ioBroker.desktop-control/main/admin/desktop-control.png",
+    "readme": "https://github.com/ipod86/ioBroker.desktop-control/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "utility",
+    "compact": true,
+    "connectionType": "local",
+    "dataSource": "push",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=7.8.23"
+      }
+    ],
+    "messagebox": true
+  },
+  "native": {
+    "brokerMode": "internal",
+    "port": 1886,
+    "bind": "0.0.0.0",
+    "host": "",
+    "hostPort": 1883,
+    "username": "",
+    "password": "",
+    "tls": false,
+    "rejectUnauthorized": true,
+    "topicBase": "winctl",
+    "clientId": "",
+    "cmdTimeout": 10,
+    "askTimeout": 120
+  },
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    }
+  ],
+  "encryptedNative": [
+    "password"
+  ],
+  "protectedNative": [
+    "password"
+  ]
 }
