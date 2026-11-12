@@ -20,8 +20,6 @@ export interface BrokerOptions {
 
 /** Running broker */
 export interface RunningBroker {
-	/** number of connected clients (agents + adapter) */
-	clients: () => number;
 	/** stops the broker and closes all connections */
 	close: () => Promise<void>;
 }
@@ -87,7 +85,6 @@ export async function startBroker(opts: BrokerOptions): Promise<RunningBroker> {
 		});
 	});
 	return {
-		clients: () => broker.connectedClients,
 		close: async () => {
 			for (const s of sockets) {
 				s.destroy();

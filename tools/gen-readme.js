@@ -68,6 +68,19 @@ const T = {
 
 const WRITABLE = ['volume', 'muted', 'keep_awake'];
 
+/** English names of the agent's German placeholders in dynamic state names */
+const PLACEHOLDERS_EN = { '<laufwerk>': '<drive>' };
+
+/**
+ * State name with English placeholders (e.g. disk/<laufwerk>_free_gb → disk/<drive>_free_gb)
+ *
+ * @param {string} name state name from the manifest
+ * @returns {string} name for the English README
+ */
+function stateNameEn(name) {
+	return Object.entries(PLACEHOLDERS_EN).reduce((n, [de, en]) => n.split(de).join(en), name);
+}
+
 /**
  * Data point kind like in src/lib/protocol.ts (commandKind)
  *
@@ -102,11 +115,11 @@ function render(lang) {
 	return lang === 'en' ? renderEn() : renderDe();
 }
 
-/** README.md: compact English tables, the full reference with examples is in README.de.md / docs/COMMANDS.md */
+/** README.md: compact English tables, the full reference with examples is in docs/COMMANDS.md (English) */
 function renderEn() {
 	const t = T.en;
 	const out = [
-		`_Generated from the agent (agent version ${proto.version}). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._`,
+		`_Generated from the agent (agent version ${proto.version}). Examples and all option descriptions: [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._`,
 		'',
 	];
 	const cats = {};
@@ -150,7 +163,7 @@ function renderEn() {
 	);
 	for (const st of proto.states) {
 		out.push(
-			`| \`state.${st.name.replace(/\//g, '.')}\` | ${st.type} | ${st.unit || ''} | ${WRITABLE.includes(st.name) ? 'yes' : ''} | ${st.description} |`,
+			`| \`state.${stateNameEn(st.name).replace(/\//g, '.')}\` | ${st.type} | ${st.unit || ''} | ${WRITABLE.includes(st.name) ? 'yes' : ''} | ${st.description} |`,
 		);
 	}
 	return out.join('\n');

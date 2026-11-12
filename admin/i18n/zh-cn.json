@@ -1,5 +1,4 @@
 {
-	"desktop-control adapter settings": "desktop-control的适配器设置",
 	"MQTT broker": "MQTT 代理",
 	"Host": "主机",
 	"hostHelp": "代理的 IP 地址或主机名",
@@ -23,5 +22,6 @@
 	"Listen on": "监听地址",
 	"bindHelp": "0.0.0.0 = 所有网络接口",
 	"loginHelp": "内置代理：可选——如果设置，代理必须使用它登录",
-	"Broker": "代理"
+	"Broker": "代理",
+	"brokerSecurityHint": "安全提示：未设置用户名时，内置代理接受网络中的任何客户端——局域网中的任何设备都可以向电脑发送命令或伪造代理数据。建议设置用户名和密码，代理随后必须使用它们登录。也可以将“监听地址”限制为一个网络接口。"
 }

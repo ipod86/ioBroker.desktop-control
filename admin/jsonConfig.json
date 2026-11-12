@@ -96,6 +96,20 @@
 					"xl": 2,
 					"hidden": "data.brokerMode === 'internal'"
 				},
+				"_securityHint": {
+					"type": "staticText",
+					"text": "brokerSecurityHint",
+					"hidden": "data.brokerMode !== 'internal' || !!data.username",
+					"style": {
+						"color": "#e65100"
+					},
+					"newLine": true,
+					"xs": 12,
+					"sm": 12,
+					"md": 12,
+					"lg": 12,
+					"xl": 12
+				},
 				"username": {
 					"type": "text",
 					"label": "User name",

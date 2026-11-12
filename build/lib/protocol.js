@@ -19,6 +19,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var protocol_exports = {};
 __export(protocol_exports, {
   ALIAS_LIMITED: () => ALIAS_LIMITED,
+  MAX_TIMEOUT_MS: () => MAX_TIMEOUT_MS,
   OPTIONS_SUFFIX: () => OPTIONS_SUFFIX,
   WRITABLE_COMMANDS: () => WRITABLE_COMMANDS,
   commandDataPoints: () => commandDataPoints,
@@ -27,6 +28,7 @@ __export(protocol_exports, {
   convertParam: () => convertParam,
   findStateDef: () => findStateDef,
   fitRole: () => fitRole,
+  isValidTimeoutMs: () => isValidTimeoutMs,
   normalizeManifest: () => normalizeManifest,
   parseCommandParams: () => parseCommandParams,
   parseOnline: () => parseOnline,
@@ -38,7 +40,8 @@ __export(protocol_exports, {
   sanitizeSegment: () => sanitizeSegment,
   stateCommon: () => stateCommon,
   stateFromResult: () => stateFromResult,
-  text: () => text
+  text: () => text,
+  timeoutSetting: () => timeoutSetting
 });
 module.exports = __toCommonJS(protocol_exports);
 var import_roles = require("./roles");
@@ -158,7 +161,7 @@ function normalizeManifest(raw) {
       pattern = new RegExp(`^${re}$`);
     }
     const type = ["json", "array", "object"].includes(raw2) ? "string" : raw2;
-    const writable = e.writable === true || path in WRITABLE_COMMANDS;
+    const writable = path in WRITABLE_COMMANDS;
     const role = fitRole(str(e.role), raw2, writable);
     return {
       path,
@@ -187,7 +190,6 @@ function normalizeManifest(raw) {
     })),
     // run/kill are only flagged because of AllowAnyRun; with alias-only run the agent itself limits them
     dangerous: e.dangerous === true && !(ALIAS_LIMITED.includes(name) && security.allow_any_run === false),
-    needsGui: e.needs_gui === true || e.needsGui === true,
     description: str(e.description),
     primary: e.primary ? str(e.primary) : void 0,
     examples: Array.isArray(e.examples) ? e.examples.map(str) : [],
@@ -200,21 +202,23 @@ function normalizeManifest(raw) {
     version: str(m.version),
     os: str(m.os),
     user: str(m.user),
-    deviceId: str(m.device_id),
     started: str(m.started),
     protocol: typeof m.protocol === "number" ? m.protocol : 0,
     apps: Array.isArray(security.apps) ? security.apps.map(str) : [],
     mac: str(m.mac),
     broadcast: str(m.broadcast),
-    allowAnyRun: security.allow_any_run === true,
     states,
     commands,
     events
   };
 }
+const BOOLEAN_ROLES = ["media.mute", "media.mute.group"];
 function fitRole(role, type, writable) {
   if (!(0, import_roles.isOfficialRole)(role)) {
     return defaultRole(type, writable);
+  }
+  if (BOOLEAN_ROLES.includes(role)) {
+    return type === "boolean" ? role : defaultRole(type, writable);
   }
   const family = role.split(".")[0];
   const booleanFamily = ["indicator", "sensor", "switch", "button"].includes(family);
@@ -414,9 +418,21 @@ function parseScreenshot(payload) {
   }
   return null;
 }
+const MAX_TIMEOUT_MS = 2147483647;
+function isValidTimeoutMs(ms) {
+  return typeof ms === "number" && Number.isFinite(ms) && ms > 0 && ms <= MAX_TIMEOUT_MS;
+}
+function timeoutSetting(seconds, defaultSeconds) {
+  if (seconds === void 0 || seconds === null || seconds === "") {
+    return { ms: defaultSeconds * 1e3, invalid: false };
+  }
+  const ms = Number(seconds) * 1e3;
+  return isValidTimeoutMs(ms) ? { ms, invalid: false } : { ms: defaultSeconds * 1e3, invalid: true };
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
   ALIAS_LIMITED,
+  MAX_TIMEOUT_MS,
   OPTIONS_SUFFIX,
   WRITABLE_COMMANDS,
   commandDataPoints,
@@ -425,6 +441,7 @@ function parseScreenshot(payload) {
   convertParam,
   findStateDef,
   fitRole,
+  isValidTimeoutMs,
   normalizeManifest,
   parseCommandParams,
   parseOnline,
@@ -436,6 +453,7 @@ function parseScreenshot(payload) {
   sanitizeSegment,
   stateCommon,
   stateFromResult,
-  text
+  text,
+  timeoutSetting
 });
 //# sourceMappingURL=protocol.js.map

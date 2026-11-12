@@ -1,5 +1,4 @@
 {
-	"desktop-control adapter settings": "Ajustes del adaptador para desktop-control",
 	"MQTT broker": "Broker MQTT",
 	"Host": "Host",
 	"hostHelp": "Dirección IP o nombre de host del broker",
@@ -23,5 +22,6 @@
 	"Listen on": "Escuchar en",
 	"bindHelp": "0.0.0.0 = todas las interfaces de red",
 	"loginHelp": "Broker integrado: opcional – si se define, los agentes deben iniciar sesión con él",
-	"Broker": "Broker"
+	"Broker": "Broker",
+	"brokerSecurityHint": "Seguridad: sin nombre de usuario, el broker integrado acepta cualquier cliente de la red; cualquier dispositivo de la LAN podría enviar comandos a los PC o falsificar datos de los agentes. Se recomienda un nombre de usuario y una contraseña; los agentes deben iniciar sesión con ellos. Como alternativa, limite \"Escuchar en\" a una interfaz de red."
 }

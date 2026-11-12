@@ -74,7 +74,6 @@ async function startBroker(opts) {
     });
   });
   return {
-    clients: () => broker.connectedClients,
     close: async () => {
       for (const s of sockets) {
         s.destroy();

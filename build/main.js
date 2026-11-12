@@ -40,6 +40,13 @@ class DesktopControl extends utils.Adapter {
   byObjId = /* @__PURE__ */ new Map();
   /** object ids already created/updated in this run */
   known = /* @__PURE__ */ new Set();
+  /** lower-case object id → existing object id (ioBroker ids must be unique regardless of case) */
+  idsLower = /* @__PURE__ */ new Map();
+  /** ids already reported as case collision (warn once per id) */
+  caseWarned = /* @__PURE__ */ new Set();
+  /** checked timeouts from the settings (ms) */
+  cmdTimeoutMs = 1e4;
+  askTimeoutMs = 12e4;
   lastError = "";
   broker;
   /** messages are handled one after another, so a manifest is complete before the states that follow it */
@@ -65,6 +72,8 @@ class DesktopControl extends utils.Adapter {
     if (await this.migrateConfig()) {
       return;
     }
+    this.cmdTimeoutMs = this.checkTimeout("cmdTimeout", cfg.cmdTimeout, 10);
+    this.askTimeoutMs = this.checkTimeout("askTimeout", cfg.askTimeout, 120);
     const mode = cfg.brokerMode || (cfg.host ? "external" : "internal");
     if (mode === "internal") {
       const port = Number(cfg.port) || 1886;
@@ -82,6 +91,11 @@ class DesktopControl extends utils.Adapter {
         return;
       }
       this.log.info(`Built-in MQTT broker listens on ${cfg.bind || "0.0.0.0"}:${port}`);
+      if (!cfg.username) {
+        this.log.warn(
+          "The built-in MQTT broker runs without login: every device in the network can connect, send commands to the PCs or fake agent data. Setting a user name and password in the adapter settings is recommended."
+        );
+      }
     } else if (!cfg.host) {
       this.log.error("No MQTT broker configured \u2013 please enter the broker host in the adapter settings.");
       return;
@@ -94,6 +108,20 @@ class DesktopControl extends utils.Adapter {
     await this.restoreDevices();
     await this.subscribeStatesAsync("*");
     this.connect();
+  }
+  /**
+   * Timeout setting (seconds) → milliseconds; invalid values (<= 0, not a number, above 2^31-1 ms) use the default
+   *
+   * @param name setting name (for the log)
+   * @param seconds configured value
+   * @param defaultSeconds default
+   */
+  checkTimeout(name, seconds, defaultSeconds) {
+    const t = (0, import_protocol.timeoutSetting)(seconds, defaultSeconds);
+    if (t.invalid) {
+      this.log.warn(`Invalid ${name} ${JSON.stringify(seconds)} \u2013 using the default of ${defaultSeconds} s`);
+    }
+    return t.ms;
   }
   /**
    * Moves settings of older versions to the current names: the built-in broker used `brokerPort`/`brokerBind`
@@ -124,6 +152,7 @@ class DesktopControl extends utils.Adapter {
     const objs = await this.getAdapterObjectsAsync();
     for (const [id, obj] of Object.entries(objs)) {
       const rel = id.slice(this.namespace.length + 1);
+      this.rememberId(rel);
       if (obj.type === "device" && rel !== "all" && !rel.includes(".")) {
         const native = (_a = obj.native) != null ? _a : {};
         const topicId = String(native.topicId || rel);
@@ -200,6 +229,43 @@ class DesktopControl extends utils.Adapter {
     }
     await this.extendObjectAsync(id, obj);
     this.known.add(id);
+    this.rememberId(id);
+  }
+  /**
+   * Registers an existing object id for the case collision check (the first id of a spelling wins)
+   *
+   * @param id object id below the namespace
+   */
+  rememberId(id) {
+    const lower = id.toLowerCase();
+    if (!this.idsLower.has(lower)) {
+      this.idsLower.set(lower, id);
+    }
+  }
+  /**
+   * True when the id (or one of its parent levels) differs only in case from an existing object.
+   * Such an id is not created – ioBroker ids must be unique regardless of case – and a warning is logged once.
+   * Existing ids are never renamed; the object that exists first keeps its spelling.
+   *
+   * @param id object id below the namespace
+   * @param source what the id comes from (topic or path, for the log)
+   */
+  caseClash(id, source) {
+    const parts = id.split(".");
+    for (let i = 1; i <= parts.length; i++) {
+      const prefix = parts.slice(0, i).join(".");
+      const existing = this.idsLower.get(prefix.toLowerCase());
+      if (existing !== void 0 && existing !== prefix) {
+        if (!this.caseWarned.has(id)) {
+          this.caseWarned.add(id);
+          this.log.warn(
+            `${source}: object id "${id}" differs only in case from the existing "${existing}" \u2013 ignored (ids must be unique regardless of case)`
+          );
+        }
+        return true;
+      }
+    }
+    return false;
   }
   /**
    * Creates a folder for every level between base and the state id (e.g. `state.disk` for `state.disk.c_free_gb`),
@@ -220,6 +286,7 @@ class DesktopControl extends utils.Adapter {
    * Device for an agent id (creates the base objects on first contact)
    *
    * @param topicId agent id
+   * @returns device, or undefined if its id differs only in case from an existing object
    */
   async ensureDevice(topicId) {
     let dev = this.devices.get(topicId);
@@ -227,6 +294,9 @@ class DesktopControl extends utils.Adapter {
       let objId = (0, import_protocol.sanitizeSegment)(topicId);
       while (this.byObjId.has(objId) && this.byObjId.get(objId) !== topicId) {
         objId += "_";
+      }
+      if (this.caseClash(objId, `agent "${topicId}"`)) {
+        return void 0;
       }
       dev = { topicId, objId, online: false };
       this.devices.set(topicId, dev);
@@ -275,6 +345,9 @@ class DesktopControl extends utils.Adapter {
       return;
     }
     const dev = await this.ensureDevice(parsed.device);
+    if (!dev) {
+      return;
+    }
     const o = dev.objId;
     const body = payload.toString("utf8");
     if (parsed.kind !== "online" || (0, import_protocol.parseOnline)(body)) {
@@ -305,6 +378,9 @@ class DesktopControl extends utils.Adapter {
         const def = (0, import_protocol.findStateDef)(dev.manifest, parsed.path);
         const value = (0, import_protocol.parseValue)(body, def == null ? void 0 : def.type);
         const id = `${o}.state.${(0, import_protocol.pathToId)(parsed.path)}`;
+        if (this.caseClash(id, `${dev.topicId}: state ${parsed.path}`)) {
+          return;
+        }
         await this.ensureParents(`${o}.state`, id);
         await this.ensureObject(id, {
           type: "state",
@@ -316,6 +392,9 @@ class DesktopControl extends utils.Adapter {
       }
       case "event": {
         const id = `${o}.event.${(0, import_protocol.pathToId)(parsed.path)}`;
+        if (this.caseClash(id, `${dev.topicId}: event ${parsed.path}`)) {
+          return;
+        }
         await this.ensureParents(`${o}.event`, id);
         await this.ensureObject(id, {
           type: "state",
@@ -428,6 +507,9 @@ class DesktopControl extends utils.Adapter {
     }
     for (const s of m.states.filter((st) => !st.pattern)) {
       const id = `${o}.state.${(0, import_protocol.pathToId)(s.path)}`;
+      if (this.caseClash(id, `${dev.topicId}: state ${s.path}`)) {
+        continue;
+      }
       this.known.delete(id);
       await this.ensureParents(`${o}.state`, id);
       await this.ensureObject(id, { type: "state", common: (0, import_protocol.stateCommon)(s.path, s), native: {} });
@@ -437,6 +519,9 @@ class DesktopControl extends utils.Adapter {
       for (const dp of (0, import_protocol.commandDataPoints)(c)) {
         const id = `${o}.cmd.${(0, import_protocol.sanitizeSegment)(c.name)}${dp.suffix}`;
         if (id === `${o}.cmd.${RESULT}`) {
+          continue;
+        }
+        if (this.caseClash(id, `${dev.topicId}: command ${c.name}`)) {
           continue;
         }
         wanted.add(id);
@@ -465,6 +550,9 @@ class DesktopControl extends utils.Adapter {
       if (!wanted.has(rel)) {
         await this.delObjectAsync(rel);
         this.known.delete(rel);
+        if (this.idsLower.get(rel.toLowerCase()) === rel) {
+          this.idsLower.delete(rel.toLowerCase());
+        }
       }
     }
     await this.updateBroadcastCommands();
@@ -573,8 +661,8 @@ class DesktopControl extends utils.Adapter {
     if (!((_a = this.client) == null ? void 0 : _a.connected)) {
       throw new Error("not connected to the MQTT broker");
     }
-    const defaultS = DIALOG_COMMANDS.includes(command) ? this.config.askTimeout || 120 : this.config.cmdTimeout || 10;
-    const { id, promise } = this.correlator.create(topicId, timeoutMs != null ? timeoutMs : defaultS * 1e3);
+    const defaultMs = DIALOG_COMMANDS.includes(command) ? this.askTimeoutMs : this.cmdTimeoutMs;
+    const { id, promise } = this.correlator.create(topicId, timeoutMs != null ? timeoutMs : defaultMs);
     await this.client.publishAsync(`${this.base}/${topicId}/cmd/${command}`, JSON.stringify({ ...params, id }), {
       qos: 1
     });
@@ -743,7 +831,14 @@ class DesktopControl extends utils.Adapter {
         return;
       }
       const params = paramsFor(topicId);
-      const timeout = typeof msg.timeout === "number" && msg.timeout > 0 ? msg.timeout : void 0;
+      let timeout;
+      if (msg.timeout !== void 0 && msg.timeout !== null) {
+        if ((0, import_protocol.isValidTimeoutMs)(msg.timeout)) {
+          timeout = msg.timeout;
+        } else {
+          this.log.warn(`sendTo cmd: invalid timeout ${JSON.stringify(msg.timeout)} \u2013 using the default`);
+        }
+      }
       const result = await this.sendCommand(topicId, command, params, timeout);
       reply(result);
     } catch (e) {

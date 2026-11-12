@@ -97,7 +97,7 @@ Written on every event (also when the content is the same), so a trigger with `c
 - Security relevant commands (e.g. `shell`) and commands switched off in the agent get no data point; they can only be sent via `sendTo`. `run` and `kill` get a data point as long as the agent only starts programs from its alias list ("allow any program" off); `cmd.run` offers the aliases as a selection.
 
 <!-- generated:start -->
-_Generated from the agent (agent version 0.6.4). Examples and all option descriptions: [German reference](README.de.md#befehle-pccmd) and [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
+_Generated from the agent (agent version 0.6.4). Examples and all option descriptions: [docs/COMMANDS.md](docs/COMMANDS.md); the object description of each command data point lists its options and an example._
 
 #### System
 
@@ -212,8 +212,8 @@ _Generated from the agent (agent version 0.6.4). Examples and all option descrip
 | `state.web_url` | string |  |  | Page that show_web currently displays (empty = none) |
 | `state.update_available` | boolean |  |  | Newer agent version available (checked at start and every 12 h) |
 | `state.latest_version` | string |  |  | Newest agent version on GitHub |
-| `state.disk.<laufwerk>_free_gb` | number | GB |  | Free space per drive, e.g. `disk.C_free_gb` |
-| `state.disk.<laufwerk>_used_percent` | number | % |  | Usage per drive, e.g. `disk.C_used_percent` |
+| `state.disk.<drive>_free_gb` | number | GB |  | Free space per drive, e.g. `disk.C_free_gb` |
+| `state.disk.<drive>_used_percent` | number | % |  | Usage per drive, e.g. `disk.C_used_percent` |
 | `state.proc.<name>` | boolean |  |  | Watched program is running (agent settings "Processes") |
 <!-- generated:end -->
 
@@ -271,11 +271,20 @@ Requirement: the exe is in a folder the user can write to (e.g. `C:\Tools\WinCtl
 
 Whoever may write to `winctl/+/cmd/#` controls the PC. Secure the broker with user/password and ACLs, use TLS if needed. By default the agent only starts programs from its alias list and `shell` is off.
 
+**Built-in broker:** it listens on all network interfaces (`0.0.0.0`) and, as long as no user name is set, accepts every client – any device in the LAN could then send commands to the PCs or fake agent data. Setting a user name and password in the adapter settings is recommended (the agents then log in with them); alternatively limit "Listen on" to one network interface. Without a login the adapter logs a warning at startup.
+
 ## Changelog
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) timeouts are checked in code (invalid values use the default)
+* (ipod86) object ids that differ only in case from existing ones are not created (warning in the log)
+* (ipod86) security hint and startup warning for the built-in broker without login
+* (ipod86) role `media.mute` is kept; manifest states without a command stay read-only
+* (ipod86) English documentation (docs/COMMANDS.md, docs/PROTOCOL.md)
+
 ### 0.1.1 (2026-10-25)
 * (ipod86) release published by the GitHub workflow (trusted publishing); news only for versions on npm; normalized repository URL
 

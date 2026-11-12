@@ -1,5 +1,4 @@
 {
-	"desktop-control adapter settings": "Ustawienia adaptera dla desktop-control",
 	"MQTT broker": "Broker MQTT",
 	"Host": "Host",
 	"hostHelp": "Adres IP lub nazwa hosta brokera",
@@ -23,5 +22,6 @@
 	"Listen on": "Nasłuchuj na",
 	"bindHelp": "0.0.0.0 = wszystkie interfejsy sieciowe",
 	"loginHelp": "Wbudowany broker: opcjonalnie – jeśli ustawiony, agenci muszą się nim logować",
-	"Broker": "Broker"
+	"Broker": "Broker",
+	"brokerSecurityHint": "Bezpieczeństwo: bez nazwy użytkownika wbudowany broker akceptuje każdego klienta w sieci – każde urządzenie w sieci LAN mogłoby wtedy wysyłać polecenia do komputerów lub fałszować dane agentów. Zalecane są nazwa użytkownika i hasło; agenci muszą się wtedy nimi logować. Alternatywnie ogranicz \"Nasłuchuj na\" do jednego interfejsu sieciowego."
 }

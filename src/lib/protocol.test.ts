@@ -15,6 +15,8 @@ import {
 	pathToId,
 	stateCommon,
 	stateFromResult,
+	timeoutSetting,
+	isValidTimeoutMs,
 } from './protocol';
 import { isOfficialRole } from './roles';
 
@@ -105,14 +107,13 @@ describe('values', () => {
 
 describe('manifest', () => {
 	it('normalises the agent manifest', () => {
-		expect(MANIFEST).to.include({ hostname: 'PC1', deviceId: 'pc1', protocol: 1, started: '2026-10-23T08:00:00Z' });
+		expect(MANIFEST).to.include({ hostname: 'PC1', protocol: 1, started: '2026-10-23T08:00:00Z' });
 		expect(MANIFEST.apps).to.deep.equal(['notepad']);
 		const disk = MANIFEST.states.find(s => s.path === 'disk/<laufwerk>_free_gb');
 		expect(disk?.pattern?.test('disk/C_free_gb')).to.equal(true);
 		expect(disk?.pattern?.test('disk/C_used_percent')).to.equal(false);
 		expect(cmd('volume').primary).to.equal('level');
 		expect(cmd('beep').disabled).to.equal(true);
-		expect(cmd('ask').needsGui).to.equal(true);
 		expect(MANIFEST.events).to.deep.equal(['lock', 'unlock']);
 	});
 	it('builds state common from the manifest, dynamic states and unknown values', () => {
@@ -217,6 +218,8 @@ describe('commands and results', () => {
 		expect(fitRole('indicator', 'number', false)).to.equal('value');
 		expect(fitRole('value.battery', 'string', false)).to.equal('text');
 		expect(fitRole('text.url', 'string', false)).to.equal('text.url');
+		expect(fitRole('media.mute', 'boolean', true)).to.equal('media.mute');
+		expect(fitRole('media.mute', 'number', true)).to.equal('level');
 	});
 
 	it('treats "true" on a JSON data point as "run with defaults" unless the primary parameter is boolean', () => {
@@ -242,5 +245,27 @@ describe('commands and results', () => {
 		});
 		expect(stateFromResult({ id: '1', command: 'mute', ok: false, error: 'x' })).to.equal(null);
 		expect(stateFromResult({ id: '1', command: 'ping', ok: true, result: { pong: true } })).to.equal(null);
+	});
+});
+
+describe('timeouts', () => {
+	it('accepts positive timeouts up to 2^31-1 ms and falls back otherwise', () => {
+		expect(timeoutSetting(10, 10)).to.deep.equal({ ms: 10000, invalid: false });
+		expect(timeoutSetting(undefined, 10)).to.deep.equal({ ms: 10000, invalid: false });
+		expect(timeoutSetting(0, 10)).to.deep.equal({ ms: 10000, invalid: true });
+		expect(timeoutSetting(-5, 120)).to.deep.equal({ ms: 120000, invalid: true });
+		expect(timeoutSetting('abc', 10)).to.deep.equal({ ms: 10000, invalid: true });
+		expect(timeoutSetting(2147484, 10)).to.deep.equal({ ms: 10000, invalid: true });
+		expect(isValidTimeoutMs(2147483647)).to.equal(true);
+		expect(isValidTimeoutMs(2147483648)).to.equal(false);
+		expect(isValidTimeoutMs(-1)).to.equal(false);
+		expect(isValidTimeoutMs('1000')).to.equal(false);
+	});
+});
+
+describe('writable states', () => {
+	it('keeps a state read-only when no command can forward the write', () => {
+		const m = normalizeManifest({ states: { foo: { type: 'boolean', writable: true } } });
+		expect(stateCommon('foo', findStateDef(m, 'foo'))).to.include({ write: false, role: 'indicator' });
 	});
 });

@@ -1,116 +1,119 @@
-# WinCtl MQTT-Protokoll v1
+# WinCtl MQTT protocol v1
 
-Dieses Dokument ist der Vertrag zwischen dem Windows-Agent (`WinCtl.exe`) und dem geplanten ioBroker-Adapter.
-Alles, was der Adapter wissen muss, steht entweder hier oder wird vom Agent selbst im `info`-Topic beschrieben.
+_Deutsche Fassung: [PROTOCOL.de.md](PROTOCOL.de.md)_
 
-## Topic-Schema
+This document is the contract between the Windows agent (`WinCtl.exe`) and the ioBroker adapter.
+Everything the adapter needs to know is either described here or described by the agent itself in the `info` topic.
 
-`{base}` = Config `BaseTopic` (Standard `winctl`), `{id}` = Config `DeviceId` bzw. Hostname (klein, nur `a-z 0-9 - _`).
+## Topic scheme
 
-| Topic | Richtung | Retained | Payload |
+`{base}` = config `BaseTopic` (default `winctl`), `{id}` = config `DeviceId` or the host name (lower case, only `a-z 0-9 - _`).
+
+| Topic | Direction | Retained | Payload |
 |---|---|---|---|
-| `{base}/{id}/online` | Agent → Broker | ja | `true` / `false` (LWT: `false` bei Verbindungsabbruch) |
-| `{base}/{id}/info` | Agent → Broker | ja | JSON-Manifest (siehe unten), bei jedem (Re-)Connect neu |
-| `{base}/{id}/state/{key}` | Agent → Broker | ja | Klartext: `true`/`false`, Zahl oder String |
-| `{base}/{id}/event/{name}` | Agent → Broker | nein | JSON `{"ts": "...", ...}` |
-| `{base}/{id}/result` | Agent → Broker | nein | JSON-Ergebnis zu jedem Befehl |
-| `{base}/{id}/screenshot` | Agent → Broker | nein | **Rohe Bild-Bytes** (JPEG oder PNG) |
-| `{base}/{id}/cmd/{command}` | Broker → Agent | nein | JSON-Objekt **oder** Kurzform-String |
-| `{base}/all/cmd/{command}` | Broker → alle Agents | nein | wie oben (Broadcast) |
+| `{base}/{id}/online` | agent → broker | yes | `true` / `false` (LWT: `false` when the connection is lost) |
+| `{base}/{id}/info` | agent → broker | yes | JSON manifest (see below), sent again on every (re)connect |
+| `{base}/{id}/state/{key}` | agent → broker | yes | plain text: `true`/`false`, number or string |
+| `{base}/{id}/event/{name}` | agent → broker | no | JSON `{"ts": "...", ...}` |
+| `{base}/{id}/result` | agent → broker | no | JSON result of every command |
+| `{base}/{id}/screenshot` | agent → broker | no | **raw image bytes** (JPEG or PNG) |
+| `{base}/{id}/cmd/{command}` | broker → agent | no | JSON object **or** short-form string |
+| `{base}/all/cmd/{command}` | broker → all agents | no | as above (broadcast) |
 
-Der Agent abonniert `{base}/{id}/cmd/#` und `{base}/all/cmd/#`.
+The agent subscribes to `{base}/{id}/cmd/#` and `{base}/all/cmd/#`.
 
-## Befehle senden
+## Sending commands
 
-Payload ist ein JSON-Objekt mit den Parametern des Befehls. Optional kann `"id"` mitgegeben werden - er kommt unverändert im `result` zurück
-(Korrelation für den Adapter). Beispiele:
+The payload is a JSON object with the parameters of the command. Optionally an `"id"` can be added - it is returned unchanged in the `result`
+(correlation for the adapter). Examples:
 
 ```
-winctl/buero/cmd/volume          {"level": 30}
-winctl/buero/cmd/show_image      {"source":"http://kamera/snap.jpg","mode":"corner","seconds":15,"slot":"tuerklingel","id":"7f3a"}
-winctl/buero/cmd/run             {"path":"notepad","args":["C:\\notiz.txt"]}
+winctl/office/cmd/volume          {"level": 30}
+winctl/office/cmd/show_image      {"source":"http://camera/snap.jpg","mode":"corner","seconds":15,"slot":"doorbell","id":"7f3a"}
+winctl/office/cmd/run             {"path":"notepad","args":["C:\\note.txt"]}
 ```
 
-**Kurzform:** Befehle mit `primary`-Parameter im Manifest akzeptieren auch einen blanken String
-(`volume` ← `30`, `speak` ← `Hallo Welt`, `run` ← `notepad`). Ein JSON-Objekt mit nur `"value"` wird ebenfalls auf den `primary`-Parameter abgebildet.
-Befehle ohne Parameter (`lock`, `monitor_off`, …) ignorieren den Payload - ein ioBroker-Button darf also beliebig (`true`) senden.
+**Short form:** commands with a `primary` parameter in the manifest also accept a plain string
+(`volume` ← `30`, `speak` ← `Hello world`, `run` ← `notepad`). A JSON object with only `"value"` is mapped to the `primary` parameter as well.
+Commands without parameters (`lock`, `monitor_off`, …) ignore the payload - an ioBroker button may send anything (`true`).
 
-## Ergebnis (`result`)
+## Result (`result`)
 
-Jeder Befehl erzeugt genau ein Ergebnis auf `{base}/{id}/result`:
+Every command produces exactly one result on `{base}/{id}/result`:
 
 ```json
 {"id": "7f3a", "cmd": "show_image", "ok": true,  "data": {"width": 640, "height": 480, "mode": "corner"}, "ts": "2026-10-23T08:30:41.7Z"}
 {"id": null,   "cmd": "run",        "ok": false, "error": "'x' ist kein Alias aus 'Apps' und AllowAnyRun ist in der Config aus", "ts": "..."}
 ```
 
-`data` ist befehlsabhängig (siehe `docs/COMMANDS.md`). Der Befehl `ask` blockiert, bis der Benutzer antwortet, und liefert
-`{"button":"Ja","index":0,"text":null}` bzw. `{"button":null,"index":-1,"timeout":true}` / `"closed":true`.
+(Error texts come from the agent as they are.) `data` depends on the command (see [`COMMANDS.md`](COMMANDS.md)). The command `ask` blocks until the user answers and returns
+`{"button":"Yes","index":0,"text":null}` or `{"button":null,"index":-1,"timeout":true}` / `"closed":true`.
 
-## Info-Manifest (`info`)
+## Info manifest (`info`)
 
-Selbstbeschreibung - der Adapter muss **keine** Befehls- oder State-Liste hartcodieren:
+Self-description - the adapter does **not** have to hard-code any command or state list:
 
 ```jsonc
 {
   "protocol": 1, "app": "WinCtl", "version": "0.1.0",
-  "device_id": "buero", "base_topic": "winctl", "hostname": "BUERO-PC", "user": "david", "os": "...", "ip": "192.168.1.20", "started": "ISO-8601",
+  "device_id": "office", "base_topic": "winctl", "hostname": "OFFICE-PC", "user": "david", "os": "...", "ip": "192.168.1.20", "started": "ISO-8601",
   "topics": { "online": "...", "info": "...", "state": ".../state/<key>", "command": ".../cmd/<command>", "broadcast": "winctl/all/cmd/<command>", "result": "...", "screenshot": "..." },
   "security": { "allow_any_run": false, "allow_shell": false, "apps": ["notepad","calc"], "disabled_commands": [] },
-  "hotkeys": { "ctrl+alt+1": "szene_kino" },
+  "hotkeys": { "ctrl+alt+1": "scene_cinema" },
   "events": ["lock","unlock","logon","logoff","remote_connect","remote_disconnect","suspend","resume","hotkey"],
-  "states": [ { "name":"volume", "type":"number", "role":"level.volume", "unit":"%", "description":"..." } ],
+  "states": [ { "name":"volume", "type":"number", "role":"level.volume", "unit":"%", "description":"...", "description_de":"..." } ],
   "commands": [ {
-      "name": "show_image", "category": "display", "description": "...", "primary": "source", "needs_gui": true, "dangerous": false,
+      "name": "show_image", "category": "display", "description": "...", "description_de": "...", "primary": "source", "needs_gui": true, "dangerous": false,
       "params": [ { "name":"source","type":"string","description":"...","required":true },
                   { "name":"mode","type":"string","enum":["popup","fullscreen","corner"],"default":"popup","required":false } ] } ]
 }
 ```
 
-Parametertypen: `string`, `integer`, `number`, `boolean`, `array`. `dangerous` markiert sicherheitsrelevante Befehle
-(run, kill, shell, shutdown, restart, logoff, exit) - der Adapter sollte sie nicht ohne Weiteres als Button anlegen.
-`needs_gui` = Befehl funktioniert nur, wenn der Agent in einer Benutzersitzung mit Tray läuft.
+`description` of commands and states is English, `description_de` German; parameter descriptions are German.
+Parameter types: `string`, `integer`, `number`, `boolean`, `array`. `dangerous` marks security relevant commands
+(run, kill, shell, shutdown, restart, logoff, exit) - the adapter should not simply create them as buttons.
+`needs_gui` = the command only works when the agent runs in a user session with a tray icon.
 
 ## States
 
-Alle States sind retained Klartext und werden **nur bei Änderung** veröffentlicht (beim Connect komplett).
-Statische Liste: `info.states`. Dynamisch dazu kommen `state/disk/{laufwerk}_free_gb`, `state/disk/{laufwerk}_used_percent`
-und `state/proc/{name}` (aus Config `WatchProcesses`). Booleans sind exakt `true`/`false`.
+All states are retained plain text and are published **only on change** (completely on connect).
+Static list: `info.states`. Dynamic ones are added: `state/disk/{drive}_free_gb`, `state/disk/{drive}_used_percent`
+and `state/proc/{name}` (from config `WatchProcesses`). Booleans are exactly `true`/`false`.
 
-Einige States spiegeln den Zustand sofort nach einem Befehl (`volume`, `muted`, `keep_awake`), sonst gilt das 2-s-Raster
-(schnelle Werte: `active_window`, `active_process`, `locked`, `user_present`, `volume`, `muted`, `proc/*`) bzw. `StateIntervalSec` (langsame: `cpu`, `ram`, `idle`, …).
+Some states reflect the new value right after a command (`volume`, `muted`, `keep_awake`); otherwise the 2 s cycle applies
+(fast values: `active_window`, `active_process`, `locked`, `user_present`, `volume`, `muted`, `proc/*`) or `StateIntervalSec` (slow ones: `cpu`, `ram`, `idle`, …).
 
 ## Events
 
-Nicht retained, JSON mit `ts`. `hotkey` enthält zusätzlich `{"name": "...", "keys": "ctrl+alt+1"}` - damit lässt sich der PC als Eingabegerät
-für Szenen in ioBroker verwenden.
+Not retained, JSON with `ts`. `hotkey` additionally contains `{"name": "...", "keys": "ctrl+alt+1"}` - this way the PC can be used as an input device
+for scenes in ioBroker.
 
-## Vorschlag für das Objektmodell des Adapters
+## Suggested object model of the adapter
 
 ```
 winctl.0.{id}.online                  (indicator.reachable, read)
-winctl.0.{id}.info.*                  (hostname, ip, version, os - aus info)
-winctl.0.{id}.state.*                 (1:1 aus state/*; role/unit/type aus info.states; read-only,
-                                       außer volume, muted, keep_awake -> schreibbar, löst Befehl aus)
-winctl.0.{id}.cmd.{command}           (je Befehl: state mit role "button" wenn keine Pflicht-Parameter,
-                                       sonst role "json" -> Payload = Parameter-JSON)
-winctl.0.{id}.result                  (letztes Ergebnis als JSON)
-winctl.0.{id}.event.{name}            (Zeitstempel / JSON)
-winctl.0.{id}.screenshot              (Base64-Data-URI oder Datei in ioBroker-Dateispeicher)
-winctl.0.all.cmd.{command}            (Broadcast)
+winctl.0.{id}.info.*                  (hostname, ip, version, os - from info)
+winctl.0.{id}.state.*                 (1:1 from state/*; role/unit/type from info.states; read-only,
+                                       except volume, muted, keep_awake -> writable, triggers a command)
+winctl.0.{id}.cmd.{command}           (per command: state with role "button" if there are no required parameters,
+                                       otherwise role "json" -> payload = parameter JSON)
+winctl.0.{id}.result                  (last result as JSON)
+winctl.0.{id}.event.{name}            (time stamp / JSON)
+winctl.0.{id}.screenshot              (Base64 data URI or file in the ioBroker file storage)
+winctl.0.all.cmd.{command}            (broadcast)
 ```
 
-Für Aufrufe aus Blockly/JavaScript empfiehlt sich zusätzlich der Adapter-Befehl `sendTo('winctl.0','cmd',{device:'buero',command:'show_image',params:{...}})`
-mit Promise/Callback, der über die `id`-Korrelation das passende `result` zurückgibt.
+For calls from Blockly/JavaScript the adapter should also offer the command `sendTo('winctl.0','cmd',{device:'office',command:'show_image',params:{...}})`
+with a promise/callback that returns the matching `result` via the `id` correlation.
 
-## Sicherheitsmodell
+## Security model
 
-* Der Broker ist die Vertrauensgrenze: **Login + ACL** setzen (nur der Adapter darf auf `.../cmd/#` schreiben), im Zweifel TLS.
-* `run`/`open` starten nur Aliase aus Config `Apps`, solange `AllowAnyRun=false`.
-* `shell` ist ohne `AllowShell=true` gesperrt.
-* Einzelne Befehle lassen sich über `DisabledCommands` komplett abschalten.
-* Der Agent läuft als normaler Benutzer (kein Admin, kein Dienst).
+* The broker is the trust boundary: set a **login + ACL** (only the adapter may write to `.../cmd/#`), use TLS if in doubt.
+* `run`/`open` only start aliases from config `Apps` as long as `AllowAnyRun=false`.
+* `shell` is blocked without `AllowShell=true`.
+* Single commands can be switched off completely via `DisabledCommands`.
+* The agent runs as a normal user (no admin, no service).
 
-## Versionierung
+## Versioning
 
-`protocol` im Manifest wird bei inkompatiblen Änderungen erhöht. Neue Befehle/Parameter/States sind abwärtskompatibel und erscheinen automatisch im Manifest.
+`protocol` in the manifest is increased on incompatible changes. New commands/parameters/states are backwards compatible and appear in the manifest automatically.

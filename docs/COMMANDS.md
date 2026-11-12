@@ -1,405 +1,407 @@
-# Befehlsreferenz
+# Command reference
 
-_Automatisch erzeugt aus `WinCtl.exe --dump-protocol` (Protokoll 1, Version 0.6.4). Nicht von Hand ändern._
+_Deutsche Fassung: [COMMANDS.de.md](COMMANDS.de.md)_
 
-Befehle werden an `{base}/{id}/cmd/<befehl>` gesendet (Payload: JSON-Objekt oder - bei Befehlen mit *Kurzform* - ein einfacher String).
+_Generated automatically from `WinCtl.exe --dump-protocol` (protocol 1, version 0.6.4). Do not edit by hand._
+
+Commands are sent to `{base}/{id}/cmd/<command>` (payload: JSON object or - for commands with a *short form* - a plain string).
 
 ## System
 
 ### `ping`
-Lebenszeichen - antwortet mit Zeitstempel und Version  
+Sign of life, answers with time and agent version  
 
 ### `get_state`
-Veröffentlicht alle State-Werte sofort neu  
+Publishes all state values again  
 
 ### `reload_config`
-Config-Datei neu einlesen und neu verbinden  
+Reloads the agent config and reconnects  
 
-### `exit`  _(⚠ sicherheitsrelevant)_
-Beendet den Agent  
+### `exit`  _(⚠ security relevant)_
+Stops the agent  
 
 ### `list_commands`
-Gibt die Liste aller Befehle zurück  
+Returns the list of all commands  
 
 ### `check_update`
-Prüft, ob es eine neuere WinCtl-Version gibt (GitHub-Releases)  
+Checks for a newer agent version (GitHub releases)  
 
 ### `update`
-Installiert die neueste WinCtl-Version und startet den Agent neu  
+Installs the newest agent version and restarts the agent  
 
-## Energie & Sitzung
+## Power & session
 
 ### `lock`
-Sperrt den Bildschirm (Win+L)  
+Locks the screen (Win+L)  
 
 ### `sleep`
 Standby  
 
 ### `hibernate`
-Ruhezustand  
+Hibernate  
 
 ### `shutdown`
-Fährt den PC herunter  
-Kurzform: Payload `<text>` entspricht `{"delay": "<text>"}`.  
+Shuts the PC down  
+Short form: payload `<text>` equals `{"delay": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 60
 {"delay":0,"force":true}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `delay` | integer |  | 10 | Verzögerung in Sekunden |
-| `force` | boolean |  | false | Programme zwangsweise schließen |
+| `delay` | integer |  | 10 | Delay in seconds |
+| `force` | boolean |  | false | Force programs to close |
 
 ### `restart`
-Startet den PC neu  
-Kurzform: Payload `<text>` entspricht `{"delay": "<text>"}`.  
+Restarts the PC  
+Short form: payload `<text>` equals `{"delay": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 30
 {"delay":0,"force":true}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `delay` | integer |  | 10 | Verzögerung in Sekunden |
-| `force` | boolean |  | false | Programme zwangsweise schließen |
+| `delay` | integer |  | 10 | Delay in seconds |
+| `force` | boolean |  | false | Force programs to close |
 
 ### `logoff`
-Meldet den Benutzer ab  
+Logs the user off  
 
 ### `cancel_shutdown`
-Bricht einen geplanten Shutdown/Neustart ab  
+Cancels a planned shutdown/restart  
 
 ### `monitor_off`
-Schaltet die Monitore aus  
+Turns the monitors off  
 
 ### `monitor_on`
-Weckt die Monitore auf  
+Wakes the monitors up  
 
 ### `screensaver`
-Startet den Bildschirmschoner (der in Windows eingestellte oder eine .scr-Datei)  
-Kurzform: Payload `<text>` entspricht `{"file": "<text>"}`.  
+Starts the screen saver (the one set in Windows or a .scr file)  
+Short form: payload `<text>` equals `{"file": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 {"file":"C:/Windows/System32/Mystify.scr"}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `file` | string |  | "" | Pfad zu einer .scr-Datei (leer = der in Windows eingestellte) |
+| `file` | string |  | "" | Path to a .scr file (empty = the one set in Windows) |
 
-### `keep_awake`  _(braucht GUI-Sitzung)_
-Verhindert Standby/Bildschirmschoner (bis auf Widerruf)  
-Kurzform: Payload `<text>` entspricht `{"state": "<text>"}`.  
+### `keep_awake`  _(needs a GUI session)_
+Prevents standby and screen saver  
+Short form: payload `<text>` equals `{"state": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 {"state":true,"display":false}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `state` | boolean |  | true | an/aus |
-| `display` | boolean |  | true | auch Bildschirm anlassen |
+| `state` | boolean |  | true | on/off |
+| `display` | boolean |  | true | Keep the screen on as well |
 
-## Programme & Fenster
+## Programs & windows
 
-### `run`  _(⚠ sicherheitsrelevant)_
-Startet ein Programm (Alias aus der Config oder - wenn erlaubt - beliebiger Pfad) mit Parametern  
-Kurzform: Payload `<text>` entspricht `{"path": "<text>"}`.  
+### `run`  _(⚠ security relevant)_
+Starts a program (alias from the agent settings)  
+Short form: payload `<text>` equals `{"path": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 notepad
 {"path":"kodi","args":"--fullscreen","window":"maximized"}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `path` | string | ja |  | Alias (z.B. 'notepad') oder Pfad zur .exe |
-| `args` | string |  |  | Parameter als String oder Liste |
-| `workdir` | string |  |  | Arbeitsverzeichnis |
-| `hidden` | boolean |  |  | Ohne Fenster starten |
-| `window` | string |  |  | Fensterzustand (normal / minimized / maximized) |
-| `admin` | boolean |  |  | Als Administrator (UAC-Abfrage am PC!) |
-| `wait` | boolean |  |  | Auf Ende warten und Exit-Code zurückgeben |
-| `timeout` | integer |  | 60 | Wartezeit in Sekunden bei wait |
+| `path` | string | yes |  | Alias (e.g. 'notepad') or path to the .exe |
+| `args` | string |  |  | Arguments as a string or list |
+| `workdir` | string |  |  | Working directory |
+| `hidden` | boolean |  |  | Start without a window |
+| `window` | string |  |  | Window state (normal / minimized / maximized) |
+| `admin` | boolean |  |  | As administrator (UAC prompt on the PC!) |
+| `wait` | boolean |  |  | Wait for the end and return the exit code |
+| `timeout` | integer |  | 60 | Wait time in seconds with wait |
 
 ### `open`
-Öffnet URL, Datei oder Ordner mit der Standard-App (Dateien/Ordner nur mit AllowAnyRun)  
-Kurzform: Payload `<text>` entspricht `{"target": "<text>"}`.  
+Opens a URL, file or folder with the default app  
+Short form: payload `<text>` equals `{"target": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 https://www.iobroker.net
 ms-settings:display
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `target` | string | ja |  | URL (immer erlaubt), sonst Alias/Pfad |
+| `target` | string | yes |  | URL (always allowed), otherwise alias/path |
 
-### `kill`  _(⚠ sicherheitsrelevant)_
-Beendet Prozesse nach Name oder PID  
-Kurzform: Payload `<text>` entspricht `{"name": "<text>"}`.  
+### `kill`  _(⚠ security relevant)_
+Ends processes by name or PID  
+Short form: payload `<text>` equals `{"name": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 notepad
 {"pid":1234}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `name` | string |  |  | Prozessname, z.B. 'chrome' |
-| `pid` | integer |  |  | Prozess-ID |
+| `name` | string |  |  | Process name, e.g. 'chrome' |
+| `pid` | integer |  |  | Process ID |
 
 ### `list_processes`
-Listet laufende Prozesse (max. 300)  
-Kurzform: Payload `<text>` entspricht `{"filter": "<text>"}`.  
+Lists running processes  
+Short form: payload `<text>` equals `{"filter": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 chrome
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `filter` | string |  |  | Namensfilter |
+| `filter` | string |  |  | Name filter |
 
 ### `list_windows`
-Listet sichtbare Fenster mit Titel  
+Lists visible windows  
 
 ### `focus_window`
-Bringt ein Fenster (Titel enthält ...) in den Vordergrund  
-Kurzform: Payload `<text>` entspricht `{"title": "<text>"}`.  
+Brings a window to the front (title contains …)  
+Short form: payload `<text>` equals `{"title": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 Kodi
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `title` | string | ja |  | Teil des Fenstertitels |
+| `title` | string | yes |  | Part of the window title |
 
 ### `close_window`
-Schließt ein Fenster sauber (Titel enthält ...)  
-Kurzform: Payload `<text>` entspricht `{"title": "<text>"}`.  
+Closes a window (title contains …)  
+Short form: payload `<text>` equals `{"title": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
-Editor
+Notepad
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `title` | string | ja |  | Teil des Fenstertitels |
+| `title` | string | yes |  | Part of the window title |
 
 ### `minimize_all`
-Alle Fenster minimieren (Desktop anzeigen) bzw. wiederherstellen  
+Minimizes all windows (show desktop) or restores them  
 
-Beispiele:
+Examples:
 
 ```
 {"undo":true}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `undo` | boolean |  | false | Wiederherstellen statt minimieren |
+| `undo` | boolean |  | false | Restore instead of minimise |
 
 ### `empty_recycle_bin`
-Leert den Papierkorb  
+Empties the recycle bin  
 
-### `shell`  _(⚠ sicherheitsrelevant)_
-Führt einen Shell-Befehl aus und liefert die Ausgabe (nur mit AllowShell=true)  
-Kurzform: Payload `<text>` entspricht `{"command": "<text>"}`.  
+### `shell`  _(⚠ security relevant)_
+Runs a PowerShell/cmd command and returns the output  
+Short form: payload `<text>` equals `{"command": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 Get-Date
 {"command":"ipconfig","shell":"cmd"}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `command` | string | ja |  | Befehl / Skript |
+| `command` | string | yes |  | Command / script |
 | `shell` | string |  | "powershell" | Interpreter (powershell / cmd) |
-| `timeout` | integer |  | 30 | Sekunden |
+| `timeout` | integer |  | 30 | Seconds |
 
 ## Audio
 
 ### `volume`
-Setzt die Master-Lautstärke (0-100)  
-Kurzform: Payload `<text>` entspricht `{"level": "<text>"}`.  
+Sets the master volume (0-100)  
+Short form: payload `<text>` equals `{"level": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 30
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `level` | integer | ja |  | 0 - 100 |
+| `level` | integer | yes |  | 0 - 100 |
 
 ### `volume_change`
-Lautstärke relativ ändern  
-Kurzform: Payload `<text>` entspricht `{"delta": "<text>"}`.  
+Changes the volume relatively  
+Short form: payload `<text>` equals `{"delta": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 -10
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `delta` | integer |  | 5 | z.B. 5 oder -10 |
+| `delta` | integer |  | 5 | e.g. 5 or -10 |
 
 ### `mute`
-Stummschalten / aufheben / umschalten  
-Kurzform: Payload `<text>` entspricht `{"state": "<text>"}`.  
+Mute / unmute / toggle  
+Short form: payload `<text>` equals `{"state": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 toggle
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `state` | string |  | "toggle" | true / false / toggle |
 
 ### `media`
-Sendet eine Medientaste  
-Kurzform: Payload `<text>` entspricht `{"key": "<text>"}`.  
+Sends a media key  
+Short form: payload `<text>` equals `{"key": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 playpause
 next
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `key` | string | ja |  | Medientaste (playpause / next / prev / stop / volume_up / volume_down / mute) |
+| `key` | string | yes |  | Media key (playpause / next / prev / stop / volume_up / volume_down / mute) |
 
 ### `speak`
-Text-to-Speech (Windows-Stimme)  
-Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+Text to speech  
+Short form: payload `<text>` equals `{"text": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
-Das Essen ist fertig
-{"text":"Achtung","voice":"Hedda","rate":2,"volume":80}
+Dinner is ready
+{"text":"Attention","voice":"Zira","rate":2,"volume":80}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `text` | string | ja |  | Zu sprechender Text |
-| `voice` | string |  |  | Teil des Stimmennamens, z.B. 'Hedda' |
-| `rate` | integer |  | 0 | -10 (langsam) bis 10 (schnell) |
+| `text` | string | yes |  | Text to speak |
+| `voice` | string |  |  | Part of the voice name, e.g. 'Hedda' |
+| `rate` | integer |  | 0 | -10 (slow) to 10 (fast) |
 | `volume` | integer |  | 100 | 0-100 |
-| `wait` | boolean |  |  | Warten bis fertig gesprochen |
-| `interrupt` | boolean |  | true | Laufende Ausgabe abbrechen |
+| `wait` | boolean |  |  | Wait until speaking has finished |
+| `interrupt` | boolean |  | true | Cancel the current output |
 
 ### `list_voices`
-Listet installierte TTS-Stimmen  
+Lists the installed voices  
 
 ### `play_sound`
-Spielt eine Audiodatei (mp3/wav/wma, Pfad oder URL)  
-Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
+Plays an audio file (mp3/wav/wma, path or URL)  
+Short form: payload `<text>` equals `{"source": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 http://192.168.1.5/gong.mp3
-{"source":"C:\\Sounds\\klingel.wav","wait":true}
+{"source":"C:\\Sounds\\doorbell.wav","wait":true}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `source` | string | ja |  | Pfad oder URL |
-| `wait` | boolean |  | false | Warten bis zum Ende |
+| `source` | string | yes |  | Path or URL |
+| `wait` | boolean |  | false | Wait until the end |
 
 ### `stop_sound`
-Stoppt play_sound / speak  
+Stops play_sound / speak  
 
 ### `beep`
-Einfacher Piepton  
+Simple beep  
 
-Beispiele:
+Examples:
 
 ```
 {"freq":1200,"ms":500}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
 | `freq` | integer |  | 800 | Hz |
-| `ms` | integer |  | 300 | Dauer in ms |
+| `ms` | integer |  | 300 | Duration in ms |
 
-## Anzeige
+## Display
 
-### `show_image`  _(braucht GUI-Sitzung)_
-Zeigt ein Bild als Popup, Vollbild oder Ecken-Einblendung (Pfad, URL oder Base64)  
-Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
+### `show_image`  _(needs a GUI session)_
+Shows an image as popup, full screen or in a corner  
+Short form: payload `<text>` equals `{"source": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
-http://kamera/snapshot.jpg
-{"source":"http://kamera/snapshot.jpg","mode":"corner","position":"top-right","size":30,"seconds":10,"caption":"Haustür","slot":"klingel"}
+http://camera/snapshot.jpg
+{"source":"http://camera/snapshot.jpg","mode":"corner","position":"top-right","size":30,"seconds":10,"caption":"Front door","slot":"doorbell"}
 {"source":"https://picsum.photos/1920/1080","mode":"fullscreen","seconds":15}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `source` | string | ja |  | Pfad, http(s)-URL oder data:-URI |
-| `base64` | string |  |  | Alternativ: Base64-Daten |
-| `fit` | string |  | "contain" | Skalierung (contain / stretch / center) |
-| `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
-| `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
-| `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string |  | "bottom-right" | Lage bei mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
-| `size` | number |  |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
-| `margin` | integer |  | 16 | Abstand zum Bildschirmrand in Pixel (mode=corner) |
-| `border` | integer |  | 2 | Rahmenbreite in Pixel (0 = kein Rahmen) |
-| `border_color` | string |  | "#282828" | Rahmenfarbe, z.B. #ff0000 |
-| `caption_size` | number |  | 11 | Schriftgröße der Beschriftung |
-| `caption_color` | string |  | "#ffffff" | Farbe der Beschriftung |
-| `caption` | string |  |  | Beschriftung unter dem Inhalt |
-| `slot` | string |  |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
-| `click_close` | boolean |  |  | Klick schließt das Popup |
-| `opacity` | number |  |  | Deckkraft 0.1 - 1 |
-| `activate` | boolean |  | false | Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten) |
-| `bg` | string |  |  | Hintergrundfarbe, z.B. #000000 |
+| `source` | string | yes |  | Path, http(s) URL or data: URI |
+| `base64` | string |  |  | Alternatively: Base64 data |
+| `fit` | string |  | "contain" | Scaling (contain / stretch / center) |
+| `mode` | string |  | "popup" | popup = window in the centre, fullscreen = full screen, corner = corner (e.g. doorbell camera) (popup / fullscreen / corner) |
+| `seconds` | number |  |  | Close automatically after X seconds (0 = stays until click/close_popups) |
+| `monitor` | integer |  | -1 | Monitor index (0 = first, -1 = primary monitor) |
+| `position` | string |  | "bottom-right" | Position with mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
+| `size` | number |  |  | Width in % of the screen (5 - 100, aspect ratio is kept; empty = automatic: corner 28 %, popup max. 70 %) |
+| `margin` | integer |  | 16 | Distance to the screen edge in pixels (mode=corner) |
+| `border` | integer |  | 2 | Border width in pixels (0 = no border) |
+| `border_color` | string |  | "#282828" | Border colour, e.g. #ff0000 |
+| `caption_size` | number |  | 11 | Font size of the caption |
+| `caption_color` | string |  | "#ffffff" | Colour of the caption |
+| `caption` | string |  |  | Caption below the content |
+| `slot` | string |  |  | Same slot replaces the previous popup (e.g. to refresh a camera image) |
+| `click_close` | boolean |  |  | Click closes the popup |
+| `opacity` | number |  |  | Opacity 0.1 - 1 |
+| `activate` | boolean |  | false | Take the focus (default: no, does not disturb work) |
+| `bg` | string |  |  | Background colour, e.g. #000000 |
 
-### `show_video`  _(braucht GUI-Sitzung)_
-Spielt ein Video ab (Datei oder URL; mit Edge mp4/H.264, WebM, Ogg, je nach Windows-Codecs auch HEVC)  
-Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
+### `show_video`  _(needs a GUI session)_
+Plays a video with Edge/Chromium (mp4, WebM, …)  
+Short form: payload `<text>` equals `{"source": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 http://server/video.mp4
@@ -407,199 +409,199 @@ http://server/video.mp4
 {"source":"C:\\Videos\\intro.mp4","mode":"fullscreen","close_when_done":true}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `source` | string | ja |  | Pfad oder URL |
-| `loop` | boolean |  | false | Endlosschleife |
-| `muted` | boolean |  | false | Ohne Ton |
+| `source` | string | yes |  | Path or URL |
+| `loop` | boolean |  | false | Loop endlessly |
+| `muted` | boolean |  | false | Without sound |
 | `volume` | number |  | 1 | 0 - 1 |
-| `controls` | boolean |  | false | Bedienelemente anzeigen |
-| `close_when_done` | boolean |  | true | Nach Ende schließen |
-| `engine` | string |  | "auto" | Player: auto = Edge (WebView2), sonst IE11; edge = nur Edge; ie = altes IE11 (auto / edge / ie) |
-| `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
-| `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
-| `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string |  | "bottom-right" | Lage bei mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
-| `size` | number |  |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
-| `margin` | integer |  | 16 | Abstand zum Bildschirmrand in Pixel (mode=corner) |
-| `border` | integer |  | 2 | Rahmenbreite in Pixel (0 = kein Rahmen) |
-| `border_color` | string |  | "#282828" | Rahmenfarbe, z.B. #ff0000 |
-| `caption_size` | number |  | 11 | Schriftgröße der Beschriftung |
-| `caption_color` | string |  | "#ffffff" | Farbe der Beschriftung |
-| `caption` | string |  |  | Beschriftung unter dem Inhalt |
-| `slot` | string |  |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
-| `click_close` | boolean |  |  | Klick schließt das Popup |
-| `opacity` | number |  |  | Deckkraft 0.1 - 1 |
-| `activate` | boolean |  | false | Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten) |
-| `bg` | string |  |  | Hintergrundfarbe, z.B. #000000 |
+| `controls` | boolean |  | false | Show the controls |
+| `close_when_done` | boolean |  | true | Close when finished |
+| `engine` | string |  | "auto" | Player: auto = Edge (WebView2), otherwise IE11; edge = Edge only; ie = old IE11 (auto / edge / ie) |
+| `mode` | string |  | "popup" | popup = window in the centre, fullscreen = full screen, corner = corner (e.g. doorbell camera) (popup / fullscreen / corner) |
+| `seconds` | number |  |  | Close automatically after X seconds (0 = stays until click/close_popups) |
+| `monitor` | integer |  | -1 | Monitor index (0 = first, -1 = primary monitor) |
+| `position` | string |  | "bottom-right" | Position with mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
+| `size` | number |  |  | Width in % of the screen (5 - 100, aspect ratio is kept; empty = automatic: corner 28 %, popup max. 70 %) |
+| `margin` | integer |  | 16 | Distance to the screen edge in pixels (mode=corner) |
+| `border` | integer |  | 2 | Border width in pixels (0 = no border) |
+| `border_color` | string |  | "#282828" | Border colour, e.g. #ff0000 |
+| `caption_size` | number |  | 11 | Font size of the caption |
+| `caption_color` | string |  | "#ffffff" | Colour of the caption |
+| `caption` | string |  |  | Caption below the content |
+| `slot` | string |  |  | Same slot replaces the previous popup (e.g. to refresh a camera image) |
+| `click_close` | boolean |  |  | Click closes the popup |
+| `opacity` | number |  |  | Opacity 0.1 - 1 |
+| `activate` | boolean |  | false | Take the focus (default: no, does not disturb work) |
+| `bg` | string |  |  | Background colour, e.g. #000000 |
 
-### `show_web`  _(braucht GUI-Sitzung)_
-Zeigt eine Webseite (z.B. vis, Lovelace, Kamera-Stream) mit Edge/Chromium in einem Fenster oder als Kiosk-Vollbild, auch mehrere im Wechsel (Diashow)  
-Kurzform: Payload `<text>` entspricht `{"url": "<text>"}`.  
+### `show_web`  _(needs a GUI session)_
+Shows a web page (vis, Lovelace, camera stream) with Edge/Chromium in a window or full screen, also several pages in turn (slideshow)  
+Short form: payload `<text>` equals `{"url": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 http://192.168.1.5:8082/vis/
 {"url":"http://192.168.1.5:8082/vis/","mode":"fullscreen"}
-{"urls":["http://192.168.1.5:8082/vis/","http://kamera/snapshot.jpg"],"interval":20,"mode":"fullscreen"}
-{"url":"http://kamera/stream","mode":"corner","size":35,"seconds":30,"slot":"kamera"}
+{"urls":["http://192.168.1.5:8082/vis/","http://camera/snapshot.jpg"],"interval":20,"mode":"fullscreen"}
+{"url":"http://camera/stream","mode":"corner","size":35,"seconds":30,"slot":"camera"}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `url` | string |  |  | Adresse (oder 'urls' für eine Diashow) |
-| `urls` | array |  |  | Diashow: mehrere Adressen, wechseln nach 'interval' Sekunden |
-| `interval` | number |  | 30 | Diashow: Sekunden je Seite |
-| `zoom` | number |  | 1 | Zoom, z. B. 1.25 = 125 % (nur Edge) |
-| `engine` | string |  | "auto" | Browser: auto = Edge (WebView2), sonst IE11; edge = nur Edge; ie = altes IE11 (auto / edge / ie) |
-| `mode` | string |  | "popup" | popup = Fenster in der Mitte, fullscreen = Vollbild, corner = Ecke (z.B. Türklingel-Kamera) (popup / fullscreen / corner) |
-| `seconds` | number |  |  | Automatisch schließen nach X Sekunden (0 = bleibt bis Klick/close_popups) |
-| `monitor` | integer |  | -1 | Monitor-Index (0 = erster, -1 = Hauptmonitor) |
-| `position` | string |  | "bottom-right" | Lage bei mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
-| `size` | number |  |  | Breite in % des Bildschirms (5 - 100, Seitenverhältnis bleibt; leer = automatisch: Ecke 28 %, Popup max. 70 %) |
-| `margin` | integer |  | 16 | Abstand zum Bildschirmrand in Pixel (mode=corner) |
-| `border` | integer |  | 2 | Rahmenbreite in Pixel (0 = kein Rahmen) |
-| `border_color` | string |  | "#282828" | Rahmenfarbe, z.B. #ff0000 |
-| `caption_size` | number |  | 11 | Schriftgröße der Beschriftung |
-| `caption_color` | string |  | "#ffffff" | Farbe der Beschriftung |
-| `caption` | string |  |  | Beschriftung unter dem Inhalt |
-| `slot` | string |  |  | Gleicher Slot ersetzt das vorherige Popup (z.B. Kamerabild aktualisieren) |
-| `click_close` | boolean |  |  | Klick schließt das Popup |
-| `opacity` | number |  |  | Deckkraft 0.1 - 1 |
-| `activate` | boolean |  | false | Fokus übernehmen (Standard: nein, stört nicht beim Arbeiten) |
-| `bg` | string |  |  | Hintergrundfarbe, z.B. #000000 |
+| `url` | string |  |  | Address (or 'urls' for a slide show) |
+| `urls` | array |  |  | Slide show: several addresses, switching after 'interval' seconds |
+| `interval` | number |  | 30 | Slide show: seconds per page |
+| `zoom` | number |  | 1 | Zoom, e.g. 1.25 = 125 % (Edge only) |
+| `engine` | string |  | "auto" | Browser: auto = Edge (WebView2), otherwise IE11; edge = Edge only; ie = old IE11 (auto / edge / ie) |
+| `mode` | string |  | "popup" | popup = window in the centre, fullscreen = full screen, corner = corner (e.g. doorbell camera) (popup / fullscreen / corner) |
+| `seconds` | number |  |  | Close automatically after X seconds (0 = stays until click/close_popups) |
+| `monitor` | integer |  | -1 | Monitor index (0 = first, -1 = primary monitor) |
+| `position` | string |  | "bottom-right" | Position with mode=corner (top-left / top / top-right / left / center / right / bottom-left / bottom / bottom-right) |
+| `size` | number |  |  | Width in % of the screen (5 - 100, aspect ratio is kept; empty = automatic: corner 28 %, popup max. 70 %) |
+| `margin` | integer |  | 16 | Distance to the screen edge in pixels (mode=corner) |
+| `border` | integer |  | 2 | Border width in pixels (0 = no border) |
+| `border_color` | string |  | "#282828" | Border colour, e.g. #ff0000 |
+| `caption_size` | number |  | 11 | Font size of the caption |
+| `caption_color` | string |  | "#ffffff" | Colour of the caption |
+| `caption` | string |  |  | Caption below the content |
+| `slot` | string |  |  | Same slot replaces the previous popup (e.g. to refresh a camera image) |
+| `click_close` | boolean |  |  | Click closes the popup |
+| `opacity` | number |  |  | Opacity 0.1 - 1 |
+| `activate` | boolean |  | false | Take the focus (default: no, does not disturb work) |
+| `bg` | string |  |  | Background colour, e.g. #000000 |
 
-### `show_text`  _(braucht GUI-Sitzung)_
-Blendet Text als Overlay ein (klickdurchlässig)  
-Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+### `show_text`  _(needs a GUI session)_
+Shows text as an overlay  
+Short form: payload `<text>` equals `{"text": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
-Waschmaschine fertig
+Washing machine finished
 {"text":"Alarm!","size":60,"color":"#ffffff","bg":"#c00000","position":"center","seconds":10}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `text` | string | ja |  | Text |
-| `seconds` | number |  | 5 | Anzeigedauer |
-| `size` | number |  | 40 | Schriftgröße |
-| `color` | string |  | "#ffffff" | Textfarbe |
-| `bg` | string |  | "#202020" | Hintergrund |
-| `opacity` | number |  | 0.9 | Deckkraft |
-| `position` | string |  | "bottom" | Lage (top / center / bottom) |
-| `monitor` | integer |  | -1 | Monitor-Index |
-| `bold` | boolean |  | true | Fett |
-| `font` | string |  | "Segoe UI" | Schriftart |
-| `click_through` | boolean |  | true | Mausklicks gehen durch |
-| `slot` | string |  |  | Ersetzt Overlay mit gleichem Slot |
-| `max_width` | number |  | 80 | Maximale Breite in % des Bildschirms (Text bricht um) |
-| `padding` | integer |  | 24 | Innenabstand in Pixel |
-| `margin` | integer |  |  | Abstand zum Rand in Pixel (top: 40, bottom: 60) |
+| `text` | string | yes |  | Text |
+| `seconds` | number |  | 5 | Display duration |
+| `size` | number |  | 40 | Font size |
+| `color` | string |  | "#ffffff" | Text colour |
+| `bg` | string |  | "#202020" | Background |
+| `opacity` | number |  | 0.9 | Opacity |
+| `position` | string |  | "bottom" | Position (top / center / bottom) |
+| `monitor` | integer |  | -1 | Monitor index |
+| `bold` | boolean |  | true | Bold |
+| `font` | string |  | "Segoe UI" | Font |
+| `click_through` | boolean |  | true | Mouse clicks pass through |
+| `slot` | string |  |  | Replaces the overlay with the same slot |
+| `max_width` | number |  | 80 | Maximum width in % of the screen (text wraps) |
+| `padding` | integer |  | 24 | Padding in pixels |
+| `margin` | integer |  |  | Distance to the edge in pixels (top: 40, bottom: 60) |
 
-### `ask`  _(braucht GUI-Sitzung)_
-Zeigt einen Dialog mit Buttons/Eingabefeld und liefert die Antwort im result zurück  
-Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+### `ask`  _(needs a GUI session)_
+Shows a dialog with buttons/input and returns the answer  
+Short form: payload `<text>` equals `{"text": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
-Licht ausschalten?
-{"text":"Kinomodus starten?","buttons":["Ja","Nein"],"timeout":30}
-{"text":"Wie warm soll es werden?","input":true,"default":"21","buttons":["OK","Abbrechen"]}
+Switch the light off?
+{"text":"Start cinema mode?","buttons":["Yes","No"],"timeout":30}
+{"text":"How warm should it be?","input":true,"default":"21","buttons":["OK","Cancel"]}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `text` | string | ja |  | Fragetext |
-| `title` | string |  |  | Titel |
-| `buttons` | array |  | ["OK"] | Beschriftungen, z.B. ["Ja","Nein"] |
-| `input` | boolean |  | false | Texteingabefeld anzeigen |
-| `default` | string |  |  | Vorgabe im Eingabefeld |
-| `password` | boolean |  | false | Eingabe verdecken |
-| `timeout` | integer |  | 0 | Sekunden bis automatisch geschlossen (0 = nie) |
-| `width` | integer |  | 460 | Breite des Dialogs in Pixel |
-| `font_size` | number |  | 10 | Schriftgröße |
-| `monitor` | integer |  | -1 | Monitor-Index (-1 = Hauptmonitor) |
+| `text` | string | yes |  | Question text |
+| `title` | string |  |  | Title |
+| `buttons` | array |  | ["OK"] | Button labels, e.g. ["Yes","No"] |
+| `input` | boolean |  | false | Show a text input field |
+| `default` | string |  |  | Default value of the input field |
+| `password` | boolean |  | false | Hide the input |
+| `timeout` | integer |  | 0 | Seconds until closed automatically (0 = never) |
+| `width` | integer |  | 460 | Width of the dialog in pixels |
+| `font_size` | number |  | 10 | Font size |
+| `monitor` | integer |  | -1 | Monitor index (-1 = primary monitor) |
 
-### `notify`  _(braucht GUI-Sitzung)_
-Zeigt eine Windows-Benachrichtigung  
-Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+### `notify`  _(needs a GUI session)_
+Shows a Windows notification  
+Short form: payload `<text>` equals `{"text": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
-Paket ist angekommen
-{"text":"Fenster offen","title":"Heizung","icon":"warning","seconds":10}
+Parcel has arrived
+{"text":"Window open","title":"Heating","icon":"warning","seconds":10}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `text` | string | ja |  | Text |
-| `title` | string |  | "WinCtl" | Titel |
-| `icon` | string |  | "info" | Symbol (info / warning / error / none) |
-| `seconds` | integer |  | 5 | Dauer |
+| `text` | string | yes |  | Text |
+| `title` | string |  | "WinCtl" | Title |
+| `icon` | string |  | "info" | Icon (info / warning / error / none) |
+| `seconds` | integer |  | 5 | Duration |
 
-### `close_popups`  _(braucht GUI-Sitzung)_
-Schließt alle Popups/Overlays/Dialoge von WinCtl  
+### `close_popups`  _(needs a GUI session)_
+Closes all popups, overlays and dialogs  
 
-### `screenshot`  _(braucht GUI-Sitzung)_
-Macht einen Screenshot und veröffentlicht das Bild (JPEG/PNG-Rohdaten) auf <base>/<id>/screenshot  
+### `screenshot`  _(needs a GUI session)_
+Takes a screenshot (stored in the ioBroker file storage)  
 
-Beispiele:
+Examples:
 
 ```
 {"monitor":0,"scale":1,"format":"png"}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `monitor` | integer |  | -1 | -1 = alle Monitore, 0 = erster ... |
-| `scale` | number |  | 0.5 | Verkleinerung 0.05 - 1 |
-| `quality` | integer |  | 70 | JPEG-Qualität |
-| `format` | string |  | "jpeg" | Bildformat (jpeg / png) |
-| `inline` | boolean |  | false | Base64 zusätzlich im result mitsenden |
+| `monitor` | integer |  | -1 | -1 = all monitors, 0 = first ... |
+| `scale` | number |  | 0.5 | Scale-down 0.05 - 1 |
+| `quality` | integer |  | 70 | JPEG quality |
+| `format` | string |  | "jpeg" | Image format (jpeg / png) |
+| `inline` | boolean |  | false | Also send Base64 in the result |
 
 ### `set_wallpaper`
-Setzt das Desktop-Hintergrundbild (Pfad oder URL)  
-Kurzform: Payload `<text>` entspricht `{"source": "<text>"}`.  
+Sets the desktop wallpaper  
+Short form: payload `<text>` equals `{"source": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 https://picsum.photos/1920/1080
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `source` | string | ja |  | Pfad oder URL |
+| `source` | string | yes |  | Path or URL |
 
 ### `brightness`
-Setzt die Helligkeit (nur interne Laptop-Displays, 0-100)  
-Kurzform: Payload `<text>` entspricht `{"level": "<text>"}`.  
+Sets the brightness (internal laptop displays only)  
+Short form: payload `<text>` equals `{"level": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 60
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `level` | integer | ja |  | 0 - 100 |
+| `level` | integer | yes |  | 0 - 100 |
 
-## Eingabe
+## Input
 
 ### `start_menu`
-Öffnet bzw. schließt das Startmenü (Windows-Taste)  
+Opens or closes the start menu (Windows key)  
 
-### `send_keys`  _(braucht GUI-Sitzung)_
-Sendet Tastendrücke (SendKeys-Syntax: ^=Strg, %=Alt, +=Umschalt, {ENTER}, {F5} ...)  
-Kurzform: Payload `<text>` entspricht `{"keys": "<text>"}`.  
+### `send_keys`  _(needs a GUI session)_
+Sends key presses (SendKeys syntax)  
+Short form: payload `<text>` equals `{"keys": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
 ^c
@@ -607,88 +609,88 @@ Beispiele:
 {ENTER}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `keys` | string | ja |  | z.B. ^c oder %{F4} oder {ENTER} |
+| `keys` | string | yes |  | e.g. ^c or %{F4} or {ENTER} |
 
-### `type_text`  _(braucht GUI-Sitzung)_
-Tippt Text in das aktive Fenster  
-Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+### `type_text`  _(needs a GUI session)_
+Types text into the active window  
+Short form: payload `<text>` equals `{"text": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
-Hallo Welt
+Hello world
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `text` | string | ja |  | Text |
+| `text` | string | yes |  | Text |
 
 ### `mouse`
-Bewegt/klickt die Maus  
+Moves/clicks the mouse  
 
-Beispiele:
+Examples:
 
 ```
 {"x":100,"y":200,"click":"single"}
 {"wheel":-3}
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `x` | integer |  |  | X-Koordinate |
-| `y` | integer |  |  | Y-Koordinate |
-| `relative` | boolean |  | false | Relativ zur aktuellen Position |
-| `click` | string |  | "none" | Klickart (none / single / double) |
-| `button` | string |  | "left" | Taste (left / right / middle) |
-| `wheel` | integer |  |  | Scrollrad-Schritte (+ hoch / - runter) |
+| `x` | integer |  |  | X coordinate |
+| `y` | integer |  |  | Y coordinate |
+| `relative` | boolean |  | false | Relative to the current position |
+| `click` | string |  | "none" | Click type (none / single / double) |
+| `button` | string |  | "left" | Button (left / right / middle) |
+| `wheel` | integer |  |  | Scroll wheel steps (+ up / - down) |
 
-### `clipboard_set`  _(braucht GUI-Sitzung)_
-Setzt den Text der Zwischenablage  
-Kurzform: Payload `<text>` entspricht `{"text": "<text>"}`.  
+### `clipboard_set`  _(needs a GUI session)_
+Sets the clipboard text  
+Short form: payload `<text>` equals `{"text": "<text>"}`.  
 
-Beispiele:
+Examples:
 
 ```
-Text für die Zwischenablage
+Text for the clipboard
 ```
 
-| Parameter | Typ | Pflicht | Standard | Beschreibung |
+| Parameter | Type | Required | Default | Description |
 |---|---|---|---|---|
-| `text` | string | ja |  | Text |
+| `text` | string | yes |  | Text |
 
-### `clipboard_get`  _(braucht GUI-Sitzung)_
-Liest den Text der Zwischenablage  
+### `clipboard_get`  _(needs a GUI session)_
+Reads the clipboard text  
 
 ## States
 
-| Topic (`{base}/{id}/state/…`) | Typ | Einheit | Rolle | Beschreibung |
+| Topic (`{base}/{id}/state/…`) | Type | Unit | Role | Description |
 |---|---|---|---|---|
-| `locked` | boolean |  | `indicator` | Bildschirm gesperrt |
-| `user_present` | boolean |  | `indicator` | Benutzer aktiv (nicht gesperrt und Eingabe innerhalb der Idle-Schwelle) |
-| `idle` | number | s | `value` | Sekunden seit der letzten Maus-/Tastatureingabe |
-| `active_window` | string |  | `text` | Titel des aktiven Fensters |
-| `active_process` | string |  | `text` | Prozess des aktiven Fensters |
-| `volume` | number | % | `level.volume` | Master-Lautstärke |
-| `muted` | boolean |  | `media.mute` | Stummgeschaltet |
-| `cpu` | number | % | `value` | CPU-Auslastung |
-| `ram` | number | % | `value` | RAM-Auslastung |
-| `ram_free_gb` | number | GB | `value` | Freier Arbeitsspeicher |
-| `uptime_min` | number | min | `value` | Laufzeit seit Windows-Start |
-| `battery` | number | % | `value.battery` | Akkustand (nur Geräte mit Akku) |
-| `charging` | boolean |  | `indicator` | Netzteil angeschlossen (nur Geräte mit Akku) |
-| `monitors` | number |  | `value` | Anzahl Monitore |
-| `ip` | string |  | `text` | Lokale IPv4-Adresse |
-| `user` | string |  | `text` | Angemeldeter Benutzer |
-| `keep_awake` | boolean |  | `indicator` | keep_awake aktiv |
-| `webcam_in_use` | boolean |  | `indicator` | Kamera wird gerade benutzt (z.B. Videokonferenz) |
-| `webcam_app` | string |  | `text` | Programm(e), die die Kamera benutzen |
-| `mic_in_use` | boolean |  | `indicator` | Mikrofon wird gerade benutzt |
-| `mic_app` | string |  | `text` | Programm(e), die das Mikrofon benutzen |
-| `web_url` | string |  | `text.url` | Seite, die show_web gerade anzeigt (leer = keine) |
-| `update_available` | boolean |  | `indicator` | Neuere WinCtl-Version verfügbar (Prüfung beim Start und alle 12 h) |
-| `latest_version` | string |  | `text` | Neueste WinCtl-Version auf GitHub |
-| `disk/<laufwerk>_free_gb` | number | GB | `value` | Freier Platz je Festplatte (dynamisch) |
-| `disk/<laufwerk>_used_percent` | number | % | `value` | Belegung je Festplatte (dynamisch) |
-| `proc/<name>` | boolean |  | `indicator` | Prozess läuft (aus Config 'WatchProcesses', dynamisch) |
+| `locked` | boolean |  | `indicator` | Screen locked |
+| `user_present` | boolean |  | `indicator` | User active (not locked and input within the idle threshold) |
+| `idle` | number | s | `value` | Seconds since the last mouse/keyboard input |
+| `active_window` | string |  | `text` | Title of the active window |
+| `active_process` | string |  | `text` | Process of the active window |
+| `volume` | number | % | `level.volume` | Master volume |
+| `muted` | boolean |  | `media.mute` | Muted |
+| `cpu` | number | % | `value` | CPU load |
+| `ram` | number | % | `value` | RAM usage |
+| `ram_free_gb` | number | GB | `value` | Free memory |
+| `uptime_min` | number | min | `value` | Time since Windows start |
+| `battery` | number | % | `value.battery` | Battery level (devices with battery only) |
+| `charging` | boolean |  | `indicator` | Power supply connected (devices with battery only) |
+| `monitors` | number |  | `value` | Number of monitors |
+| `ip` | string |  | `text` | Local IPv4 address |
+| `user` | string |  | `text` | Logged-in user |
+| `keep_awake` | boolean |  | `indicator` | keep_awake active |
+| `webcam_in_use` | boolean |  | `indicator` | Camera in use (e.g. video call) |
+| `webcam_app` | string |  | `text` | Program(s) using the camera |
+| `mic_in_use` | boolean |  | `indicator` | Microphone in use |
+| `mic_app` | string |  | `text` | Program(s) using the microphone |
+| `web_url` | string |  | `text.url` | Page that show_web currently displays (empty = none) |
+| `update_available` | boolean |  | `indicator` | Newer agent version available (checked at start and every 12 h) |
+| `latest_version` | string |  | `text` | Newest agent version on GitHub |
+| `disk/<drive>_free_gb` | number | GB | `value` | Free space per drive, e.g. `disk.C_free_gb` |
+| `disk/<drive>_used_percent` | number | % | `value` | Usage per drive, e.g. `disk.C_used_percent` |
+| `proc/<name>` | boolean |  | `indicator` | Watched program is running (agent settings "Processes") |

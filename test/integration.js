@@ -212,6 +212,22 @@ tests.integration(path.join(__dirname, '..'), {
 				expect(res.result.sent).to.include('127.0.0.1');
 			});
 
+			it('creates no object whose id differs only in case from an existing one', async function () {
+				this.timeout(15000);
+				const opts = { qos: 1, retain: false };
+				await agent.client.publishAsync('winctl/FAKE-PC/state/volume', '10', opts);
+				await agent.client.publishAsync('winctl/fake-pc/state/Volume', '11', opts);
+				await agent.client.publishAsync('winctl/fake-pc/state/DISK/C_free_gb', '12', opts);
+				await agent.client.publishAsync('winctl/fake-pc/state/case_check', '1', opts);
+				// messages are handled in order, so the last one existing means the others were processed
+				await waitForState(`${NS}.fake-pc.state.case_check`);
+				expect(await harness.objects.getObjectAsync(`${NS}.FAKE-PC`)).to.equal(null);
+				expect(await harness.objects.getObjectAsync(`${NS}.fake-pc.state.Volume`)).to.equal(null);
+				expect(await harness.objects.getObjectAsync(`${NS}.fake-pc.state.DISK`)).to.equal(null);
+				const vol = await harness.states.getStateAsync(`${NS}.fake-pc.state.volume`);
+				expect(vol.val).to.not.equal(11);
+			});
+
 			it('answers commands to an offline device immediately with an error', async function () {
 				this.timeout(15000);
 				await agent.stop();

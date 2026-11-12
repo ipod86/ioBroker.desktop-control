@@ -65,8 +65,6 @@ export interface ManifestCommand {
 	params: ManifestParam[];
 	/** only reachable via sendTo */
 	dangerous: boolean;
-	/** needs a logged-in desktop */
-	needsGui: boolean;
 	/** description */
 	description: string;
 	/** parameter a plain value is mapped to (short form) */
@@ -89,8 +87,6 @@ export interface Manifest {
 	os: string;
 	/** logged-in user */
 	user: string;
-	/** agent id from the config */
-	deviceId: string;
 	/** start time of the agent (ISO) */
 	started: string;
 	/** protocol version */
@@ -101,8 +97,6 @@ export interface Manifest {
 	mac: string;
 	/** IPv4 broadcast address of the PC's network (Wake-on-LAN) */
 	broadcast: string;
-	/** agent may start any program (not only aliases) */
-	allowAnyRun: boolean;
 	/** announced states */
 	states: ManifestState[];
 	/** announced commands */
@@ -307,8 +301,9 @@ export function normalizeManifest(raw: unknown): Manifest {
 		}
 		// structured values are stored as JSON text
 		const type = (['json', 'array', 'object'].includes(raw) ? 'string' : raw) as ioBroker.CommonType;
-		// volume, muted, keep_awake can be set from ioBroker (the agent has a command for them)
-		const writable = e.writable === true || path in WRITABLE_COMMANDS;
+		// volume, muted, keep_awake can be set from ioBroker (the agent has a command for them); a state the
+		// manifest marks writable without such a command stays read-only, a write could not be forwarded
+		const writable = path in WRITABLE_COMMANDS;
 		const role = fitRole(str(e.role), raw, writable);
 		return {
 			path,
@@ -337,7 +332,6 @@ export function normalizeManifest(raw: unknown): Manifest {
 		})),
 		// run/kill are only flagged because of AllowAnyRun; with alias-only run the agent itself limits them
 		dangerous: e.dangerous === true && !(ALIAS_LIMITED.includes(name) && security.allow_any_run === false),
-		needsGui: e.needs_gui === true || e.needsGui === true,
 		description: str(e.description),
 		primary: e.primary ? str(e.primary) : undefined,
 		examples: Array.isArray(e.examples) ? e.examples.map(str) : [],
@@ -350,25 +344,20 @@ export function normalizeManifest(raw: unknown): Manifest {
 		version: str(m.version),
 		os: str(m.os),
 		user: str(m.user),
-		deviceId: str(m.device_id),
 		started: str(m.started),
 		protocol: typeof m.protocol === 'number' ? m.protocol : 0,
 		apps: Array.isArray(security.apps) ? security.apps.map(str) : [],
 		mac: str(m.mac),
 		broadcast: str(m.broadcast),
-		allowAnyRun: security.allow_any_run === true,
 		states,
 		commands,
 		events,
 	};
 }
 
-/**
- * Role if the agent does not send one
- *
- * @param type common type
- * @param writable writable state
- */
+/** official roles of type boolean that are not in a boolean family (indicator, sensor, switch, button) */
+const BOOLEAN_ROLES = ['media.mute', 'media.mute.group'];
+
 /**
  * Role from the manifest, checked against the official list and made to fit type and write flag
  * (stateroles.md: indicator/sensor/value are read-only, switch/level writable, button is a write-only boolean).
@@ -380,6 +369,10 @@ export function normalizeManifest(raw: unknown): Manifest {
 export function fitRole(role: string, type: string, writable: boolean): string {
 	if (!isOfficialRole(role)) {
 		return defaultRole(type, writable);
+	}
+	// boolean roles outside the boolean families (stateroles.md: media.mute is boolean, read/write)
+	if (BOOLEAN_ROLES.includes(role)) {
+		return type === 'boolean' ? role : defaultRole(type, writable);
 	}
 	const family = role.split('.')[0];
 	const booleanFamily = ['indicator', 'sensor', 'switch', 'button'].includes(family);
@@ -673,4 +666,31 @@ export function parseScreenshot(payload: Buffer): { data: Buffer; ext: string; i
 		return { data, ext: 'jpg', id };
 	}
 	return null;
+}
+
+/** largest delay setTimeout accepts (2^31 - 1 ms); longer or negative delays fire immediately */
+export const MAX_TIMEOUT_MS = 2147483647;
+
+/**
+ * Checks a timeout in milliseconds: positive, finite and not above MAX_TIMEOUT_MS.
+ *
+ * @param ms timeout in milliseconds
+ */
+export function isValidTimeoutMs(ms: unknown): ms is number {
+	return typeof ms === 'number' && Number.isFinite(ms) && ms > 0 && ms <= MAX_TIMEOUT_MS;
+}
+
+/**
+ * Timeout setting in seconds → milliseconds. An empty setting silently uses the default;
+ * an invalid one (not a number, <= 0, too large) uses the default and is reported as invalid.
+ *
+ * @param seconds configured value in seconds
+ * @param defaultSeconds default in seconds
+ */
+export function timeoutSetting(seconds: unknown, defaultSeconds: number): { ms: number; invalid: boolean } {
+	if (seconds === undefined || seconds === null || seconds === '') {
+		return { ms: defaultSeconds * 1000, invalid: false };
+	}
+	const ms = Number(seconds) * 1000;
+	return isValidTimeoutMs(ms) ? { ms, invalid: false } : { ms: defaultSeconds * 1000, invalid: true };
 }

@@ -1055,11 +1055,20 @@ Voraussetzung: Die exe liegt in einem Ordner, in den der Benutzer schreiben darf
 
 Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer/Passwort und ACLs absichern, bei Bedarf TLS nutzen. Standardmäßig startet der Agent nur Programme aus seiner Alias-Liste, und `shell` ist aus.
 
+**Eingebauter Broker:** Er lauscht auf allen Netzwerkschnittstellen (`0.0.0.0`) und nimmt, solange kein Benutzername gesetzt ist, jeden Client an – jedes Gerät im LAN könnte dann Befehle an die PCs senden oder Agent-Daten fälschen. Empfohlen sind Benutzername und Passwort in den Adapter-Einstellungen (die Agents melden sich dann damit an); alternativ „Lauschen auf“ auf eine Netzwerkschnittstelle beschränken. Ohne Login schreibt der Adapter beim Start eine Warnung ins Log.
+
 ## Changelog
 <!--
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+* (ipod86) Timeouts werden im Code geprüft (ungültige Werte → Standardwert)
+* (ipod86) Objekt-IDs, die sich nur in der Groß-/Kleinschreibung von vorhandenen unterscheiden, werden nicht angelegt (Warnung im Log)
+* (ipod86) Sicherheitshinweis und Start-Warnung für den eingebauten Broker ohne Login
+* (ipod86) Rolle `media.mute` bleibt erhalten; Manifest-States ohne Befehl bleiben schreibgeschützt
+* (ipod86) englische Dokumentation (docs/COMMANDS.md, docs/PROTOCOL.md)
+
 ### 0.1.1 (2026-10-25)
 * (ipod86) Release über den GitHub-Workflow veröffentlicht (Trusted Publishing); News nur für Versionen auf npm; vereinheitlichte Repository-URL
 

@@ -1,5 +1,4 @@
 {
-	"desktop-control adapter settings": "Adapterinstellingen voor desktop-control",
 	"MQTT broker": "MQTT-broker",
 	"Host": "Host",
 	"hostHelp": "IP-adres of hostnaam van de broker",
@@ -23,5 +22,6 @@
 	"Listen on": "Luisteren op",
 	"bindHelp": "0.0.0.0 = alle netwerkinterfaces",
 	"loginHelp": "Ingebouwde broker: optioneel – indien ingesteld moeten de agents hiermee inloggen",
-	"Broker": "Broker"
+	"Broker": "Broker",
+	"brokerSecurityHint": "Beveiliging: zonder gebruikersnaam accepteert de ingebouwde broker elke client in het netwerk – elk apparaat in het LAN kan dan opdrachten naar de pc's sturen of agentgegevens vervalsen. Een gebruikersnaam en wachtwoord worden aanbevolen; de agents moeten zich daarmee aanmelden. U kunt ook \"Luisteren op\" beperken tot één netwerkinterface."
 }

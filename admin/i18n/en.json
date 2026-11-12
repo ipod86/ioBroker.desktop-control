@@ -1,5 +1,4 @@
 {
-	"desktop-control adapter settings": "Adapter settings for desktop-control",
 	"MQTT broker": "MQTT broker",
 	"Host": "Host",
 	"hostHelp": "IP address or host name of the broker",
@@ -23,5 +22,6 @@
 	"Listen on": "Listen on",
 	"bindHelp": "0.0.0.0 = all network interfaces",
 	"loginHelp": "Built-in broker: optional – if set, the agents have to log in with it",
-	"Broker": "Broker"
+	"Broker": "Broker",
+	"brokerSecurityHint": "Security: without a user name the built-in broker accepts every client on the network – any device in the LAN could then send commands to the PCs or fake agent data. A user name and password are recommended; the agents then have to log in with them. Alternatively limit \"Listen on\" to one network interface."
 }

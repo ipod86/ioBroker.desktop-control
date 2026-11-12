@@ -16,12 +16,14 @@ WinCtl.exe (per PC) ──MQTT──> broker (built-in or external) <──MQTT�
 - `src/lib/roles.ts` – the official role list (https://www.iobroker.com/docs/dev/stateroles.md) without the deprecated aliases; `isOfficialRole` also accepts `*.forecast.<n>` and `button.mode.*`/`switch.mode.*`. `fitRole` (protocol.ts) falls back to a generic role for unknown roles and fits the rest to type and write flag (switch↔indicator, level↔value, buttons write-only).
 - `src/main.ts` – MQTT connection, objects, `onStateChange`, `onMessage` (`cmd`, `devices`).
 - `tools/fake-agent.js` – fake agent built from `docs/protocol.json`, used by the integration test and usable by hand (`node tools/fake-agent.js mqtt://host:1883 pc1`).
-- `docs/PROTOCOL.md`, `docs/COMMANDS.md`, `docs/protocol.json` – copied from the agent repo, the source of truth for the protocol. Update them together with the agent.
+- `docs/PROTOCOL.md`, `docs/COMMANDS.md` (English) + `docs/PROTOCOL.de.md`, `docs/COMMANDS.de.md` (German), `docs/protocol.json` – copied from the agent repo (COMMANDS*.md generated there by `tools/gen_docs.py`), the source of truth for the protocol. Update them together with the agent.
 
 ## Decisions
 
 - Object ids: segments only `[A-Za-z0-9_-]` (`sanitizeSegment`); every level exists (nested state/event paths get `folder` objects via `ensureParents`, checked with the repochecker object validator, see the maintainer wiki "Konformitäts-Check").
-- Object texts are English: the agent manifest has `description` (English) and `description_de` (German, used for README.de.md/COMMANDS.md).
+- Object texts are English: the agent manifest has `description` (English) and `description_de` (German, used for README.de.md/COMMANDS.de.md).
+- Case collisions: existing ids are never renamed/lower-cased. A new device/state/event/command id that differs only in case (at any level) from an existing object is not created (`caseClash`, warning once); the first spelling wins. `idsLower` is filled from all adapter objects in `restoreDevices`.
+- Timeouts: `cmdTimeout`/`askTimeout` and the sendTo `timeout` are checked in code (> 0, <= 2^31-1 ms, `timeoutSetting`/`isValidTimeoutMs`); invalid → default + warning.
 - Topics: `{base}/{id}/online|info|state/<path>|event/<name>|result|screenshot`, commands to `{base}/{id}/cmd/<name>` and `{base}/all/cmd/<name>`.
 - States are plain text; typed with the manifest. `/` in state paths becomes an object level (`disk/C_free_gb` → `state.disk.C_free_gb`). Dynamic states (`<...>` or `/*` in the manifest) are created on the first value.
 - Command data points (`commandDataPoints`): no params → button; required param (or primary without default) → `json` input; only optional params → button with defaults + `<name>_json` input. A non-JSON value is the short form for the `primary` parameter; `true`/`{}` = default options. `common.desc` = description | options | example (from the manifest `examples`).
