@@ -1062,7 +1062,7 @@ Wer auf `winctl/+/cmd/#` schreiben darf, steuert den PC. Den Broker mit Benutzer
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
-### **WORK IN PROGRESS**
+### 0.1.2 (2026-11-12)
 * (ipod86) Timeouts werden im Code geprüft (ungültige Werte → Standardwert)
 * (ipod86) Objekt-IDs, die sich nur in der Groß-/Kleinschreibung von vorhandenen unterscheiden, werden nicht angelegt (Warnung im Log)
 * (ipod86) Sicherheitshinweis und Start-Warnung für den eingebauten Broker ohne Login
